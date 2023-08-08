@@ -1,17 +1,17 @@
 import { useState, memo } from 'react'
 import "./FileList.scss"
 import File from "../File-comp/File"
+import { FileType } from '../../types/index.ts';
 
-function FileList({ files }) {
+interface FileListProps {
+    files: FileType[];
+}
+
+function FileList({ files }: FileListProps) {
     const filesMapped = files.map(file => {
         return <File 
             key={file.id}
-            id={file.id}
-            name={file.name}
-            path={file.path}
-            date={file.date}
-            type={file.type}
-            size={file.size}
+            file={file} // Pass the entire file object as prop
         />
     })
 
