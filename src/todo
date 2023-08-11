@@ -1,1 +1,1 @@
-// delete app.tsx if not needed
+// store username on database as case sensitive, convert username to case insensitve for checks

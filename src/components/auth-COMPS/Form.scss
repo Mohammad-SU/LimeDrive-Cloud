@@ -1,0 +1,102 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    gap: 1.2rem;
+
+    &__heading {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        font-size: 2rem;
+        font-weight: normal;
+
+        &::before {
+            content: '';
+            margin-right: 1rem;
+            animation: rotateLine 0.5s linear infinite;
+        }
+        &::after {
+            content: '';
+            margin-left: 1rem;
+            animation: rotateLine 0.5s linear infinite;
+        }
+
+        @keyframes rotateLine {
+            0% {
+                content: '/';
+            }
+            25% {
+                content: '—';
+            }
+            50% {
+                content: '\\';
+            }
+            75% {
+                content: '|';
+            }
+            100% {
+                content: '/';
+            }
+        }
+    }
+    
+    &__input-cont {
+        display: flex;
+        align-items: center;
+    }
+        &__input-label {
+            margin-left: -8.7rem;
+            position: absolute;
+
+            &.emailReg-label {
+                margin-left: -3.8rem;
+            }
+            &.usernameReg-label {
+                margin-left: -5.45rem;
+            }
+            &.passwordLog-label,
+            &.passwordReg-label {
+                margin-left: -5.4rem;
+            }
+            &.passwordConfirm-label {
+                margin-left: -9.82rem;
+            }
+        }  
+
+        input {
+            font-size: 1rem;
+            font-family: inherit;
+            width: 20rem;
+            height: 1.7rem;
+            border: none;
+            border-bottom: .125rem dashed lime;
+            color: inherit;
+            background-color: black;
+
+            &::placeholder {
+                color: rgba(0, 255, 0, 0.605);
+            }
+        }
+
+    &__error {
+
+    }
+
+    &__submit {
+        padding: 0.7rem 1rem;
+        font-size: 1.5rem;
+        margin-top: 1.5rem;
+        border: 0.125rem dashed lime;
+        background-color: black;
+        color: inherit;
+        font-family: inherit;
+        cursor: pointer;
+
+        &:hover {
+            background-color: lime;
+            color: black;
+        }
+    }
+}

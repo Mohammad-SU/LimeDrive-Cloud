@@ -1,3 +1,30 @@
-body {
-    background: black;
+html {
+    min-height: 100vh;
 }
+
+body {
+    font-family: "consolasregular";
+    background: black;
+    min-height: 100vh;
+    margin: 0;
+    color: lime;
+    caret-color: lime;
+    caret-shape: block;
+}
+    input {
+        border: none;
+        outline: none;
+    }
+
+    button {
+        appearance: none;
+        background: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: none;
+        
+        color: inherit;
+    }
