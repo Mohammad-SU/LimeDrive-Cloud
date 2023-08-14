@@ -1,0 +1,31 @@
+html {
+  min-height: 100vh;
+  color-scheme: dark;
+}
+
+body {
+  font-family: "consolasregular";
+  background: black;
+  min-height: 100vh;
+  margin: 0;
+  color: lime;
+}
+
+input {
+  border: none;
+  outline: none;
+}
+
+button {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+  color: inherit;
+}/*# sourceMappingURL=global.css.map */

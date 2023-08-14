@@ -1,26 +1,37 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Laravel specific files
+.env
+public/hot
+public/storage
+storage/*.key
+vendor/
+Homestead.json
+Homestead.yaml
+composer.lock
+npm-debug.log
+yarn-error.log
 
-node_modules
-dist
-dist-ssr
-*.local
+# Node dependencies
+node_modules/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+# Compiled assets for Laravel Mix
+public/css/
+public/js/
+
+# IDE/Editor specific files
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-/vendor/
+# User-specific files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/*
+*.log
+*.pid
+*.seed
+*.pid.lock

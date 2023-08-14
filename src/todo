@@ -1,1 +1,2 @@
-// store username on database as case sensitive, convert username to case insensitve for checks
+store username on database as case sensitive, convert username to case insensitve for checks
+environment variables for .env when publishing to github/render.com

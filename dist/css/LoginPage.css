@@ -1,0 +1,18 @@
+.AuthPage {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: black;
+  min-height: 100vh;
+  min-width: 100vh;
+}
+.AuthPage__heading {
+  margin-top: 4rem;
+  width: 80%;
+}
+.AuthPage__textarea {
+  font-size: 1rem;
+  color: lime;
+  background-color: black;
+}/*# sourceMappingURL=LoginPage.css.map */

@@ -1,0 +1,103 @@
+@charset "UTF-8";
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  gap: 1.2rem;
+}
+.form__heading {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: normal;
+}
+.form__heading::before {
+  content: "";
+  margin-right: 1rem;
+  animation: rotateLine 0.5s linear infinite;
+}
+.form__heading::after {
+  content: "";
+  margin-left: 1rem;
+  animation: rotateLine 0.5s linear infinite;
+}
+@keyframes rotateLine {
+  0% {
+    content: "/";
+  }
+  25% {
+    content: "—";
+  }
+  50% {
+    content: "\\";
+  }
+  75% {
+    content: "|";
+  }
+  100% {
+    content: "/";
+  }
+}
+.form__input-cont {
+  display: flex;
+  align-items: center;
+}
+.form__input-label {
+  margin-left: -8.7rem;
+  position: absolute;
+}
+.form__input-label.emailReg-label {
+  margin-left: -3.8rem;
+}
+.form__input-label.usernameReg-label {
+  margin-left: -5.45rem;
+}
+.form__input-label.passwordLog-label, .form__input-label.passwordReg-label {
+  margin-left: -5.4rem;
+}
+.form__input-label.passwordConfirm-label {
+  margin-left: -9.82rem;
+}
+.form input {
+  font-size: 1rem;
+  font-family: inherit;
+  width: 20rem;
+  height: 1.7rem;
+  border: none;
+  border-bottom: 0.125rem dashed lime;
+  color: inherit;
+  background-color: black;
+}
+.form input::-moz-placeholder {
+  color: rgba(0, 255, 0, 0.605);
+}
+.form input::placeholder {
+  color: rgba(0, 255, 0, 0.605);
+}
+.form .eye-icon {
+  position: absolute;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-left: 20.7rem;
+  cursor: pointer;
+}
+.form__error {
+  margin: 0;
+  margin-top: 0.2rem;
+}
+.form__submit {
+  padding: 0.7rem 1rem;
+  font-size: 1.5rem;
+  margin-top: 0.4rem;
+  border: 0.125rem dashed lime;
+  background-color: black;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+.form__submit:hover {
+  background-color: lime;
+  color: black;
+}/*# sourceMappingURL=Form.css.map */

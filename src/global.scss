@@ -1,5 +1,6 @@
 html {
     min-height: 100vh;
+    color-scheme: dark;
 }
 
 body {
@@ -8,8 +9,6 @@ body {
     min-height: 100vh;
     margin: 0;
     color: lime;
-    caret-color: lime;
-    caret-shape: block;
 }
     input {
         border: none;

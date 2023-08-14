@@ -19,7 +19,6 @@
     &__main-cont {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        align-items: center;
         overflow: hidden;
 
         .gen-cont {
@@ -51,7 +50,7 @@
     }
 
     &__changeFormBtn {
-        margin-top: 2rem;
+        margin-top: 1.3rem;
         border-bottom: .0625rem solid lime;
     }
 }
