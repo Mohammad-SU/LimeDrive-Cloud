@@ -1,4 +1,5 @@
 import { useState, memo } from 'react'
+import axios from 'axios';
 import "./Form.scss"
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
@@ -10,10 +11,16 @@ function LoginForm() {
     })
     const [invalidDetails, setInvalidDetails] = useState<boolean>(false)
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
         if (formData.usernameOrEmailLog === 'validUsernameOrEmailLog' && formData.passwordLog === 'validPasswordLog') {
             setInvalidDetails(false)
+            try {
+                const response = await axios.post('/api/login', formData);
+                console.log(response.data);
+            } catch (error) {
+                console.error(error);
+            }
         } 
         else {
             setInvalidDetails(true)

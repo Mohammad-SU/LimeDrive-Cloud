@@ -7,10 +7,6 @@ import HomePage from './HomePage-f/HomePage'
 
 const router = createBrowserRouter([
     {
-        path: "*",
-        element: <Navigate to="/auth" replace={true} />,
-    },
-    {
         path: "/auth",
         element: <AuthPage />,
     },

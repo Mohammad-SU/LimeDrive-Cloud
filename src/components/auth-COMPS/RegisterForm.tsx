@@ -1,4 +1,5 @@
 import { useState, memo } from 'react'
+import axios from 'axios';
 import "./Form.scss"
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
@@ -17,11 +18,17 @@ function RegisterForm() {
     const isPasswordValid = formData.passwordReg.length >= 8;
     const isPasswordMatch = formData.passwordReg === formData.passwordConfirm;
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
 
         if (isEmailValid && isUsernameValid && isPasswordValid && isPasswordMatch) {
             setInvalidDetails(false)
+            try {
+                const response = await axios.post('/api/register', formData);
+                console.log(response.data);
+            } catch (error) {
+                console.error(error);
+            }
         } else {
             setInvalidDetails(true)
         }
