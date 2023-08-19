@@ -1,36 +1,48 @@
 import { useState, memo } from 'react'
-import axios from 'axios';
+import axios from 'axios'
 import "./Form.scss"
-import { useFormLogic } from "../../hooks/useFormLogic.ts";
-import { BsEye, BsEyeSlash } from 'react-icons/bs';
+import { handleBackendError } from "../../functions/BackendErrorResponse.ts"
+import { useFormLogic } from "../../hooks/useFormLogic.ts"
+import { BsEye, BsEyeSlash } from 'react-icons/bs'
+import LoadingBar from "../LoadingBar-comp/LoadingBar.tsx"
 
 function RegisterForm() {
     const { formData, handleInputChange } = useFormLogic({
         emailReg:'',
         usernameReg: '',
         passwordReg: '',
-        passwordConfirm: '',
+        passwordReg_confirmation: '',
     })
     const [invalidDetails, setInvalidDetails] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [backendError, setBackendError] = useState<string | null>(null)
 
-    const isEmailValid = /^\S+@\S+\.\S+$/.test(formData.emailReg);
-    const isUsernameValid = /^[a-zA-Z0-9_-]+$/.test(formData.usernameReg);
-    const isPasswordValid = formData.passwordReg.length >= 8;
-    const isPasswordMatch = formData.passwordReg === formData.passwordConfirm;
+    const isEmailValid = /^\S+@\S+\.\S+$/.test(formData.emailReg)
+    const isUsernameValid = /^[a-zA-Z0-9_-]+$/.test(formData.usernameReg)
+    const isPasswordValid = formData.passwordReg.length >= 8
+    const isPasswordMatch = formData.passwordReg === formData.passwordReg_confirmation
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
 
         if (isEmailValid && isUsernameValid && isPasswordValid && isPasswordMatch) {
-            setInvalidDetails(false)
+            setLoading(true)
             try {
-                const response = await axios.post('/api/register', formData);
-                console.log(response.data);
-            } catch (error) {
-                console.error(error);
+                const response = await axios.post('http://localhost:8000/api/register', formData)
+                if (response.data.message == 'Registration successful') {
+                    setInvalidDetails(false)
+                    // Redirect to home page
+                }
             }
-        } else {
-            setInvalidDetails(true)
+            catch (error) {
+                if (axios.isAxiosError(error)) {
+                    setBackendError(handleBackendError(error))
+                }
+                setInvalidDetails(true)
+            } 
+            finally {
+                setLoading(false)
+            }
         }
     }
 
@@ -38,9 +50,24 @@ function RegisterForm() {
     const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
     const togglePasswordVisibility = () => {setShowPassword(!showPassword)}
     const toggleConfirmPasswordVisibility = () => {setShowConfirmPassword(!showConfirmPassword)}
+
+    function renderError() {
+        let errorMessage = null;
+        errorMessage = 
+            !isEmailValid ? 'Invalid email format.'
+            : !isUsernameValid ? 'Invalid username format.'
+            : !isPasswordValid ? 'Password must have at least 8 characters.'
+            : !isPasswordMatch ? 'Passwords do not match.' 
+            : backendError === "The email has already been taken. (and 1 more error)" ? 'Email and username is taken.'
+            : backendError === "The email has already been taken." ? "Email is taken"
+            : backendError === "The username has already been taken." ? "Username is taken"
+            : backendError != null ? 'Error. Please check your connection.'
+            : null;
+        return errorMessage && <span>{errorMessage}</span>;
+    }
     
     return (
-        <form className="form" name="login-form" method="POST" onSubmit={handleSubmit}>
+        <form className="form" name="register-form" method="POST" onSubmit={handleSubmit}>
             <h2 className="form__heading">Register</h2>
 
             <div className="form__input-cont">
@@ -80,7 +107,7 @@ function RegisterForm() {
                     onChange={handleInputChange}
                     maxLength={72}
                     placeholder="Must contain at least 8 characters"
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                     spellCheck="false"
                     required
                 />
@@ -91,15 +118,14 @@ function RegisterForm() {
                 }
             </div>
             <div className="form__input-cont">
-                <div className="form__input-label passwordConfirm-label">Confirm password:</div>
+                <div className="form__input-label passwordReg_confirmation-label">Confirm password:</div>
                 <input
-                    className="form__passwordConfirm"
-                    name="passwordConfirm"
+                    className="form__passwordReg_confirmation"
+                    name="passwordReg_confirmation"
                     type={showConfirmPassword ? 'text' : 'password'}
-                    value={formData.passwordConfirm}
+                    value={formData.passwordReg_confirmation}
                     onChange={handleInputChange}
                     maxLength={72}
-                    autoComplete="current-password"
                     spellCheck="false"
                     required
                 />
@@ -109,18 +135,13 @@ function RegisterForm() {
                     (<BsEye className="eye-icon" onClick={toggleConfirmPasswordVisibility} />)
                 }
             </div>
+            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
-            
-                <p className="form__error">
-                    {invalidDetails && (
-                        <>
-                            {!isEmailValid && <span>Invalid email format.</span>}
-                            {isEmailValid && !isUsernameValid && <span>Invalid username format.</span>}
-                            {isEmailValid && isUsernameValid && !isPasswordValid && <span>Password must have at least 8 characters.</span>}
-                            {isEmailValid && isUsernameValid && isPasswordValid && !isPasswordMatch && <span>Passwords do not match.</span>}
-                        </>
-                    )}
+                <p className="form__error-and-loading">
+                    {invalidDetails && renderError()}
+                    <LoadingBar loading={loading} />
                 </p>
+
             <button className="form__submit" type="submit">
                 Register
             </button>

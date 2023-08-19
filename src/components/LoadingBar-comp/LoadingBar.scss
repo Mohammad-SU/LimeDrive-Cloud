@@ -1,0 +1,31 @@
+$steps: 30;
+
+.LoadingBar::after {
+    content: "";
+    animation: fillLoadingBar 1s steps($steps) infinite;
+}
+
+@function generate-bar($total, $filled) {
+    $bar: "";
+    $fill: "#";
+    $empty: "-";
+  
+    @for $i from 1 through $total {
+        $bar: if($i <= $filled, $bar + $fill, $bar + $empty);
+    }
+  
+    @return "[#{$bar}]";
+}
+  
+@keyframes fillLoadingBar {
+    @for $i from 0 through $steps {
+        $percentage: percentage($i / $steps);
+        #{$percentage} {
+            content: generate-bar($steps, $i);
+        }
+    }
+
+    99% {
+        content: generate-bar($steps, $steps);
+    }
+}

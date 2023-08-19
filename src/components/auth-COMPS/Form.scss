@@ -47,6 +47,7 @@
         align-items: center;
     }
         &__input-label {
+            font-weight: bold;
             margin-left: -8.7rem;
             position: absolute;
 
@@ -60,7 +61,7 @@
             &.passwordReg-label {
                 margin-left: -5.4rem;
             }
-            &.passwordConfirm-label {
+            &.passwordReg_confirmation-label {
                 margin-left: -9.82rem;
             }
         }  
@@ -88,7 +89,7 @@
             cursor: pointer;
         }
 
-    &__error {
+    &__error-and-loading {
         margin: 0;
         margin-top: 0.2rem;
     }

@@ -8,7 +8,7 @@
 }
 .AuthPage__heading {
   margin-top: 5rem;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
   width: 80%;
 }
 .AuthPage__heading.active {
@@ -19,12 +19,30 @@
   grid-template-columns: repeat(3, 1fr);
   overflow: hidden;
 }
-.AuthPage__main-cont .gen-cont {
+.AuthPage__main-cont .generator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 27rem;
   font-size: 1rem;
   margin-right: 4rem;
   margin-bottom: 12rem;
   text-align: center;
+}
+.AuthPage__main-cont .generator button {
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+  border-bottom: 0.0625rem solid lime;
+}
+.AuthPage__main-cont .generator__details p {
+  display: flex;
+  align-items: baseline;
+}
+.AuthPage__main-cont .generator__details p strong {
+  margin-right: 1rem;
+}
+.AuthPage__main-cont .generator.active {
+  margin-right: 3rem;
 }
 .AuthPage__main-cont .form-cont {
   display: flex;
@@ -43,6 +61,7 @@
   background-color: black;
 }
 .AuthPage__changeFormBtn {
+  font-size: 1.1rem;
   margin-top: 1.3rem;
   border-bottom: 0.0625rem solid lime;
 }/*# sourceMappingURL=AuthPage.css.map */

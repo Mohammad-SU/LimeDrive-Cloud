@@ -1,29 +1,49 @@
 import { useState, memo } from 'react'
 import axios from 'axios';
 import "./Form.scss"
+import { handleBackendError } from "../../functions/BackendErrorResponse.ts"
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
+import LoadingBar from "../LoadingBar-comp/LoadingBar.tsx"
 
 function LoginForm() {
     const { formData, handleInputChange } = useFormLogic({
         usernameOrEmailLog: '',
         passwordLog: '',
     })
-    const [invalidDetails, setInvalidDetails] = useState<boolean>(false)
+    const [backendError, setBackendError] = useState<string | null>(null)
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
+    const [loading, setLoading] = useState<boolean>(false)
+
+    const isPasswordValid = formData.passwordLog.length >= 8
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
-        if (formData.usernameOrEmailLog === 'validUsernameOrEmailLog' && formData.passwordLog === 'validPasswordLog') {
-            setInvalidDetails(false)
+        
+        if (isPasswordValid) {
+            setErrorMessage(null)
+            setLoading(true)
             try {
-                const response = await axios.post('/api/login', formData);
-                console.log(response.data);
-            } catch (error) {
-                console.error(error);
+                const response = await axios.post('http://localhost:8000/api/login', formData)
+
+                if (response.data.message == "Login successful") {
+                    setErrorMessage(null)
+                    // Redirect to home page
+                }
+            } 
+            catch (error) {
+                if (axios.isAxiosError(error)) {
+                    setBackendError(handleBackendError(error))
+                    backendError == ("Invalid login credentials") ? setErrorMessage("Invalid login details.")
+                    : setErrorMessage("Error. Please check your connection.")
+                }
             }
-        } 
+            finally {
+                setLoading(false)
+            }
+        }
         else {
-            setInvalidDetails(true)
+            setErrorMessage("Invalid login details.")
         }
     }
 
@@ -68,7 +88,10 @@ function LoginForm() {
                 }
             </div>
 
-            <p className="form__error">{invalidDetails && <span>Invalid login details, please try again.</span>}</p>
+            <p className="form__error-and-loading">
+                {errorMessage}
+                <LoadingBar loading={loading} />
+            </p>
 
             <button className="form__submit" type="submit">Login</button>
         </form>

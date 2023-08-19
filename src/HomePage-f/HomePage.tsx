@@ -5,6 +5,7 @@ function HomePage() {
     return (
         <div className="HomePage">
             <div className="sidebar"></div>
+            <p>this is the homepage</p>
         </div>
     )
 }
