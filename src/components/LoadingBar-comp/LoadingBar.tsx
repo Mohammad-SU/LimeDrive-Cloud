@@ -7,7 +7,13 @@ interface LoadingBarProps {
 
 function LoadingBar({ loading }: LoadingBarProps) {
     return (
-        loading ? <span className="LoadingBar"></span> : null
+        loading ?
+            <>
+            <span className="LoadingBar-spinner-before"></span>
+            <span className="LoadingBar"></span> 
+            <span className="LoadingBar-spinner-after"></span>
+            </>
+        : null
     )
 }
 

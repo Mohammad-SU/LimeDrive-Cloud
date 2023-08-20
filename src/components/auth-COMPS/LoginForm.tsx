@@ -11,7 +11,7 @@ function LoginForm() {
         usernameOrEmailLog: '',
         passwordLog: '',
     })
-    const [backendError, setBackendError] = useState<string | null>(null)
+    var backendError: string | null = null
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
 
@@ -19,9 +19,9 @@ function LoginForm() {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
-        
+        setErrorMessage(null)
+
         if (isPasswordValid) {
-            setErrorMessage(null)
             setLoading(true)
             try {
                 const response = await axios.post('http://localhost:8000/api/login', formData)
@@ -33,8 +33,9 @@ function LoginForm() {
             } 
             catch (error) {
                 if (axios.isAxiosError(error)) {
-                    setBackendError(handleBackendError(error))
-                    backendError == ("Invalid login credentials") ? setErrorMessage("Invalid login details.")
+                    backendError = handleBackendError(error)
+    
+                    backendError === "Invalid login credentials" ? setErrorMessage("Invalid login details.")
                     : setErrorMessage("Error. Please check your connection.")
                 }
             }

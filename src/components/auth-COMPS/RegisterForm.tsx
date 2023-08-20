@@ -13,47 +13,17 @@ function RegisterForm() {
         passwordReg: '',
         passwordReg_confirmation: '',
     })
-    const [invalidDetails, setInvalidDetails] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
-    const [backendError, setBackendError] = useState<string | null>(null)
+    var backendError: string | null = null
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
     const isEmailValid = /^\S+@\S+\.\S+$/.test(formData.emailReg)
     const isUsernameValid = /^[a-zA-Z0-9_-]+$/.test(formData.usernameReg)
     const isPasswordValid = formData.passwordReg.length >= 8
     const isPasswordMatch = formData.passwordReg === formData.passwordReg_confirmation
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault()
-
-        if (isEmailValid && isUsernameValid && isPasswordValid && isPasswordMatch) {
-            setLoading(true)
-            try {
-                const response = await axios.post('http://localhost:8000/api/register', formData)
-                if (response.data.message == 'Registration successful') {
-                    setInvalidDetails(false)
-                    // Redirect to home page
-                }
-            }
-            catch (error) {
-                if (axios.isAxiosError(error)) {
-                    setBackendError(handleBackendError(error))
-                }
-                setInvalidDetails(true)
-            } 
-            finally {
-                setLoading(false)
-            }
-        }
-    }
-
-    const [showPassword, setShowPassword] = useState<boolean>(false)
-    const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
-    const togglePasswordVisibility = () => {setShowPassword(!showPassword)}
-    const toggleConfirmPasswordVisibility = () => {setShowConfirmPassword(!showConfirmPassword)}
-
     function renderError() {
-        let errorMessage = null;
-        errorMessage = 
+        setErrorMessage( 
             !isEmailValid ? 'Invalid email format.'
             : !isUsernameValid ? 'Invalid username format.'
             : !isPasswordValid ? 'Password must have at least 8 characters.'
@@ -62,9 +32,41 @@ function RegisterForm() {
             : backendError === "The email has already been taken." ? "Email is taken"
             : backendError === "The username has already been taken." ? "Username is taken"
             : backendError != null ? 'Error. Please check your connection.'
-            : null;
-        return errorMessage && <span>{errorMessage}</span>;
+            : null
+        )
     }
+
+    async function handleSubmit(event: React.FormEvent) {
+        event.preventDefault()
+        setErrorMessage(null)
+        
+        if (isEmailValid && isUsernameValid && isPasswordValid && isPasswordMatch) {
+            setLoading(true)
+            try {
+                const response = await axios.post('http://localhost:8000/api/register', formData)
+                if (response.data.message == 'Registration successful') {
+                    // Redirect to home page
+                }
+            }
+            catch (error) {
+                if (axios.isAxiosError(error)) {
+                    backendError = handleBackendError(error)
+                }
+                renderError()
+            } 
+            finally {
+                setLoading(false)
+            }
+        }
+        else {
+            renderError()
+        }
+    }
+
+    const [showPassword, setShowPassword] = useState<boolean>(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
+    function togglePasswordVisibility() {setShowPassword(!showPassword)}
+    function toggleConfirmPasswordVisibility() {setShowConfirmPassword(!showConfirmPassword)}
     
     return (
         <form className="form" name="register-form" method="POST" onSubmit={handleSubmit}>
@@ -138,7 +140,7 @@ function RegisterForm() {
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
                 <p className="form__error-and-loading">
-                    {invalidDetails && renderError()}
+                    <span>{errorMessage}</span>
                     <LoadingBar loading={loading} />
                 </p>
 

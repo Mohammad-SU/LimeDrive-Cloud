@@ -9,6 +9,7 @@ body {
     min-height: 100vh;
     margin: 0;
     color: lime;
+    box-sizing: border-box;
 }
     input {
         border: none;
@@ -27,3 +28,21 @@ body {
         
         color: inherit;
     }
+
+@keyframes rotateLine {
+    0% {
+        content: '/';
+    }
+    25% {
+        content: '—';
+    }
+    50% {
+        content: '\\';
+    }
+    75% {
+        content: '|';
+    }
+    100% {
+        content: '/';
+    }
+}

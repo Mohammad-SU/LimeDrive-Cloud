@@ -26,7 +26,6 @@
   width: 27rem;
   font-size: 1rem;
   margin-right: 4rem;
-  margin-bottom: 12rem;
   text-align: center;
 }
 .AuthPage__main-cont .generator button {
@@ -34,15 +33,26 @@
   margin-bottom: 0.2rem;
   border-bottom: 0.0625rem solid lime;
 }
-.AuthPage__main-cont .generator__details p {
+.AuthPage__main-cont .generator__details-cont {
+  margin-top: 1.3rem;
+  margin-bottom: 0.3rem;
+  border: 2px dashed lime;
+}
+.AuthPage__main-cont .generator__details-cont p {
+  margin: 1rem;
+  margin-right: 0.8rem;
   display: flex;
   align-items: baseline;
 }
-.AuthPage__main-cont .generator__details p strong {
-  margin-right: 1rem;
+.AuthPage__main-cont .generator__details-cont p strong {
+  margin-right: 0.6rem;
 }
-.AuthPage__main-cont .generator.active {
-  margin-right: 3rem;
+.AuthPage__main-cont .generator__details-cont p .eye-icon {
+  align-self: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-left: 0.6rem;
+  cursor: pointer;
 }
 .AuthPage__main-cont .form-cont {
   display: flex;

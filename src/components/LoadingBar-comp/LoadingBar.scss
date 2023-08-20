@@ -1,8 +1,24 @@
 $steps: 30;
 
+.LoadingBar-spinner-before {
+    &::before {
+        content: '';
+        margin-right: 0.5rem;
+        animation: rotateLine 0.5s linear infinite;
+        animation-play-state: running;
+    }
+}
 .LoadingBar::after {
     content: "";
     animation: fillLoadingBar 1s steps($steps) infinite;
+}
+.LoadingBar-spinner-after {
+    &::after {
+        content: '';
+        margin-left: 0.5rem;
+        animation: rotateLine 0.5s linear infinite;
+        animation-play-state: running;
+    }
 }
 
 @function generate-bar($total, $filled) {

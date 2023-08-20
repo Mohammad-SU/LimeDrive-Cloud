@@ -1,6 +1,3 @@
-store username on database as case sensitive, convert username to case insensitve for checks
-change database info after deployment
-make email and password_confirmation not required for username generator in backend
 make login take to files page
 file uploads
 file previews
@@ -9,4 +6,6 @@ file sharing
 account generator
 settings page?
 responsive css
+store username on database as case sensitive, convert username to case insensitve for checks
+change database info after deployment
 modify allowed-origins in cors config if deploying backend separately

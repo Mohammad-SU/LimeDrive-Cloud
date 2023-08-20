@@ -12,23 +12,28 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $validatedData = $request->validate([
-            'emailReg' => 'required|email|unique:users,email',
+        $rules = [
             'usernameReg' => 'required|regex:/^[a-zA-Z0-9_-]+$/|unique:users,username',
-            'passwordReg' => 'required|string|min:8|confirmed',
-        ], [
+            'passwordReg' => 'required|string|min:8',
+        ];
+    
+        if ($request->has('emailReg')) { // Check if the request has email and password confirmation
+            $rules['emailReg'] = 'required|email|unique:users,email';
+        }
+    
+        $validatedData = $request->validate($rules, [
             'emailReg.unique' => 'The email has already been taken.',
             'usernameReg.unique' => 'The username has already been taken.',
         ]);
-
+    
         $user = User::create([
-            'email' => $validatedData['emailReg'],
+            'email' => $validatedData['emailReg'] ?? null, // Null if not provided (i.e. in the account generator)
             'username' => $validatedData['usernameReg'],
             'password_hash' => bcrypt($validatedData['passwordReg']),
         ]);
-
+    
         Auth::login($user);
-
+    
         return response()->json(['message' => 'Registration successful', 'user' => $user]);
     }
     
