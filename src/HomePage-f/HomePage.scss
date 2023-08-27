@@ -1,0 +1,16 @@
+.HomePage {
+    min-height: 100vh;
+    min-width: 100vh;
+}
+
+.main-content {
+    display: flex;
+    height: calc(100vh - 4rem);
+
+    .content {
+        width: 100%;
+        padding: 2rem;
+        border-top: none;
+        border-left: none;
+    }
+}

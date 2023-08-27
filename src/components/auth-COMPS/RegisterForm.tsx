@@ -1,12 +1,14 @@
 import { useState, memo } from 'react'
 import axios from 'axios'
 import "./Form.scss"
-import { handleBackendError } from "../../functions/BackendErrorResponse.ts"
+import { useUserContext } from '../../contexts/UserContext';
+import { handleBackendError } from '../../functions/BackendErrorResponse.ts';
+import { useNavigate } from "react-router-dom";
 import { useFormLogic } from "../../hooks/useFormLogic.ts"
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
 import LoadingBar from "../LoadingBar-comp/LoadingBar.tsx"
 
-function RegisterForm() {
+function RegisterForm() {          
     const { formData, handleInputChange } = useFormLogic({
         emailReg:'',
         usernameReg: '',
@@ -14,6 +16,8 @@ function RegisterForm() {
         passwordReg_confirmation: '',
     })
     const [loading, setLoading] = useState<boolean>(false)
+    const { setUser, token, setToken } = useUserContext();
+    const navigate = useNavigate(); 
     var backendError: string | null = null
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -28,9 +32,10 @@ function RegisterForm() {
             : !isUsernameValid ? 'Invalid username format.'
             : !isPasswordValid ? 'Password must have at least 8 characters.'
             : !isPasswordMatch ? 'Passwords do not match.' 
-            : backendError === "The email has already been taken. (and 1 more error)" ? 'Email and username is taken.'
-            : backendError === "The email has already been taken." ? "Email is taken"
-            : backendError === "The username has already been taken." ? "Username is taken"
+            : backendError === "Email is taken. (and 1 more error)" ? 'Email and username is taken.'
+            : backendError === "Username is taken. (and 1 more error)" ? 'Email and username is taken.'
+            : backendError === "Email is taken." ? backendError
+            : backendError === "Username is taken." ? backendError
             : backendError != null ? 'Error. Please check your connection.'
             : null
         )
@@ -44,8 +49,13 @@ function RegisterForm() {
             setLoading(true)
             try {
                 const response = await axios.post('http://localhost:8000/api/register', formData)
-                if (response.data.message == 'Registration successful') {
-                    // Redirect to home page
+
+                if (response.data.message == "Registration successful.") {
+                    setErrorMessage(null)
+                    const { user, token } = response.data;
+                    setUser(user);
+                    setToken(token);
+                    navigate("/home")
                 }
             }
             catch (error) {
@@ -83,6 +93,7 @@ function RegisterForm() {
                     autoComplete="email"
                     spellCheck="false"
                     required
+                    disabled={loading}
                 />
             </div>
             <div className="form__input-cont">
@@ -97,6 +108,7 @@ function RegisterForm() {
                     autoComplete="username"
                     spellCheck="false"
                     required
+                    disabled={loading}
                 />
             </div>
             <div className="form__input-cont">
@@ -112,6 +124,7 @@ function RegisterForm() {
                     autoComplete="new-password"
                     spellCheck="false"
                     required
+                    disabled={loading}
                 />
                 {showPassword ? 
                     (<BsEyeSlash className="eye-icon" onClick={togglePasswordVisibility} />)
@@ -130,6 +143,7 @@ function RegisterForm() {
                     maxLength={72}
                     spellCheck="false"
                     required
+                    disabled={loading}
                 />
                 {showConfirmPassword ? 
                     (<BsEyeSlash className="eye-icon" onClick={toggleConfirmPasswordVisibility} />)
@@ -144,7 +158,7 @@ function RegisterForm() {
                     <LoadingBar loading={loading} />
                 </p>
 
-            <button className="form__submit" type="submit">
+            <button className="form__submit" type="submit" disabled={loading}>
                 Register
             </button>
         </form>

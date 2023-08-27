@@ -1,34 +1,72 @@
-import { useState, memo } from 'react'
+import { useState, useEffect, memo } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import "./AuthPage.scss"
 import { adjectives } from '../data/adjectives.ts'
 import { nouns } from '../data/nouns.ts'
-import { handleBackendError } from "../functions/BackendErrorResponse.ts"
+import { handleBackendError } from '../functions/BackendErrorResponse.ts'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
+import { useCookies } from '../hooks/useCookies';
 import LimeDriveAscii from '../assets/images/ascii/LimeDrive-ascii.png'
 import LoadingBar from "../components/LoadingBar-comp/LoadingBar.tsx"
-import { BsEye, BsEyeSlash } from 'react-icons/bs';
+import { BsEye, BsEyeSlash } from 'react-icons/bs'
 import LoginForm from '../components/auth-COMPS/LoginForm.tsx'
 import RegisterForm from '../components/auth-COMPS/RegisterForm.tsx'
 
 function AuthPage() {
+    axios.defaults.baseURL = 'http://localhost:8000/api'; // Replace with your actual API URL
+
+    const navigate = useNavigate()
+    const [token] = useCookies('auth_token', null);
+
+    useEffect(() => { // Redirect if user is logged in
+        if (token) {
+            navigate('/home');
+        }
+    }, [navigate, token]);
+
+    if (token) {
+        return null
+    }
+
     var backendError: string | null = null
     const [errorMessage, setErrorMessage]  = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
-    const [cooldown, setCooldown] = useState<number>(0)
+
+    const [cooldown, setCooldown] = useLocalStorage<number>('cooldown', 0)
+    const [cooldownEndTimestamp, setCooldownEndTimestamp] = useLocalStorage<number>('cooldownEndTimestamp', 0)
+    function startCooldown() {
+        setCooldown(60) // 60 seconds (1 minute)
+        const endTime = Date.now() + 60000 // Current timestamp + 60 seconds
+        setCooldownEndTimestamp(endTime) // Store the timestamp when cooldown should end
+    }
+    useEffect(() => {
+        if (cooldown > 0 && cooldownEndTimestamp > 0) {
+            const remainingCooldown = Math.floor((cooldownEndTimestamp - Date.now()) / 1000)
+            if (remainingCooldown <= 0) {
+                setCooldown(0) // Reset cooldown if time has elapsed
+                setCooldownEndTimestamp(0) // Reset timestamp as well
+            } else {
+                setCooldown(remainingCooldown) // Update the remaining cooldown
+            }
+        }
+    }, [])
+    useEffect(() => {
+        let intervalId: number
+        if (cooldown > 0) {
+            intervalId = setInterval(() => {
+                setCooldown(prevCooldown => (prevCooldown > 0 ? prevCooldown - 1 : 0))
+            }, 1000)
+        }
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId)
+            }
+        }
+    }, [cooldown])
+
     const [generatedUsername, setGeneratedUsername] = useState<string | null>(null)
     const [generatedPassword, setGeneratedPassword] = useState<string | null>(null)
-
-    function startCooldown() {
-        setCooldown(60); // 60 seconds, or 1 minute
-        const interval = setInterval(() => {
-            setCooldown(prevCooldown => prevCooldown - 1);
-        }, 1000);
-    
-        setTimeout(() => {
-            clearInterval(interval);
-            setCooldown(0);
-        }, 60000); // Clear interval after 1 minute
-    }
     function generateRandomUsername() {
         let result = ''
         const crypto = window.crypto
@@ -57,15 +95,15 @@ function AuthPage() {
         setErrorMessage(null)
         setGeneratedUsername(null)
         setGeneratedPassword(null)
-        const randomUsername = generateRandomUsername();
-        const randomPassword = generateRandomPassword(15);
+        const randomUsername = generateRandomUsername()
+        const randomPassword = generateRandomPassword(15)
         try {
             const response = await axios.post('http://localhost:8000/api/register', {
                 usernameReg: randomUsername,
                 passwordReg: randomPassword,
             })
 
-            if (response.data.message == 'Registration successful') {
+            if (response.data.message == 'Registration successful.') {
                 setLoading(false)
                 setGeneratedUsername(randomUsername)
                 setGeneratedPassword(randomPassword)
@@ -73,7 +111,6 @@ function AuthPage() {
             }
         } 
         catch (error) {
-            console.log(error)
             if (axios.isAxiosError(error)) {
                 backendError = handleBackendError(error)
                 if (backendError == "The username has already been taken.") {
@@ -137,7 +174,7 @@ function AuthPage() {
                             <>
                                 <span>Save these details in a secure place.</span> 
                                 <br /> 
-                                <span>Use them to login with different devices.</span>
+                                <span>Use them to login on different devices.</span>
                             </>
                         }
                     </p>

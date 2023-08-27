@@ -1,0 +1,28 @@
+.LoadingPage {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background: black;
+
+    .wrapper {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        margin-bottom: 3rem;
+    
+        p {
+            font-size: 2rem;
+            margin-bottom: 1.3rem;
+        }
+
+        .LoadingBar {
+            font-size: 2rem;
+        }
+    }
+}

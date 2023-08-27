@@ -46,24 +46,17 @@
 .form input {
   font-size: 1rem;
   font-family: inherit;
-  width: 20rem;
+  width: 18.7rem;
   height: 1.7rem;
   border: none;
   border-bottom: 0.125rem dashed lime;
-  color: inherit;
   background-color: black;
-}
-.form input::-moz-placeholder {
-  color: rgba(0, 255, 0, 0.605);
-}
-.form input::placeholder {
-  color: rgba(0, 255, 0, 0.605);
 }
 .form .eye-icon {
   position: absolute;
   width: 1.3rem;
   height: 1.3rem;
-  margin-left: 20.7rem;
+  margin-left: 19.3rem;
   cursor: pointer;
 }
 .form__error-and-loading {
@@ -81,6 +74,5 @@
   cursor: pointer;
 }
 .form__submit:hover {
-  background-color: lime;
-  color: black;
+  background-color: rgba(0, 255, 0, 0.15);
 }/*# sourceMappingURL=Form.css.map */

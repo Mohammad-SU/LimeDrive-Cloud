@@ -1,7 +1,9 @@
 import { useState, memo } from 'react'
 import axios from 'axios';
 import "./Form.scss"
-import { handleBackendError } from "../../functions/BackendErrorResponse.ts"
+import { useUserContext } from '../../contexts/UserContext';
+import { handleBackendError } from '../../functions/BackendErrorResponse.ts';
+import { useNavigate } from "react-router-dom";
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
 import LoadingBar from "../LoadingBar-comp/LoadingBar.tsx"
@@ -11,10 +13,11 @@ function LoginForm() {
         usernameOrEmailLog: '',
         passwordLog: '',
     })
+    const { setUser, token, setToken } = useUserContext();
+    const navigate = useNavigate();
     var backendError: string | null = null
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
-
     const isPasswordValid = formData.passwordLog.length >= 8
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -26,16 +29,20 @@ function LoginForm() {
             try {
                 const response = await axios.post('http://localhost:8000/api/login', formData)
 
-                if (response.data.message == "Login successful") {
+                if (response.data.message == "Login successful.") {
                     setErrorMessage(null)
-                    // Redirect to home page
+                    const { user, token } = response.data;
+                    setUser(user);
+                    setToken(token);
+                    navigate("/home");
                 }
             } 
             catch (error) {
                 if (axios.isAxiosError(error)) {
                     backendError = handleBackendError(error)
-    
-                    backendError === "Invalid login credentials" ? setErrorMessage("Invalid login details.")
+                    
+                    backendError === "Invalid login details." 
+                    ? setErrorMessage(backendError)
                     : setErrorMessage("Error. Please check your connection.")
                 }
             }
@@ -66,6 +73,7 @@ function LoginForm() {
                     autoComplete="username email"
                     spellCheck="false"
                     required
+                    disabled={loading}
                 />
             </div>
 
@@ -81,6 +89,7 @@ function LoginForm() {
                     autoComplete="current-password"
                     spellCheck="false"
                     required
+                    disabled={loading}
                 />
                 {showPassword ? 
                     (<BsEyeSlash className="eye-icon" onClick={togglePasswordVisibility} />)
@@ -94,7 +103,9 @@ function LoginForm() {
                 <LoadingBar loading={loading} />
             </p>
 
-            <button className="form__submit" type="submit">Login</button>
+            <button className="form__submit" type="submit" disabled={loading}>
+                Login
+            </button>
         </form>
     )
 }

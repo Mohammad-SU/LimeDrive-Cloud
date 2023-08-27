@@ -1,16 +1,18 @@
-.LoadingBar-spinner-before::before {
+.LoadingBar {
+  display: flex;
+  align-items: center;
+}
+.LoadingBar .spinner-before::before {
   content: "";
   margin-right: 0.5rem;
   animation: rotateLine 0.5s linear infinite;
   animation-play-state: running;
 }
-
-.LoadingBar::after {
+.LoadingBar .bar::after {
   content: "";
   animation: fillLoadingBar 1s steps(30) infinite;
 }
-
-.LoadingBar-spinner-after::after {
+.LoadingBar .spinner-after::after {
   content: "";
   margin-left: 0.5rem;
   animation: rotateLine 0.5s linear infinite;

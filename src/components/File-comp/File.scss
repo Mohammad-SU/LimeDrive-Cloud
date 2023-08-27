@@ -1,0 +1,20 @@
+.File {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 1rem;
+    border-bottom: .0625rem solid lime;
+
+    &:first-child {
+        border-top: .0625rem solid lime;
+    }
+
+    p {
+        margin: 0;
+        flex: 1;
+
+        &.file-name {
+            flex: 3;
+        }
+    }
+}

@@ -1,0 +1,25 @@
+.FileList {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+    
+        padding: 1rem;
+        padding-top: 0;
+        border-bottom: .125rem solid lime;
+    
+        p {
+            flex: 1;
+            margin: 0;
+            font-weight: bold;
+
+            &.name-header {
+                flex: 3;
+            }
+        }
+    }
+}

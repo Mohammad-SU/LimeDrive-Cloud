@@ -1,13 +1,32 @@
 import { useState, memo } from 'react'
 import "./FileList.scss"
 import File from "../File-comp/File"
-import { FileType } from '../../types/index.ts';
+import { FileType } from '../../types/index.ts'
 
-interface FileListProps {
-    files: FileType[];
-}
+function FileList() {
+    const files: FileType[] = [
+        {
+            "id": "id-1",
+            "name": "file-1",
+            "content": new Blob(),
+            "path": "/path/to/file-1",
+            "type": "exampletype",
+            "extension": ".exampleext",
+            "size": 0,
+            "date": new Date(),
+        },
+        {
+            "id": "id-2",
+            "name": "file-2",
+            "content": new Blob(),
+            "path": "/path/to/file-2",
+            "type": "exampletype",
+            "extension": ".exampleext",
+            "size": 0,
+            "date": new Date(),
+        }
+    ]
 
-function FileList({ files }: FileListProps) {
     const filesMapped = files.map(file => {
         return <File 
             key={file.id}
@@ -17,6 +36,13 @@ function FileList({ files }: FileListProps) {
 
     return (
         <div className="FileList">
+            <div className="header-row">
+                <p className="name-header">Name</p>
+                <p>Type</p>
+                <p>Extension</p>
+                <p>Size</p>
+                <p>Date (D/M/Y)</p>
+            </div>
             {filesMapped}
         </div>
     )

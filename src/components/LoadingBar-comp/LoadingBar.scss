@@ -1,23 +1,29 @@
+@use "sass:math";
 $steps: 30;
 
-.LoadingBar-spinner-before {
-    &::before {
-        content: '';
-        margin-right: 0.5rem;
-        animation: rotateLine 0.5s linear infinite;
-        animation-play-state: running;
+.LoadingBar {
+    display: flex;
+    align-items: center;
+
+    .spinner-before {
+        &::before {
+            content: '';
+            margin-right: 0.5rem;
+            animation: rotateLine 0.5s linear infinite;
+            animation-play-state: running;
+        }
     }
-}
-.LoadingBar::after {
-    content: "";
-    animation: fillLoadingBar 1s steps($steps) infinite;
-}
-.LoadingBar-spinner-after {
-    &::after {
-        content: '';
-        margin-left: 0.5rem;
-        animation: rotateLine 0.5s linear infinite;
-        animation-play-state: running;
+    .bar::after {
+        content: "";
+        animation: fillLoadingBar 1s steps($steps) infinite;
+    }
+    .spinner-after {
+        &::after {
+            content: '';
+            margin-left: 0.5rem;
+            animation: rotateLine 0.5s linear infinite;
+            animation-play-state: running;
+        }
     }
 }
 
@@ -35,7 +41,7 @@ $steps: 30;
   
 @keyframes fillLoadingBar {
     @for $i from 0 through $steps {
-        $percentage: percentage($i / $steps);
+        $percentage: percentage(math.div($i, $steps));
         #{$percentage} {
             content: generate-bar($steps, $i);
         }

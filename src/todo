@@ -1,11 +1,11 @@
-make login take to files page
 file uploads
 file previews
 folders
 file sharing
-account generator
-settings page?
+settings page
 responsive css
-store username on database as case sensitive, convert username to case insensitve for checks
+store username on database as case sensitive, convert username to case insensitve for checks?
 change database info after deployment
 modify allowed-origins in cors config if deploying backend separately
+api endpoints url in UserContext, LoginForm, RegisterForm, Header, should be changed before deployment
+remove usestate import from all files where its not used

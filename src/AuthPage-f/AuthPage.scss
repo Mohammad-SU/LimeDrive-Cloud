@@ -19,7 +19,6 @@
     &__main-cont {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        overflow: hidden;
 
         .generator {
             display: flex;
@@ -27,13 +26,17 @@
             align-items: center;
             width: 27rem;
             font-size: 1rem;
-            margin-right: 4rem;
+            margin-right: 3.3rem;
             text-align: center;
 
             button {
                 font-size: 1.1rem;
                 margin-bottom: 0.2rem;
                 border-bottom: .0625rem solid lime;
+
+                &:hover {
+                    opacity: 0.7;
+                }
             }
 
             &__details-cont {
@@ -86,5 +89,9 @@
         font-size: 1.1rem;
         margin-top: 1.3rem;
         border-bottom: .0625rem solid lime;
+
+        &:hover {
+            opacity: 0.7;
+        }
     }
 }

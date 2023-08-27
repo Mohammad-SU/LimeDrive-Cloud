@@ -17,7 +17,6 @@
 .AuthPage__main-cont {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  overflow: hidden;
 }
 .AuthPage__main-cont .generator {
   display: flex;
@@ -25,13 +24,16 @@
   align-items: center;
   width: 27rem;
   font-size: 1rem;
-  margin-right: 4rem;
+  margin-right: 3.3rem;
   text-align: center;
 }
 .AuthPage__main-cont .generator button {
   font-size: 1.1rem;
   margin-bottom: 0.2rem;
   border-bottom: 0.0625rem solid lime;
+}
+.AuthPage__main-cont .generator button:hover {
+  opacity: 0.7;
 }
 .AuthPage__main-cont .generator__details-cont {
   margin-top: 1.3rem;
@@ -74,4 +76,7 @@
   font-size: 1.1rem;
   margin-top: 1.3rem;
   border-bottom: 0.0625rem solid lime;
+}
+.AuthPage__changeFormBtn:hover {
+  opacity: 0.7;
 }/*# sourceMappingURL=AuthPage.css.map */

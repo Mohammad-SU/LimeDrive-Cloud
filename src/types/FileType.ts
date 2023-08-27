@@ -1,9 +1,10 @@
 export interface FileType {
-    id: number;
+    id: string;
     name: string;
     content: Blob;
     path: string;
-    date: Date;
     type: string;
+    extension: string;
     size: number;
+    date: Date;
 }
