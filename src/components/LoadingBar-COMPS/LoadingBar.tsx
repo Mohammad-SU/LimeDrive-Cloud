@@ -11,7 +11,7 @@ function LoadingBar({ loading, className }: LoadingBarProps) {
         loading ?
             <span className={`LoadingBar ${className}`}>
                 <span className="spinner-before"></span>
-                <span className="bar"></span> 
+                <span className="loading-bar"></span> 
                 <span className="spinner-after"></span>
             </span>
         : null

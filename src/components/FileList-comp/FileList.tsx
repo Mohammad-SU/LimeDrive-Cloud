@@ -5,26 +5,6 @@ import { FileType } from '../../types/index.ts'
 
 function FileList() {
     const files: FileType[] = [
-        {
-            "id": "id-1",
-            "name": "file-1",
-            "content": new Blob(),
-            "path": "/path/to/file-1",
-            "type": "exampletype",
-            "extension": ".exampleext",
-            "size": 0,
-            "date": new Date(),
-        },
-        {
-            "id": "id-2",
-            "name": "file-2",
-            "content": new Blob(),
-            "path": "/path/to/file-2",
-            "type": "exampletype",
-            "extension": ".exampleext",
-            "size": 0,
-            "date": new Date(),
-        }
     ]
 
     const filesMapped = files.map(file => {

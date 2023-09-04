@@ -56,7 +56,7 @@ function Header() {
             }
         }
         finally {
-            setLoadLogout(false) // Finish logging out
+            setLoadLogout(false)
         }
     }
 

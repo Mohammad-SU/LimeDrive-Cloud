@@ -15,10 +15,15 @@
             animation-play-state: running;
         }
     }
-    .bar::after {
+
+    .loading-bar::after {
         content: "";
         animation: fillLoadingBar 1s steps($steps) infinite;
     }
+    .progress-bar::after {
+        content: "";
+    }
+
     .spinner-after {
         &::after {
             content: '';
@@ -51,29 +56,5 @@
         99% {
             content: generate-bar($steps, $steps);
         }
-    }
-
-    @keyframes fillUploadBar {
-        @for $i from 0 through $uploadSteps {
-            $percentage: percentage(math.div($i, $uploadSteps));
-            #{$percentage} {
-                content: generate-bar($uploadSteps, $i);
-            }
-        }
-    
-        99% {
-            content: generate-bar($uploadSteps, $uploadSteps);
-        }
-    }
-
-    &.upload {
-        .bar::after {
-            animation: fillUploadBar 1s steps($uploadSteps) infinite;
-        }
-    }
-
-    .bar::after {
-        content: "";
-        animation: fillLoadingBar 1s steps($steps) infinite;
     }
 }

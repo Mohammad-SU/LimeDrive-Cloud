@@ -6,7 +6,7 @@ import { handleBackendError } from '../../functions/BackendErrorResponse.ts';
 import { useNavigate } from "react-router-dom";
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
-import LoadingBar from "../LoadingBar-comp/LoadingBar.tsx"
+import LoadingBar from "../LoadingBar-COMPS/LoadingBar.tsx"
 
 function LoginForm() {
     const { formData, handleInputChange } = useFormLogic({
@@ -41,7 +41,7 @@ function LoginForm() {
                 if (axios.isAxiosError(error)) {
                     backendError = handleBackendError(error)
                     
-                    backendError === "Invalid login details." 
+                    backendError === "Invalid login details."
                     ? setErrorMessage(backendError)
                     : setErrorMessage("Error. Please check your connection.")
                 }

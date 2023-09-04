@@ -1,6 +1,5 @@
-import { memo } from "react";
 import "./LoadingPage.scss"
-import LoadingBar from "../LoadingBar-comp/LoadingBar";
+import LoadingBar from "../LoadingBar-COMPS/LoadingBar";
 
 interface LoadingPageProps {
     message: string;
@@ -18,4 +17,4 @@ function LoadingPage(props: LoadingPageProps) {
     )
 }
 
-export default memo(LoadingPage);
+export default LoadingPage;

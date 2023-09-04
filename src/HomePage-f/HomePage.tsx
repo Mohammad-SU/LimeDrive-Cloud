@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect } from 'react'
 import "./HomePage.scss"
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from '../contexts/UserContext';
@@ -34,4 +34,4 @@ function HomePage() {
     )
 }
 
-export default memo(HomePage)
+export default HomePage

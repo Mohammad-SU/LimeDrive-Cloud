@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
@@ -59,7 +58,7 @@ class AuthController extends Controller
     }
     
     public function login(Request $request)
-    {
+    {       
         $credentials = $request->only('usernameOrEmailLog', 'passwordLog');
 
         $isEmail = filter_var($credentials['usernameOrEmailLog'], FILTER_VALIDATE_EMAIL);
@@ -74,11 +73,6 @@ class AuthController extends Controller
 
         if ($user && Hash::check($credentials['passwordLog'], $user->password_hash)) {
             Auth::login($user);
-    
-            $additionalDetails = [
-                'username' => $user->username,
-                'email' => $user->email,
-            ];
 
             $message = 'Login successful.';
             return $this->createLoginResponse($user, $message);

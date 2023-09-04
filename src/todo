@@ -1,12 +1,16 @@
 try to run php/laravel on same domain as frontend
+make tokens expire in a month and make frontend delete token if expired
 file uploads
+malware check
 file previews
 folders
 file sharing
 settings page
 responsive css
 store username on database as case sensitive, convert username to case insensitve for checks?
+email verification
 change database info after deployment
 modify allowed-origins in cors config if deploying backend separately
 api endpoints url in UserContext, LoginForm, RegisterForm, Header, upload, should be changed before deployment
 remove usestate import from all files where its not used
+set env for render.com (database and backblaze b2)

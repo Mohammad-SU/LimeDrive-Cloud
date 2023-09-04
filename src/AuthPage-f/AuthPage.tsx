@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import "./AuthPage.scss"
@@ -8,13 +8,13 @@ import { handleBackendError } from '../functions/BackendErrorResponse.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 import { useCookies } from '../hooks/useCookies';
 import LimeDriveAscii from '../assets/images/ascii/LimeDrive-ascii.png'
-import LoadingBar from "../components/LoadingBar-comp/LoadingBar.tsx"
+import LoadingBar from "../components/LoadingBar-COMPS/LoadingBar.tsx"
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
 import LoginForm from '../components/auth-COMPS/LoginForm.tsx'
 import RegisterForm from '../components/auth-COMPS/RegisterForm.tsx'
 
 function AuthPage() {
-    axios.defaults.baseURL = 'http://localhost:8000/api'; // Replace with your actual API URL
+    axios.defaults.baseURL = 'http://localhost:8000/api';
 
     const navigate = useNavigate()
     const [token] = useCookies('auth_token', null);
@@ -194,4 +194,4 @@ function AuthPage() {
     )
 }
 
-export default memo(AuthPage)
+export default AuthPage
