@@ -1,3 +1,4 @@
+try to run php/laravel on same domain as frontend
 file uploads
 file previews
 folders
@@ -7,5 +8,5 @@ responsive css
 store username on database as case sensitive, convert username to case insensitve for checks?
 change database info after deployment
 modify allowed-origins in cors config if deploying backend separately
-api endpoints url in UserContext, LoginForm, RegisterForm, Header, should be changed before deployment
+api endpoints url in UserContext, LoginForm, RegisterForm, Header, upload, should be changed before deployment
 remove usestate import from all files where its not used

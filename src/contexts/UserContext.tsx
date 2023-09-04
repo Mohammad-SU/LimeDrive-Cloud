@@ -68,8 +68,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return (
         <UserContext.Provider value={contextValue}>
             {!loadUser && !backendError ? children
-                : loadUser && !backendError ? <LoadingPage message="Fetching user data..." loading={loadUser}/>
-                : <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
+                : loadUser && token && !backendError ? <LoadingPage message="Fetching user data..." loading={loadUser}/>
+                : backendError ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
+                : children
             }
         </UserContext.Provider>
     )

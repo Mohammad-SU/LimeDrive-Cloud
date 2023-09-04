@@ -1,15 +1,13 @@
-import { useState, memo } from 'react'
+import { memo } from 'react'
 import "./Sidebar.scss"
-import { Link } from "react-router-dom";
-import {AiOutlineUpload} from "react-icons/ai";
+import { Link } from "react-router-dom"
+import {AiOutlineUpload} from "react-icons/ai"
+import Upload from '../Upload-comp/Upload'
 
 function Sidebar() {
     return (
         <div className="Sidebar">
-            <button className="upload-btn">
-                <AiOutlineUpload className="upload-icon"/>
-                Upload
-            </button>
+            <Upload />
             <nav>
                 <Link to="/home">All Files</Link>
                 <Link to="/shared">Shared</Link>

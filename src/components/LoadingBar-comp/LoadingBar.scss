@@ -1,7 +1,9 @@
 @use "sass:math";
-$steps: 30;
 
 .LoadingBar {
+    $steps: 30;
+    $uploadSteps: 18;
+
     display: flex;
     align-items: center;
 
@@ -25,29 +27,53 @@ $steps: 30;
             animation-play-state: running;
         }
     }
-}
 
-@function generate-bar($total, $filled) {
-    $bar: "";
-    $fill: "#";
-    $empty: "-";
-  
-    @for $i from 1 through $total {
-        $bar: if($i <= $filled, $bar + $fill, $bar + $empty);
+    @function generate-bar($total, $filled) {
+        $bar: "";
+        $fill: "#";
+        $empty: "-";
+      
+        @for $i from 1 through $total {
+            $bar: if($i <= $filled, $bar + $fill, $bar + $empty);
+        }
+      
+        @return "[#{$bar}]";
     }
-  
-    @return "[#{$bar}]";
-}
-  
-@keyframes fillLoadingBar {
-    @for $i from 0 through $steps {
-        $percentage: percentage(math.div($i, $steps));
-        #{$percentage} {
-            content: generate-bar($steps, $i);
+
+    @keyframes fillLoadingBar {
+        @for $i from 0 through $steps {
+            $percentage: percentage(math.div($i, $steps));
+            #{$percentage} {
+                content: generate-bar($steps, $i);
+            }
+        }
+    
+        99% {
+            content: generate-bar($steps, $steps);
         }
     }
 
-    99% {
-        content: generate-bar($steps, $steps);
+    @keyframes fillUploadBar {
+        @for $i from 0 through $uploadSteps {
+            $percentage: percentage(math.div($i, $uploadSteps));
+            #{$percentage} {
+                content: generate-bar($uploadSteps, $i);
+            }
+        }
+    
+        99% {
+            content: generate-bar($uploadSteps, $uploadSteps);
+        }
+    }
+
+    &.upload {
+        .bar::after {
+            animation: fillUploadBar 1s steps($uploadSteps) infinite;
+        }
+    }
+
+    .bar::after {
+        content: "";
+        animation: fillLoadingBar 1s steps($steps) infinite;
     }
 }

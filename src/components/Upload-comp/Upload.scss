@@ -1,0 +1,123 @@
+.upload-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    gap: 0.4rem;
+    height: 5rem;
+    margin: 1.8rem;
+    margin-bottom: 0;
+    border: .125rem dashed lime;
+    padding-right: 0.5rem;
+}
+
+.upload-info {
+    position: absolute;
+    width: 23rem;
+    bottom: 0;
+    right: 0;
+    z-index: 3;
+    background: black;
+    
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1rem;
+        padding: 0.7rem;
+        padding-right: 0.5rem;
+        border: .0625rem solid lime;
+
+        &__icons-cont {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.4rem;
+
+            .icon:hover {
+                cursor: pointer;
+                opacity: 0.7;
+            }
+        }
+    }
+
+    .upload-list {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        border: .125rem dashed lime;
+        border-top: none;
+
+        font-size: 0.9rem;
+        max-height: 19.35rem;
+        padding: 0 1rem;
+        overflow-y: auto;
+
+        .file {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 1.1rem 0;
+            border-bottom: 1px solid lime;
+            border-left: none;
+            border-right: none;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .file-icon {
+                font-size: 1.3rem;
+                margin-right: 0.6rem;
+            }
+            
+            .file-info {
+                display: flex;
+                flex-direction: column;
+                gap: 0.3rem;
+                max-width: 12.3rem;
+                
+                .name, .progress-and-location {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .link {
+                    text-decoration: underline;
+                    text-underline-offset: 0.15rem;
+
+                    &:hover {
+                        opacity: 1;
+                    }
+                }
+            }
+
+            button {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+                white-space: nowrap;
+                border: 1px solid lime;
+                margin-left: auto;
+            }
+        }
+
+        &::-webkit-scrollbar {
+            width: .5rem;
+        }
+            &::-webkit-scrollbar-track {
+                background: transparent;
+                outline: .125rem dashed lime;
+                margin-top: 1px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background-color: black;
+                outline: 2px solid lime;
+                border-right: none;
+                
+                &:hover {
+                    background-color: rgba(0, 255, 0, 0.332);
+                }
+            }
+    }
+}

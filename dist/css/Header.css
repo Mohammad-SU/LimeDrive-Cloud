@@ -7,7 +7,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 0.125rem dashed lime; /* Dashed border at the bottom */
+  border-bottom: 0.125rem dashed lime;
   box-sizing: border-box;
 }
 .Header .main-heading {
@@ -77,4 +77,5 @@
 }
 .Header .user-cont .user-dropdown .logout-btn:hover {
   opacity: 0.7;
+  background: none;
 }/*# sourceMappingURL=Header.css.map */

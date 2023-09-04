@@ -55,6 +55,29 @@ body {
         opacity: 0.7;
     }
 
+    button:hover {
+        background-color: rgba(0, 255, 0, 0.150);
+    }
+
+    ::-webkit-scrollbar:horizontal{ 
+        height: .5rem;
+    }
+    ::-webkit-scrollbar {
+        width: .5rem;
+    }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+            outline: .125rem dashed lime;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: black;
+            outline: .125rem solid lime;
+            border-right: .125rem solid lime;;
+            &:hover {
+                background-color: rgba(0, 255, 0, 0.332);
+            }
+        }
+
 @keyframes rotateLine {
     0% {
         content: '/';

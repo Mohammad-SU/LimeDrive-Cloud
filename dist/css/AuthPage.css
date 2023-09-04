@@ -30,10 +30,12 @@
 .AuthPage__main-cont .generator button {
   font-size: 1.1rem;
   margin-bottom: 0.2rem;
-  border-bottom: 0.0625rem solid lime;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
 }
 .AuthPage__main-cont .generator button:hover {
   opacity: 0.7;
+  background-color: black;
 }
 .AuthPage__main-cont .generator__details-cont {
   margin-top: 1.3rem;
@@ -75,8 +77,10 @@
 .AuthPage__changeFormBtn {
   font-size: 1.1rem;
   margin-top: 1.3rem;
-  border-bottom: 0.0625rem solid lime;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
 }
 .AuthPage__changeFormBtn:hover {
+  background-color: black;
   opacity: 0.7;
 }/*# sourceMappingURL=AuthPage.css.map */

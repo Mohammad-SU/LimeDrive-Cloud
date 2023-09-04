@@ -1,0 +1,108 @@
+.upload-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  gap: 0.4rem;
+  height: 5rem;
+  margin: 1.8rem;
+  margin-bottom: 0;
+  border: 0.125rem dashed lime;
+  padding-right: 0.5rem;
+}
+
+.upload-info {
+  position: absolute;
+  width: 23rem;
+  bottom: 0;
+  right: 0;
+  z-index: 3;
+  background: black;
+}
+.upload-info .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  padding: 0.7rem;
+  padding-right: 0.5rem;
+  border: 0.0625rem solid lime;
+}
+.upload-info .header__icons-cont {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.4rem;
+}
+.upload-info .header__icons-cont .icon:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+.upload-info .upload-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 0.125rem dashed lime;
+  border-top: none;
+  font-size: 0.9rem;
+  max-height: 19.35rem;
+  padding: 0 1rem;
+  overflow-y: auto;
+}
+.upload-info .upload-list .file {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid lime;
+  border-left: none;
+  border-right: none;
+}
+.upload-info .upload-list .file:last-child {
+  border-bottom: none;
+}
+.upload-info .upload-list .file .file-icon {
+  font-size: 1.3rem;
+  margin-right: 0.6rem;
+}
+.upload-info .upload-list .file .file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 12.3rem;
+}
+.upload-info .upload-list .file .file-info .name, .upload-info .upload-list .file .file-info .progress-and-location {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.upload-info .upload-list .file .file-info .link {
+  text-decoration: underline;
+  text-underline-offset: 0.15rem;
+}
+.upload-info .upload-list .file .file-info .link:hover {
+  opacity: 1;
+}
+.upload-info .upload-list .file button {
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  white-space: nowrap;
+  border: 1px solid lime;
+  margin-left: auto;
+}
+.upload-info .upload-list::-webkit-scrollbar {
+  width: 0.5rem;
+}
+.upload-info .upload-list::-webkit-scrollbar-track {
+  background: transparent;
+  outline: 0.125rem dashed lime;
+  margin-top: 1px;
+}
+.upload-info .upload-list::-webkit-scrollbar-thumb {
+  background-color: black;
+  outline: 2px solid lime;
+  border-right: none;
+}
+.upload-info .upload-list::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 255, 0, 0.332);
+}/*# sourceMappingURL=Upload.css.map */

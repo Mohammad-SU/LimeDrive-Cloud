@@ -7,7 +7,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: .125rem dashed lime; /* Dashed border at the bottom */
+    border-bottom: .125rem dashed lime;
     box-sizing: border-box;
 
     .main-heading {
@@ -89,6 +89,7 @@
 
             .logout-btn:hover {
                 opacity: 0.7;
+                background: none;
             }
         }
     }
