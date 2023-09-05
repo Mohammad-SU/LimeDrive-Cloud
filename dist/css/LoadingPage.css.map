@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/components/LoadingPage-comp/LoadingPage.scss","LoadingPage.css"],"names":[],"mappings":"AAAA;EACI,kBAAA;EACA,aAAA;EACA,mBAAA;EACA,uBAAA;EACA,iBAAA;EACA,eAAA;EACA,MAAA;EACA,OAAA;EACA,aAAA;EACA,iBAAA;ACCJ;ADCI;EACI,aAAA;EACA,mBAAA;EACA,sBAAA;EACA,mBAAA;ACCR;ADCQ;EACI,eAAA;EACA,qBAAA;ACCZ;ADEQ;EACI,eAAA;ACAZ","file":"LoadingPage.css"}
