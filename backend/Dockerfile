@@ -12,9 +12,7 @@ RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env
 
 COPY . .
 
-RUN apt-get update && apt-get install -y git
-
-RUN apt-get install -y p7zip
+RUN apt-get update && apt-get install -y git zip unzip php-zip
 
 RUN composer install
 

@@ -10,8 +10,6 @@ import { BsEye, BsEyeSlash } from 'react-icons/bs';
 import LoadingBar from "../LoadingBar-COMPS/LoadingBar.tsx"
 
 function LoginForm() {
-    let baseURL = api.defaults.baseURL;
-    console.log(baseURL)
     const { formData, handleInputChange } = useFormLogic({
         usernameOrEmailLog: '',
         passwordLog: '',
