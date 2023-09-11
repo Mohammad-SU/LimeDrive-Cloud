@@ -21,9 +21,9 @@ return [
 
     'allowed_origins' => [
         "http://localhost:8000",
-        "https://limedrive-backend.onrender.com/",
+        "https://limedrive-backend.onrender.com",
         "http://localhost:5173",
-        "https://limedrive.netlify.app/"
+        "https://limedrive.netlify.app"
     ],
 
     'allowed_origins_patterns' => [],
