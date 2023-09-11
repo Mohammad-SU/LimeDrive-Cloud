@@ -1,4 +1,4 @@
-import { useState, memo } from 'react'
+import { memo } from 'react'
 import "./FileList.scss"
 import File from "../File-comp/File"
 import { FileType } from '../../types/index.ts'

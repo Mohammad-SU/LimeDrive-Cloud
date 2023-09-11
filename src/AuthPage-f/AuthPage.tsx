@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import api from '../axios-config.ts'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import "./AuthPage.scss"
@@ -14,8 +15,6 @@ import LoginForm from '../components/auth-COMPS/LoginForm.tsx'
 import RegisterForm from '../components/auth-COMPS/RegisterForm.tsx'
 
 function AuthPage() {
-    axios.defaults.baseURL = 'http://localhost:8000/api';
-
     const navigate = useNavigate()
     const [token] = useCookies('auth_token', null);
 
@@ -36,7 +35,7 @@ function AuthPage() {
     const [cooldown, setCooldown] = useLocalStorage<number>('cooldown', 0)
     const [cooldownEndTimestamp, setCooldownEndTimestamp] = useLocalStorage<number>('cooldownEndTimestamp', 0)
     function startCooldown() {
-        setCooldown(60) // 60 seconds (1 minute)
+        setCooldown(60) // 60 seconds
         const endTime = Date.now() + 60000 // Current timestamp + 60 seconds
         setCooldownEndTimestamp(endTime) // Store the timestamp when cooldown should end
     }
@@ -54,7 +53,7 @@ function AuthPage() {
     useEffect(() => {
         let intervalId: number
         if (cooldown > 0) {
-            intervalId = setInterval(() => {
+            intervalId = window.setInterval(() => {
                 setCooldown(prevCooldown => (prevCooldown > 0 ? prevCooldown - 1 : 0))
             }, 1000)
         }
@@ -77,14 +76,17 @@ function AuthPage() {
         return result
     }
     function generateRandomPassword(length: number): string {
-        const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-        const randomValues = new Uint32Array(length)
-        window.crypto.getRandomValues(randomValues)
-        let result = ''
+        const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const randomValues = new Uint32Array(length);
+        window.crypto.getRandomValues(randomValues);
+        let result = '';
         for (let i = 0; i < length; i++) {
-            result += charset.charAt(randomValues[i] % charset.length)
+            if (i > 0 && i % 4 === 0) { // Insert dash after every 4 characters for UX
+                result += '-';
+            }
+            result += charset.charAt(randomValues[i] % charset.length);
         }
-        return result
+        return result;
     }
     async function attemptRegistration() {
         if (cooldown > 0) {
@@ -96,11 +98,12 @@ function AuthPage() {
         setGeneratedUsername(null)
         setGeneratedPassword(null)
         const randomUsername = generateRandomUsername()
-        const randomPassword = generateRandomPassword(15)
+        const randomPassword = generateRandomPassword(16)
         try {
-            const response = await axios.post('http://localhost:8000/api/register', {
+            const response = await api.post('/register', {
                 usernameReg: randomUsername,
                 passwordReg: randomPassword,
+                skipTokenCreation: true,
             })
 
             if (response.data.message == 'Registration successful.') {

@@ -10,14 +10,19 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    private function createLoginResponse(User $user, $message)
+    private function createLoginResponse(Request $request, User $user, $message)
     {
         $additionalDetails = [
             'username' => $user->username,
             'email' => $user->email,
         ];
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        if (!$request->input('skipTokenCreation')) {
+            $token = $user->createToken('auth_token')->plainTextToken;
+        } 
+        else {
+            $token = null;
+        };
 
         $response = response()->json([
             'message' => $message,
@@ -54,7 +59,7 @@ class AuthController extends Controller
         Auth::login($user);
 
         $message = 'Registration successful.';
-        return $this->createLoginResponse($user, $message);
+        return $this->createLoginResponse($request, $user, $message);
     }
     
     public function login(Request $request)
@@ -75,10 +80,10 @@ class AuthController extends Controller
             Auth::login($user);
 
             $message = 'Login successful.';
-            return $this->createLoginResponse($user, $message);
+            return $this->createLoginResponse($request, $user, $message);
         } 
         else {
             return response()->json(['message' => 'Invalid login details.'], 401);
-        }
+        };
     }
 }

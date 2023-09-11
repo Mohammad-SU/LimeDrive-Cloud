@@ -1,5 +1,6 @@
 import { useState, memo } from 'react'
 import axios from 'axios'
+import api from '../../axios-config.ts';
 import "./Form.scss"
 import { useUserContext } from '../../contexts/UserContext';
 import { handleBackendError } from '../../functions/BackendErrorResponse.ts';
@@ -16,7 +17,7 @@ function RegisterForm() {
         passwordReg_confirmation: '',
     })
     const [loading, setLoading] = useState<boolean>(false)
-    const { setUser, token, setToken } = useUserContext();
+    const { setUser, setToken } = useUserContext();
     const navigate = useNavigate(); 
     var backendError: string | null = null
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -48,7 +49,7 @@ function RegisterForm() {
         if (isEmailValid && isUsernameValid && isPasswordValid && isPasswordMatch) {
             setLoading(true)
             try {
-                const response = await axios.post('http://localhost:8000/api/register', formData)
+                const response = await api.post('/register', formData)
 
                 if (response.data.message == "Registration successful.") {
                     setErrorMessage(null)

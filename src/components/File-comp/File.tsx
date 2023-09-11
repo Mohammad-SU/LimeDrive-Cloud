@@ -1,4 +1,4 @@
-import { useState, memo } from 'react'
+import { memo } from 'react'
 import "./File.scss"
 import { FileType } from '../../types/index.ts';
 

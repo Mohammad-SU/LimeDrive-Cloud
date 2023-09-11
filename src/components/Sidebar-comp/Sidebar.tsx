@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import "./Sidebar.scss"
 import { Link } from "react-router-dom"
-import {AiOutlineUpload} from "react-icons/ai"
 import Upload from '../Upload-comp/Upload'
 
 function Sidebar() {

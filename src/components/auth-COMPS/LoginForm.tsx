@@ -1,5 +1,6 @@
 import { useState, memo } from 'react'
 import axios from 'axios';
+import api from '../../axios-config.ts';
 import "./Form.scss"
 import { useUserContext } from '../../contexts/UserContext';
 import { handleBackendError } from '../../functions/BackendErrorResponse.ts';
@@ -9,11 +10,13 @@ import { BsEye, BsEyeSlash } from 'react-icons/bs';
 import LoadingBar from "../LoadingBar-COMPS/LoadingBar.tsx"
 
 function LoginForm() {
+    let baseURL = api.defaults.baseURL;
+    console.log(baseURL)
     const { formData, handleInputChange } = useFormLogic({
         usernameOrEmailLog: '',
         passwordLog: '',
     })
-    const { setUser, token, setToken } = useUserContext();
+    const { setUser, setToken } = useUserContext();
     const navigate = useNavigate();
     var backendError: string | null = null
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -27,7 +30,7 @@ function LoginForm() {
         if (isPasswordValid) {
             setLoading(true)
             try {
-                const response = await axios.post('http://localhost:8000/api/login', formData)
+                const response = await api.post('/login', formData)
 
                 if (response.data.message == "Login successful.") {
                     setErrorMessage(null)
@@ -56,7 +59,7 @@ function LoginForm() {
     }
 
     const [showPassword, setShowPassword] = useState<boolean>(false)
-    const togglePasswordVisibility = () => {setShowPassword(!showPassword)}
+    function togglePasswordVisibility() {setShowPassword(!showPassword)}
 
     return (
         <form className="form" name="login-form" method="POST" onSubmit={handleSubmit}>
@@ -97,6 +100,7 @@ function LoginForm() {
                     (<BsEye className="eye-icon" onClick={togglePasswordVisibility} />)
                 }
             </div>
+            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
             <p className="form__error-and-loading">
                 {errorMessage}

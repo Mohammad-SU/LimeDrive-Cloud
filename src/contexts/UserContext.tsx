@@ -1,5 +1,6 @@
 import { useState, createContext, useContext, useEffect } from 'react';
 import axios from 'axios';
+import api from '../axios-config';
 import { UserType } from '../types';
 import { useCookies } from '../hooks/useCookies';
 import { handleBackendError } from '../functions/BackendErrorResponse';
@@ -24,14 +25,14 @@ export function useUserContext() {
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useCookies<string | null>('auth_token', null, {secure: true,})
-    const [user, setUser] = useState<UserType>({ username: null, email: null })
+    const [user, setUser] = useState<UserType>({ id: null, username: null, email: null })
     const [loadUser, setLoadUser] = useState(true)
     const [backendError, setBackendError] = useState<string | null>(null);
 
     useEffect(() => {
         async function fetchUser() {
             try {
-                const response = await axios.get('http://localhost:8000/api/user', {
+                const response = await api.get('/user', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

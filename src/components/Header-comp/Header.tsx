@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, memo } from 'react';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import api from '../../axios-config';
 import "./Header.scss";
 import { useUserContext } from '../../contexts/UserContext';
 import { useNavigate, Link } from 'react-router-dom'; 
@@ -42,7 +43,7 @@ function Header() {
     async function logout() {
         try {
             setLoadLogout(true);
-            await axios.post('http://localhost:8000/api/logout', null, {
+            await api.post('/logout', null, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import "./Upload.scss"
 import axios from 'axios'
+import api from '../../axios-config.ts'
 import { Link } from 'react-router-dom'
 import { useUserContext } from '../../contexts/UserContext.tsx'
 import { AiOutlineUpload, AiFillFileText } from 'react-icons/ai'
@@ -43,7 +44,7 @@ function Upload() {
         formData.append('user_id', String(user.id))
     
         try {
-            const response = await axios.post('http://localhost:8000/api/upload', formData, {
+            const response = await api.post('/upload', formData, {
                 onUploadProgress: (progressEvent) => {
                     if (progressEvent.total != undefined) {
                         const percentCompleted = Math.round(
