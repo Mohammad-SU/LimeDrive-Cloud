@@ -7,7 +7,17 @@ interface FileProps {
 }
 
 function File({ file }: FileProps) {
-    
+
+    function formatBytes(bytes: number) {
+        if (bytes < 1048576) {
+            return (bytes / 1024).toFixed(2) + " KB";
+        } else {
+            return (bytes / 1048576).toFixed(2) + " MB";
+        }
+    }
+
+    const formattedSize = formatBytes(file.size);
+
     function formatDate(date: Date) {
         const day = date.getDate();
         const month = date.getMonth() + 1; // Months are 0-indexed, so add 1
@@ -25,8 +35,9 @@ function File({ file }: FileProps) {
       
         return `${formattedDay}/${formattedMonth}/${year} ${hours}:${formattedMinutes}${amPm}`;
       }
-      
-      const dateToFormat = file.date;
+
+      const date = new Date(file.date) // Parse ISO 8601
+      const dateToFormat = date;
       const formattedDate = formatDate(dateToFormat);
 
     return (
@@ -34,7 +45,7 @@ function File({ file }: FileProps) {
             <p className="file-name">{file.name}</p>
             <p>{file.type}</p>
             <p>{file.extension}</p>
-            <p>{file.size}</p>
+            <p>{formattedSize}</p>
             <p>{formattedDate}</p>
         </div>
     )

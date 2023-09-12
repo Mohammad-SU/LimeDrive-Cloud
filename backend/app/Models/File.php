@@ -14,11 +14,13 @@ class File extends Model
     protected $fillable = [
         'user_id', 
         'name', 
-        'content_path', 
+        'cloud_path', 
         'app_path', 
         'type', 
         'extension', 
         'size', 
         'date'
     ];
+
+    public $timestamps = false;
 }

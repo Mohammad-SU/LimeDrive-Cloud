@@ -16,14 +16,14 @@ class FileController extends Controller
         $app_path_replaced = str_replace('all-files', (string)$user_id, $app_path);
 
         foreach ($request->file('files') as $uploadedFile) {
-            $content_path = $app_path_replaced . $uploadedFile->getClientOriginalName();
+            $cloud_path = $app_path_replaced . $uploadedFile->getClientOriginalName();
             $content = file_get_contents($uploadedFile->getRealPath());
-            Storage::disk('s3')->put($content_path, $content);
+            Storage::disk('s3')->put($cloud_path, $content);
 
             $uploadedFiles[] = File::create([
                 'user_id' => $user_id,
                 'name' => $uploadedFile->getClientOriginalName(),
-                'content_path' => $content_path,
+                'cloud_path' => $cloud_path,
                 'app_path' => $app_path,
                 'type' => $uploadedFile->getClientMimeType(),
                 'extension' => $uploadedFile->getClientOriginalExtension(),

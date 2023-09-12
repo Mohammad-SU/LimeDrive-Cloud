@@ -4,6 +4,7 @@ import axios from 'axios'
 import api from '../../axios-config.ts'
 import { Link } from 'react-router-dom'
 import { useUserContext } from '../../contexts/UserContext.tsx'
+import { useFileContext } from '../../contexts/FileContext';
 import { AiOutlineUpload, AiFillFileText } from 'react-icons/ai'
 import { IoChevronDownSharp, IoChevronUpSharp } from 'react-icons/io5'
 import { IoMdClose } from 'react-icons/io'
@@ -19,6 +20,7 @@ function Upload() {
         }
     }
     
+    const { addFile } = useFileContext()
     const [backendError, setBackendError] = useState<string | null>(null)
     const [app_path, setApp_path] = useState('all-files/');
     const [uploadNumComplete, setUploadNumComplete] = useState<number>(0)
@@ -38,6 +40,8 @@ function Upload() {
 
     const { user } = useUserContext();
     const uploadFile = async (file: File) => {
+        if (!file) return // No file selected? exit function.
+
         const formData = new FormData();
         formData.append('files[]', file)
         formData.append('app_path', app_path)
@@ -56,7 +60,7 @@ function Upload() {
                     }
                 },
             })
-            console.log('Upload successful:', response);
+            addFile(response.data[0])
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {
@@ -91,7 +95,7 @@ function Upload() {
             {uploadQueue.length > 0 &&
                 <div className="upload-info">
                     <div className="header">
-                        {uploadNumComplete} of {uploadQueue.length} uploads complete
+                        {currentUploadIndex} of {uploadQueue.length} uploads complete
                         <div className="header__icons-cont">
                             {!collapseUploadList ?
                                 <IoChevronDownSharp className="icon" onClick={() => setCollapseUploadList(true)}/>
@@ -109,13 +113,17 @@ function Upload() {
                                     <div className="file-info">
                                         <div className="name">{file.name}</div>
                                         <div className="progress-and-location">
-                                            {index === currentUploadIndex ? (
+                                            {index === currentUploadIndex ? 
                                                 <ProgressBar progress={currentFileProgress} />
-                                            ) : backendError ? (
-                                                <span>Error. Check connection.</span>
-                                            ) : (
-                                                <>In <span className="link"><Link to="/folder-that-has-file">folder-that-has-file-folder-that-has-file</Link></span></>
-                                            )}
+
+                                                : index > currentUploadIndex ?
+                                                    <span>Queued</span>
+
+                                                : backendError ? 
+                                                    <span>Error. Check connection.</span>
+
+                                                : <>In <span className="link"><Link to="/folder-that-has-file">folder-that-has-file</Link></span></>
+                                            }
                                         </div>
                                     </div>
                                     <button>Copy Link</button>

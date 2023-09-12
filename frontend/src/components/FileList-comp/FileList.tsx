@@ -1,16 +1,23 @@
 import { memo } from 'react'
 import "./FileList.scss"
+import { useFileContext } from '../../contexts/FileContext'
+import Folder from "../Folder-comp/Folder"
 import File from "../File-comp/File"
-import { FileType } from '../../types/index.ts'
 
 function FileList() {
-    const files: FileType[] = [
-    ]
+    const { files, folders } = useFileContext()
+
+    const foldersMapped = folders.map(folder => {
+        return <Folder 
+            key={folder.id}
+            folder={folder} // map entire folder object
+        />
+    })
 
     const filesMapped = files.map(file => {
         return <File 
             key={file.id}
-            file={file} // Pass the entire file object as prop
+            file={file}
         />
     })
 
@@ -23,6 +30,7 @@ function FileList() {
                 <p>Size</p>
                 <p>Date (D/M/Y)</p>
             </div>
+            {foldersMapped}
             {filesMapped}
         </div>
     )

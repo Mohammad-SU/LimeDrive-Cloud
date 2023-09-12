@@ -1,7 +1,7 @@
 export interface FileType {
-    id: string;
+    id: number;
     name: string;
-    content_path: string;
+    cloud_path: string;
     app_path: string;
     type: string;
     extension: string;
