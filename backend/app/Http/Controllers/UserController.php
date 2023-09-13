@@ -2,16 +2,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\File;
+use App\Models\Folder;
 
 class UserController extends Controller
 {
-    public function getUser(Request $request)
+    public function getUserData(Request $request)
     {
         $user = $request->user();
-        
+        $files = File::where('user_id', $user->id)->get();
+        $folders = Folder::where('user_id', $user->id)->get();
+
         return response()->json([
-            'username' => $user->username,
-            'email' => $user->email,
+            'user' => [
+                'username' => $user->username,
+                'email' => $user->email,
+            ],
+            'files' => $files,
+            'folders' => $folders,
         ]);
     }
     

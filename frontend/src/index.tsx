@@ -31,10 +31,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <UserProvider>
-            <FileProvider>
+        <FileProvider>
+            <UserProvider>
                 <RouterProvider router={router} />
-            </FileProvider>   
-        </UserProvider>
+            </UserProvider>
+        </FileProvider>
     </React.StrictMode>,
 )

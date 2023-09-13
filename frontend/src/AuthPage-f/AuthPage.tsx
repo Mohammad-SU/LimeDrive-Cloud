@@ -116,7 +116,7 @@ function AuthPage() {
         catch (error) {
             if (axios.isAxiosError(error)) {
                 backendError = handleBackendError(error)
-                if (backendError == "The username has already been taken.") {
+                if (backendError == "Username is taken.") {
                     attemptRegistration()
                 } 
                 else {

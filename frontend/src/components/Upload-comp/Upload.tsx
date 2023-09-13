@@ -20,7 +20,7 @@ function Upload() {
         }
     }
     
-    const { addFile } = useFileContext()
+    const { addFiles } = useFileContext()
     const [backendError, setBackendError] = useState<string | null>(null)
     const [app_path, setApp_path] = useState('all-files/');
     const [uploadNumComplete, setUploadNumComplete] = useState<number>(0)
@@ -38,17 +38,20 @@ function Upload() {
         }
     }
 
-    const { user } = useUserContext();
+    const { token } = useUserContext();
+    
     const uploadFile = async (file: File) => {
         if (!file) return // No file selected? exit function.
 
         const formData = new FormData();
         formData.append('files[]', file)
         formData.append('app_path', app_path)
-        formData.append('user_id', String(user.id))
     
         try {
-            const response = await api.post('/upload', formData, {
+            const response = await api.post('/uploadFiles', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 onUploadProgress: (progressEvent) => {
                     if (progressEvent.total != undefined) {
                         const percentCompleted = Math.round(
@@ -60,7 +63,7 @@ function Upload() {
                     }
                 },
             })
-            addFile(response.data[0])
+            addFiles(response.data[0])
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {

@@ -4,6 +4,7 @@ import api from '../axios-config';
 import { UserType } from '../types';
 import { useCookies } from '../hooks/useCookies';
 import { handleBackendError } from '../functions/BackendErrorResponse';
+import { useFileContext } from './FileContext';
 import LoadingPage from '../components/LoadingPage-comp/LoadingPage';
 
 interface UserContextType {
@@ -28,6 +29,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<UserType>({ id: null, username: null, email: null })
     const [loadUser, setLoadUser] = useState(true)
     const [backendError, setBackendError] = useState<string | null>(null);
+    const { addFiles, addFolders } = useFileContext();
 
     useEffect(() => {
         async function fetchUser() {
@@ -37,8 +39,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                const user = response.data
+                console.log(response.data)
+                const { user, files, folders } = response.data
                 setUser(user)
+                addFiles(files)
+                addFolders(folders)
                 setBackendError(null)
             } 
             catch (error) {
@@ -69,7 +74,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return (
         <UserContext.Provider value={contextValue}>
             {!loadUser && !backendError ? children
-                : loadUser && token && !backendError ? <LoadingPage message="Fetching user data..." loading={loadUser}/>
+                : loadUser && token && !backendError ? <LoadingPage message="Fetching data..." loading={loadUser}/>
                 : backendError ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
                 : children
             }

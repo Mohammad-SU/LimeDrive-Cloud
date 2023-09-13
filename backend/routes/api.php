@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\FileController;
+use App\Http\Controllers\UploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,17 +17,13 @@ use App\Http\Controllers\FileController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    [UserController::class, 'getUser'];
-    return $request->user();
-});
-
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/user', [UserController::class, 'getUserData']);
     Route::post('/logout', [UserController::class, 'logout']);
+
+    Route::post('/uploadFiles', [UploadController::class, 'uploadFiles']);
+    Route::post('/uploadFolders', [UploadController::class, 'uploadFolders']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
-Route::post('/upload', [FileController::class, 'upload']);
-Route::get('/files',  [FileController::class, 'index']);

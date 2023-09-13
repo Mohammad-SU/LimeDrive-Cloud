@@ -5,8 +5,8 @@ import { FolderType } from '../types'
 interface FileContextType {
   files: FileType[]
   folders: FolderType[]
-  addFile: (file: FileType) => void
-  addFolder: (folder: FolderType) => void
+  addFiles: (files: FileType[]) => void;
+  addFolders: (folders: FolderType[]) => void
   // Add more functions to manipulate files and folders if needed
 }
 
@@ -24,16 +24,20 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
 
-    const addFile = (file: FileType) => {
-        setFiles((prevFiles) => [...prevFiles, file])
+    const addFiles = (newFiles: FileType[]) => {
+        let filesToAdd = Array.isArray(newFiles) ? newFiles : [newFiles]
+        setFiles((prevFiles) => [...prevFiles, ...filesToAdd])
+        filesToAdd = [] // Empty to prevent duplicates due to re-renders
     }
 
-    const addFolder = (folder: FolderType) => {
-        setFolders((prevFolders) => [...prevFolders, folder])
+    const addFolders = (newFolders: FolderType[]) => {
+        let foldersToAdd = Array.isArray(newFolders) ? newFolders : [newFolders]
+        setFolders((prevFolders) => [...prevFolders, ...foldersToAdd])
+        foldersToAdd = []
     }
 
     return (
-        <FileContext.Provider value={{ files, folders, addFile, addFolder }}>
+        <FileContext.Provider value={{ files, folders, addFiles, addFolders }}>
             {children}
         </FileContext.Provider>
     )
