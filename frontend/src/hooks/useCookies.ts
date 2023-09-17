@@ -14,15 +14,24 @@ interface CookieOptions {
 export function useCookies<T>(
     key: string,
     initialValue: T,
-    options: CookieOptions = {} // Provide default options if not specified
+    options: CookieOptions = {}
 ): [T, SetValue<T>] {
     const [cookieValue, setCookieValue] = useState<T>(() => {
-        const storedCookie = Cookies.get(key);
-        return storedCookie !== undefined ? JSON.parse(storedCookie) : initialValue;
+        try {
+            const storedCookie = Cookies.get(key);
+            return storedCookie !== undefined ? JSON.parse(storedCookie) : initialValue;
+        } catch (error) {
+            console.error(`Error parsing cookie for key "${key}":`, error);
+            return initialValue; // Return the initialValue in case of an error
+        }
     });
 
     useEffect(() => {
-        Cookies.set(key, JSON.stringify(cookieValue), options);
+        try {
+            Cookies.set(key, JSON.stringify(cookieValue), options);
+        } catch (error) {
+            console.error(`Error setting cookie for key "${key}":`, error);
+        }
     }, [key, cookieValue, options]);
 
     return [cookieValue, setCookieValue];

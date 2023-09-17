@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
 import api from '../axios-config.ts'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
 import "./AuthPage.scss"
 import { adjectives } from '../data/adjectives.ts'
 import { nouns } from '../data/nouns.ts'
-import { handleBackendError } from '../functions/BackendErrorResponse.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 import { useCookies } from '../hooks/useCookies';
 import LimeDriveAscii from '../assets/images/ascii/LimeDrive-ascii.png'
@@ -28,7 +27,7 @@ function AuthPage() {
         return null
     }
 
-    var backendError: string | null = null
+    var backendError: AxiosError | null = null
     const [errorMessage, setErrorMessage]  = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
 
@@ -115,8 +114,8 @@ function AuthPage() {
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {
-                backendError = handleBackendError(error)
-                if (backendError == "Username is taken.") {
+                backendError = error
+                if (backendError.message == "Username is taken.") {
                     attemptRegistration()
                 } 
                 else {

@@ -1,23 +1,24 @@
 import { useState, useEffect, useRef, memo } from 'react';
 import Cookies from 'js-cookie';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import api from '../../axios-config';
 import "./Header.scss";
+import { useFileContext } from '../../contexts/FileContext';
 import { useUserContext } from '../../contexts/UserContext';
 import { useNavigate, Link } from 'react-router-dom'; 
 import LimeDriveAscii_header from '../../assets/images/ascii/LimeDrive-ascii-header.png';
 import { GiOrange } from "react-icons/gi";
 import { BsPersonFillGear } from "react-icons/bs";
 import { BsSearch } from "react-icons/bs";
-import { handleBackendError } from '../../functions/BackendErrorResponse';
 import LoadingPage from '../LoadingPage-comp/LoadingPage';
 
 
 function Header() {
     const { user, token } = useUserContext()
+    const { setFiles } = useFileContext()
     const [dropdownVisible, setDropdownVisible] = useState(false)
     const dropdownRef = useRef<HTMLDivElement | null>(null)
-    const [backendError, setBackendError] = useState<string | null>(null);
+    const [backendError, setBackendError] = useState<AxiosError | null>(null);
 
     const toggleDropdown = (event: React.MouseEvent) => {
         event.stopPropagation();
@@ -48,12 +49,13 @@ function Header() {
                     Authorization: `Bearer ${token}`
                 }
             })
-            Cookies.remove('auth_token');
+            setFiles([])
+            Cookies.remove('auth_token')
             navigate("/auth")
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {
-                setBackendError(handleBackendError(error))
+                setBackendError(error)
             }
         }
         finally {

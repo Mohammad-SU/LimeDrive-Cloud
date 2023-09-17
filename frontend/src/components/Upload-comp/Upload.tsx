@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import "./Upload.scss"
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import api from '../../axios-config.ts'
 import { Link } from 'react-router-dom'
 import { useUserContext } from '../../contexts/UserContext.tsx'
@@ -8,7 +8,6 @@ import { useFileContext } from '../../contexts/FileContext';
 import { AiOutlineUpload, AiFillFileText } from 'react-icons/ai'
 import { IoChevronDownSharp, IoChevronUpSharp } from 'react-icons/io5'
 import { IoMdClose } from 'react-icons/io'
-import { handleBackendError } from '../../functions/BackendErrorResponse.ts'
 import ProgressBar from '../LoadingBar-COMPS/ProgressBar.tsx'
 
 function Upload() {
@@ -21,7 +20,7 @@ function Upload() {
     }
     
     const { addFiles } = useFileContext()
-    const [backendError, setBackendError] = useState<string | null>(null)
+    const [backendError, setBackendError] = useState<AxiosError | null>(null);
     const [app_path, setApp_path] = useState('all-files/');
     const [uploadNumComplete, setUploadNumComplete] = useState<number>(0)
     const [uploadNumAll, setUploadNumAll] = useState<number>(0)
@@ -67,7 +66,7 @@ function Upload() {
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {
-                setBackendError(handleBackendError(error));
+                setBackendError(error);
             }
         }
     }

@@ -2,12 +2,8 @@
     display: flex;
     justify-content: space-between;
 
-    padding: 1rem;
+    padding: 1rem 0.55rem;
     border-bottom: .0625rem solid lime;
-
-    &:first-child {
-        border-top: .0625rem solid lime;
-    }
 
     p {
         margin: 0;

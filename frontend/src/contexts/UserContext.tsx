@@ -1,9 +1,8 @@
 import { useState, createContext, useContext, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import api from '../axios-config';
 import { UserType } from '../types';
 import { useCookies } from '../hooks/useCookies';
-import { handleBackendError } from '../functions/BackendErrorResponse';
 import { useFileContext } from './FileContext';
 import LoadingPage from '../components/LoadingPage-comp/LoadingPage';
 
@@ -28,41 +27,46 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useCookies<string | null>('auth_token', null, {secure: true,})
     const [user, setUser] = useState<UserType>({ id: null, username: null, email: null })
     const [loadUser, setLoadUser] = useState(true)
-    const [backendError, setBackendError] = useState<string | null>(null);
+    const [backendError, setBackendError] = useState<AxiosError | null>(null);
     const { addFiles, addFolders } = useFileContext();
-
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const response = await api.get('/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                console.log(response.data)
-                const { user, files, folders } = response.data
-                setUser(user)
-                addFiles(files)
-                addFolders(folders)
-                setBackendError(null)
-            } 
-            catch (error) {
-                if (axios.isAxiosError(error)) {
-                    setBackendError(handleBackendError(error))
+    
+    async function fetchUserData() {
+        setLoadUser(true)
+        
+        try {            
+            const response = await api.get('/user', {
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
-            }
-            finally {
-                setLoadUser(false);
+            });
+            console.log(response.data)
+            const { user, files, folders } = response.data
+            setUser(user)
+            addFiles(files)
+            addFolders(folders)
+            setBackendError(null)
+        } 
+        catch (error) {
+            if (axios.isAxiosError(error)) {
+                setBackendError(error)
+                console.error(error)
+                if (error.status == 401) setToken(null)
             }
         }
+        finally {
+            setLoadUser(false)
+        }
+    }
 
-        if (token) {
-            fetchUser()
+    useEffect(() => {
+        if (token && backendError?.response?.status != 401) {
+            console.log(token)
+            fetchUserData()
         }
         else {
             setLoadUser(false)
         }
-    }, [token]);
+    }, [token])
 
     const contextValue: UserContextType = {
         user,
@@ -75,7 +79,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         <UserContext.Provider value={contextValue}>
             {!loadUser && !backendError ? children
                 : loadUser && token && !backendError ? <LoadingPage message="Fetching data..." loading={loadUser}/>
-                : backendError ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
+                : backendError?.status == 500 ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
                 : children
             }
         </UserContext.Provider>

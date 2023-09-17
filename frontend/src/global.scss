@@ -1,6 +1,15 @@
+:root {
+    body {
+        &::-webkit-scrollbar-thumb {
+            border-right: .125rem solid lime;
+        }
+    }
+}
+
 html {
     min-height: 100vh;
     color-scheme: dark;
+    cursor: pointer;
 }
 
 body {
@@ -10,6 +19,7 @@ body {
     margin: 0;
     color: lime;
     box-sizing: border-box;
+    cursor: default;
 }
     input {
         border: none;
@@ -72,7 +82,8 @@ body {
         ::-webkit-scrollbar-thumb {
             background-color: black;
             outline: .125rem solid lime;
-            border-right: .125rem solid lime;;
+            cursor: pointer !important;
+            
             &:hover {
                 background-color: rgba(0, 255, 0, 0.332);
             }

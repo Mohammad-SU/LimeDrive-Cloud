@@ -1,17 +1,16 @@
-automated testing
-make tokens expire in a month and make frontend delete token if expired
-file uploads
-malware check
+fix file upload progress and reuploading when new files are selected
 file previews
 folders
 file sharing
 settings page
+malware check
 responsive CSS
+make tokens expire in a month and make frontend delete token if expired
 store username on database as case sensitive, convert username to case insensitive for checks?
 email verification
 allow Google and Facebook to be used for logins? (OAuth)
 change database info after deployment
-modify allowed-origins in CORS config if deploying backend separately
 remove useState import from all files where it's not used
 change env secret file for render.com if changed
+add more automated tests
 implement Redis?

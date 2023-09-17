@@ -1,9 +1,8 @@
 import { useState, memo } from 'react'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import api from '../../axios-config.ts';
 import "./Form.scss"
 import { useUserContext } from '../../contexts/UserContext';
-import { handleBackendError } from '../../functions/BackendErrorResponse.ts';
 import { useNavigate } from "react-router-dom";
 import { useFormLogic } from "../../hooks/useFormLogic.ts"
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
@@ -19,8 +18,9 @@ function RegisterForm() {
     const [loading, setLoading] = useState<boolean>(false)
     const { setUser, setToken } = useUserContext();
     const navigate = useNavigate(); 
-    var backendError: string | null = null
-    const [errorMessage, setErrorMessage] = useState<string | null>(null)
+    var backendError: AxiosError | null = null
+    var backendErrorMsg: string | null = null
+    const [formError, setFormError] = useState<string | null>(null)
 
     const isEmailValid = /^\S+@\S+\.\S+$/.test(formData.emailReg)
     const isUsernameValid = /^[a-zA-Z0-9_-]+$/.test(formData.usernameReg)
@@ -28,23 +28,23 @@ function RegisterForm() {
     const isPasswordMatch = formData.passwordReg === formData.passwordReg_confirmation
 
     function renderError() {
-        setErrorMessage( 
-            !isEmailValid ? 'Invalid email format.'
+        setFormError( 
+            (!isEmailValid || backendErrorMsg === "The email reg field must be a valid email address.") ? 'Invalid email format.'
             : !isUsernameValid ? 'Invalid username format.'
             : !isPasswordValid ? 'Password must have at least 8 characters.'
             : !isPasswordMatch ? 'Passwords do not match.' 
-            : backendError === "Email is taken. (and 1 more error)" ? 'Email and username is taken.'
-            : backendError === "Username is taken. (and 1 more error)" ? 'Email and username is taken.'
-            : backendError === "Email is taken." ? backendError
-            : backendError === "Username is taken." ? backendError
-            : backendError != null ? 'Error. Please check your connection.'
+            : backendErrorMsg === "Email is taken. (and 1 more error)" ? 'Email and username is taken.'
+            : backendErrorMsg === "Username is taken. (and 1 more error)" ? 'Email and username is taken.'
+            : backendErrorMsg === "Email is taken." ? backendErrorMsg
+            : backendErrorMsg === "Username is taken." ? backendErrorMsg
+            : backendErrorMsg != null ? 'Error. Please check your connection.'
             : null
         )
     }
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault()
-        setErrorMessage(null)
+        setFormError(null)
         
         if (isEmailValid && isUsernameValid && isPasswordValid && isPasswordMatch) {
             setLoading(true)
@@ -52,7 +52,7 @@ function RegisterForm() {
                 const response = await api.post('/register', formData)
 
                 if (response.data.message == "Registration successful.") {
-                    setErrorMessage(null)
+                    setFormError(null)
                     const { user, token } = response.data;
                     setUser(user);
                     setToken(token);
@@ -60,8 +60,10 @@ function RegisterForm() {
                 }
             }
             catch (error) {
+                console.error(error)
                 if (axios.isAxiosError(error)) {
-                    backendError = handleBackendError(error)
+                    backendError = error
+                    backendErrorMsg = error?.response?.data.message
                 }
                 renderError()
             } 
@@ -155,7 +157,7 @@ function RegisterForm() {
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
                 <p className="form__error-and-loading">
-                    <span>{errorMessage}</span>
+                    <span>{formError}</span>
                     <LoadingBar loading={loading} />
                 </p>
 

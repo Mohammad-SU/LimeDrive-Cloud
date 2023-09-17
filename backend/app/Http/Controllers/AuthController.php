@@ -83,7 +83,7 @@ class AuthController extends Controller
             return $this->createLoginResponse($request, $user, $message);
         } 
         else {
-            return response()->json(['message' => 'Invalid login details.'], 401);
+            return response()->json(['message' => 'Invalid login details.'], 400);
         };
     }
 }

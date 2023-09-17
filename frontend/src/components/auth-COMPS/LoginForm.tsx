@@ -1,9 +1,8 @@
 import { useState, memo } from 'react'
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import api from '../../axios-config.ts';
 import "./Form.scss"
 import { useUserContext } from '../../contexts/UserContext';
-import { handleBackendError } from '../../functions/BackendErrorResponse.ts';
 import { useNavigate } from "react-router-dom";
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import { BsEye, BsEyeSlash } from 'react-icons/bs';
@@ -16,14 +15,15 @@ function LoginForm() {
     })
     const { setUser, setToken } = useUserContext();
     const navigate = useNavigate();
-    var backendError: string | null = null
-    const [errorMessage, setErrorMessage] = useState<string | null>(null)
+    var backendError: AxiosError | null = null
+    var backendErrorMsg: string | null = null
+    const [formError, setFormError] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const isPasswordValid = formData.passwordLog.length >= 8
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
-        setErrorMessage(null)
+        setFormError(null)
 
         if (isPasswordValid) {
             setLoading(true)
@@ -31,20 +31,22 @@ function LoginForm() {
                 const response = await api.post('/login', formData)
 
                 if (response.data.message == "Login successful.") {
-                    setErrorMessage(null)
-                    const { user, token } = response.data;
-                    setUser(user);
-                    setToken(token);
-                    navigate("/home");
+                    setFormError(null)
+                    const { user, token } = response.data
+                    setUser(user)
+                    setToken(token)
+                    navigate("/home")
                 }
             } 
             catch (error) {
+                console.error(error)
                 if (axios.isAxiosError(error)) {
-                    backendError = handleBackendError(error)
-                    
-                    backendError === "Invalid login details."
-                    ? setErrorMessage(backendError)
-                    : setErrorMessage("Error. Please check your connection.")
+                    backendError = error
+                    backendErrorMsg = error?.response?.data.message
+
+                    backendErrorMsg === "Invalid login details."
+                    ? setFormError(backendErrorMsg)
+                    : setFormError("Error. Please check your connection.")
                 }
             }
             finally {
@@ -52,7 +54,7 @@ function LoginForm() {
             }
         }
         else {
-            setErrorMessage("Invalid login details.")
+            setFormError("Invalid login details.")
         }
     }
 
@@ -75,6 +77,7 @@ function LoginForm() {
                     spellCheck="false"
                     required
                     disabled={loading}
+                    data-testid="usernameOrEmailInput"
                 />
             </div>
 
@@ -91,6 +94,7 @@ function LoginForm() {
                     spellCheck="false"
                     required
                     disabled={loading}
+                    data-testid="passwordInput"
                 />
                 {showPassword ? 
                     (<BsEyeSlash className="eye-icon" onClick={togglePasswordVisibility} />)
@@ -100,12 +104,12 @@ function LoginForm() {
             </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
-            <p className="form__error-and-loading">
-                {errorMessage}
+            <p className="form__error-and-loading" data-testid="domErrorText">
+                {formError}
                 <LoadingBar loading={loading} />
             </p>
 
-            <button className="form__submit" type="submit" disabled={loading}>
+            <button className="form__submit" type="submit" disabled={loading} data-testid="loginButton">
                 Login
             </button>
         </form>

@@ -30,8 +30,10 @@ function FileList() {
                 <p>Size</p>
                 <p>Date (D/M/Y)</p>
             </div>
-            {foldersMapped}
-            {filesMapped}
+            <div className="main-list">
+                {foldersMapped}
+                {filesMapped}
+            </div>
         </div>
     )
 }

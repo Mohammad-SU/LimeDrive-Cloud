@@ -7,6 +7,8 @@ interface FileContextType {
   folders: FolderType[]
   addFiles: (files: FileType[]) => void;
   addFolders: (folders: FolderType[]) => void
+  setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
+  setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
   // Add more functions to manipulate files and folders if needed
 }
 
@@ -37,7 +39,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <FileContext.Provider value={{ files, folders, addFiles, addFolders }}>
+        <FileContext.Provider value={{ files, folders, setFiles, setFolders, addFiles, addFolders, }}>
             {children}
         </FileContext.Provider>
     )
