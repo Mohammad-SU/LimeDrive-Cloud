@@ -29,17 +29,16 @@ function Upload() {
     const [currentFileProgress, setCurrentFileProgress] = useState<number | null>(0);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFiles = event.target.files;
+        const selectedFiles = event.target.files
         if (!selectedFiles) return
 
         const newFiles = Array.from(selectedFiles)
         
-        setPrevUploadedFiles((prevFiles: File[]) => [...prevFiles, ...uploadQueue]);
-        setSuccessfulUploadNum(prevUploadedFiles.length)
-        setUploadListFilesNum(newFiles.length + prevUploadedFiles.length);
-        
-        setUploadQueue(newFiles);
-        setCurrentUploadIndex(0);
+        setPrevUploadedFiles((prevFiles: File[]) => [...prevFiles, ...uploadQueue])
+        setUploadListFilesNum((prevValue) => prevValue + newFiles.length)
+
+        setUploadQueue(newFiles)
+        setCurrentUploadIndex(0)
     }
 
     const { token } = useUserContext();
@@ -103,12 +102,12 @@ function Upload() {
 
             {uploadListFilesNum > 0 &&
                 <div className="upload-info">
-                    <div className="header">
+                    <div className="header" onClick={() => setCollapseUploadList(prevState => !prevState)}>
                         {successfulUploadNum} of {uploadListFilesNum} uploads complete
                         <div className="header__icons-cont">
                             {!collapseUploadList ?
-                                <IoChevronDownSharp className="icon" onClick={() => setCollapseUploadList(true)}/>
-                                : <IoChevronUpSharp className="icon" onClick={() => setCollapseUploadList(false)}/>
+                                <IoChevronDownSharp className="icon" />
+                                : <IoChevronUpSharp className="icon" />
                             }
                             <IoMdClose className="icon" />
                         </div>
