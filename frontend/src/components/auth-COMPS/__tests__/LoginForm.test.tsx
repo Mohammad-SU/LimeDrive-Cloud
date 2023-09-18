@@ -49,7 +49,7 @@ describe('Login Input Validation', () => {
 		let response = mock.onPost('/login').reply(400, { message: invalidLoginError });
 
 		await waitFor(() => {
-			console.log(response.data)
+			console.log(response)
 			console.log(domErrorText)
 			expect(domErrorText).toHaveTextContent(invalidLoginError);
 		});
