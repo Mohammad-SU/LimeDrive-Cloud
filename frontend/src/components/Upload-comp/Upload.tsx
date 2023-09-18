@@ -19,29 +19,33 @@ function Upload() {
         }
     }
     
-    const { addFiles } = useFileContext()
     const [backendError, setBackendError] = useState<AxiosError | null>(null);
     const [app_path, setApp_path] = useState('all-files/');
-    const [uploadNumComplete, setUploadNumComplete] = useState<number>(0)
-    const [uploadNumAll, setUploadNumAll] = useState<number>(0)
-    const [uploading, setUploading] = useState<boolean>(false)
-    const [uploadQueue, setUploadQueue] = useState<File[]>([]);
-    const [currentUploadIndex, setCurrentUploadIndex] = useState<number>(-1);
-    const [currentFileProgress, setCurrentFileProgress] = useState<number | null>(null);
+    const [prevUploadedFiles, setPrevUploadedFiles] = useState<File[]>([]); // Files in the list that have been successfully uploaded and will not be sent again
+    const [uploadQueue, setUploadQueue] = useState<File[]>([]); // Files in the list to be sent to backend
+    const [uploadListFilesNum, setUploadListFilesNum] = useState<number>(0) // Number of files in the list in total, including both current and successful uploads
+    const [currentUploadIndex, setCurrentUploadIndex] = useState<number>(-1); // Current file to be uploaded in uploadQueue (negative means no files in uploadQueue)
+    const [successfulUploadNum, setSuccessfulUploadNum] = useState<number>(0);
+    const [currentFileProgress, setCurrentFileProgress] = useState<number | null>(0);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files;
-        if (selectedFiles) {
-            setUploadQueue((prevQueue) => [...prevQueue, ...Array.from(selectedFiles)]);
-            setCurrentUploadIndex(0)
-        }
+        if (!selectedFiles) return
+
+        const newFiles = Array.from(selectedFiles)
+        
+        setPrevUploadedFiles((prevFiles: File[]) => [...prevFiles, ...uploadQueue]);
+        setSuccessfulUploadNum(prevUploadedFiles.length)
+        setUploadListFilesNum(newFiles.length + prevUploadedFiles.length);
+        
+        setUploadQueue(newFiles);
+        setCurrentUploadIndex(0);
     }
 
     const { token } = useUserContext();
+    const { addFiles } = useFileContext()
     
     const uploadFile = async (file: File) => {
-        if (!file) return // No file selected? exit function.
-
         const formData = new FormData();
         formData.append('files[]', file)
         formData.append('app_path', app_path)
@@ -73,12 +77,15 @@ function Upload() {
 
     useEffect(() => {
         if (currentUploadIndex >= 0 && currentUploadIndex < uploadQueue.length) {
-            uploadFile(uploadQueue[currentUploadIndex]).then(() => {
-                setCurrentUploadIndex((prevIndex) => prevIndex + 1)
-                setCurrentFileProgress(null)
-            })
+            uploadFile(uploadQueue[currentUploadIndex]) // Upload the current file
+                .then(() => {
+                    setCurrentUploadIndex((prevIndex) => prevIndex + 1);
+                    setCurrentFileProgress(0);
+                    setSuccessfulUploadNum(current => current + 1)
+                })
         }
-    }, [currentUploadIndex])
+    }, [currentUploadIndex]);
+    
 
     return (
         <>
@@ -94,10 +101,10 @@ function Upload() {
                 multiple
             />
 
-            {uploadQueue.length > 0 &&
+            {uploadListFilesNum > 0 &&
                 <div className="upload-info">
                     <div className="header">
-                        {currentUploadIndex} of {uploadQueue.length} uploads complete
+                        {successfulUploadNum} of {uploadListFilesNum} uploads complete
                         <div className="header__icons-cont">
                             {!collapseUploadList ?
                                 <IoChevronDownSharp className="icon" onClick={() => setCollapseUploadList(true)}/>
@@ -110,22 +117,34 @@ function Upload() {
                     {!collapseUploadList &&
                         <div className="upload-list">
                             {uploadQueue.map((file, index) => (
+                                    <div className="file" key={index}>
+                                        <AiFillFileText className="file-icon" />
+                                        <div className="file-info">
+                                            <div className="name">{file.name}</div>
+                                            <div className="progress-and-location">
+                                                {index === currentUploadIndex ? 
+                                                    <ProgressBar progress={currentFileProgress} />
+
+                                                    : index > currentUploadIndex ?
+                                                        <span>Queued</span>
+
+                                                    : backendError ? 
+                                                        <span>Error. Check connection.</span>
+
+                                                    : <>In <span className="link"><Link to={`all-files/${file.name}`}>all-files</Link></span></>
+                                                }
+                                            </div>
+                                        </div>
+                                        <button>Copy Link</button>
+                                    </div>
+                            ))}
+                            {prevUploadedFiles.map((file, index) => (
                                 <div className="file" key={index}>
                                     <AiFillFileText className="file-icon" />
                                     <div className="file-info">
                                         <div className="name">{file.name}</div>
-                                        <div className="progress-and-location">
-                                            {index === currentUploadIndex ? 
-                                                <ProgressBar progress={currentFileProgress} />
-
-                                                : index > currentUploadIndex ?
-                                                    <span>Queued</span>
-
-                                                : backendError ? 
-                                                    <span>Error. Check connection.</span>
-
-                                                : <>In <span className="link"><Link to="/folder-that-has-file">folder-that-has-file</Link></span></>
-                                            }
+                                        <div className="location">
+                                            In <span className="link"><Link to={`all-files/${file.name}`}>all-files</Link></span>
                                         </div>
                                     </div>
                                     <button>Copy Link</button>

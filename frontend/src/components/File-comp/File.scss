@@ -2,14 +2,18 @@
     display: flex;
     justify-content: space-between;
 
-    padding: 1rem 0.55rem;
+    padding: 1rem 0;
     border-bottom: .0625rem solid lime;
 
     p {
+        padding: 0 0.55rem;
         margin: 0;
         flex: 1;
 
         &.file-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             flex: 3;
         }
     }

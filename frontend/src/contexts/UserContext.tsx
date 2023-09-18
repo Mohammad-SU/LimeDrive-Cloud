@@ -39,7 +39,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log(response.data)
             const { user, files, folders } = response.data
             setUser(user)
             addFiles(files)
@@ -60,7 +59,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (token && backendError?.response?.status != 401) {
-            console.log(token)
             fetchUserData()
         }
         else {

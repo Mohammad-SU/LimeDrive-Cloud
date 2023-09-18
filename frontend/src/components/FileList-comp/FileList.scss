@@ -8,14 +8,18 @@
         display: flex;
         justify-content: space-between;
     
-        padding: 1rem 0.55rem;
+        padding: 1rem 0;
         padding-top: 0;
         border-bottom: .125rem solid lime;
+        overflow: auto;
+        scrollbar-gutter: stable both-edges;
     
         p {
+            padding: 0 0.55rem;
             flex: 1;
             margin: 0;
             font-weight: bold;
+            box-sizing: border-box;
 
             &.name-header {
                 flex: 3;
@@ -26,6 +30,8 @@
     .main-list {
         overflow-y: auto;
         max-height: calc(100vh - 8.4rem);
+
+        scrollbar-gutter: stable both-edges;
 
         &::-webkit-scrollbar:vertical{ 
             width: 0.6rem;
