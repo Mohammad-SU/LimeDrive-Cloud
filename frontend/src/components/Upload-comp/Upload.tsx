@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, memo } from 'react'
+import "../../global.scss"
 import "./Upload.scss"
 import axios, { AxiosError } from 'axios'
 import api from '../../axios-config.ts'
@@ -21,6 +22,7 @@ function Upload() {
     
     const [backendError, setBackendError] = useState<AxiosError | null>(null);
     const [app_path, setApp_path] = useState('all-files/');
+    const [currentlyUploading, setCurrentlyUploading] = useState(false) // Are files in the process of being uploaded/are queued?
     const [prevUploadedFiles, setPrevUploadedFiles] = useState<File[]>([]); // Files in the list that have been successfully uploaded and will not be sent again
     const [uploadQueue, setUploadQueue] = useState<File[]>([]); // Files in the list to be sent to backend
     const [uploadListFilesNum, setUploadListFilesNum] = useState<number>(0) // Number of files in the list in total, including both current and successful uploads
@@ -50,6 +52,8 @@ function Upload() {
         formData.append('app_path', app_path)
     
         try {
+            setCurrentlyUploading(true)
+
             const response = await api.post('/uploadFiles', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -65,6 +69,7 @@ function Upload() {
                     }
                 },
             })
+
             addFiles(response.data[0])
         } 
         catch (error) {
@@ -82,6 +87,9 @@ function Upload() {
                     setCurrentFileProgress(0);
                     setSuccessfulUploadNum(current => current + 1)
                 })
+        }
+        else if (currentUploadIndex === uploadQueue.length) {
+            setCurrentlyUploading(false)
         }
     }, [currentUploadIndex]);
     
@@ -103,7 +111,11 @@ function Upload() {
             {uploadListFilesNum > 0 &&
                 <div className="upload-info">
                     <div className="header" onClick={() => setCollapseUploadList(prevState => !prevState)}>
-                        {successfulUploadNum} of {uploadListFilesNum} uploads complete
+                        {successfulUploadNum} of {uploadListFilesNum} {uploadListFilesNum > 1 ? 'uploads' : 'upload'} complete
+                        {currentlyUploading && collapseUploadList &&
+                            <span className="spinner-after"></span>
+                        }
+
                         <div className="header__icons-cont">
                             {!collapseUploadList ?
                                 <IoChevronDownSharp className="icon" />

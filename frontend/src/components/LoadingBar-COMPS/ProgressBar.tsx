@@ -1,4 +1,4 @@
-import { memo } from "react"
+import { memo, useState, useEffect } from "react"
 import "./LoadingBar.scss"
 
 interface ProgressBarProps {
@@ -6,10 +6,26 @@ interface ProgressBarProps {
 }
 
 function ProgressBar({ progress }: ProgressBarProps) {
+    const [showFinalising, setShowFinalising] = useState<boolean>(false)
+
     let filled
     let empty
 
     if (progress != null) {
+        useEffect(() => {
+            if (progress != null) {
+                if (progress === 100) {
+                    const delay = 1000
+                    setTimeout(() => {
+                        setShowFinalising(true)
+                    }, delay)
+                } 
+                else {
+                    setShowFinalising(false)
+                }
+            }
+        }, [progress])
+
         const maxSteps = 18;
         const filledSteps = Math.round((progress / 100) * maxSteps);
         const emptySteps = maxSteps - filledSteps;
@@ -22,7 +38,11 @@ function ProgressBar({ progress }: ProgressBarProps) {
         progress != null ?
             <span className="LoadingBar">
                 <span className="spinner-before"></span>
-                <span className="progress-bar">{`[${filled}${empty}]`}</span>
+                {showFinalising ? 
+                    <span className="finalising-text">Finalising...</span> 
+                    
+                    : <span className="progress-bar">{`[${filled}${empty}]`}</span>
+                }
                 <span className="spinner-after"></span>
             </span>
         : null

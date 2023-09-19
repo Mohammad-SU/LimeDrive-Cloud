@@ -11,7 +11,7 @@ interface CookieOptions {
     sameSite?: 'strict' | 'lax' | 'none';
 }
 
-export function useCookies<T>(
+export function useCookies<T> (
     key: string,
     initialValue: T,
     options: CookieOptions = {}

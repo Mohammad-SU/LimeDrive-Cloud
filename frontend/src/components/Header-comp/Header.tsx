@@ -83,6 +83,7 @@ function Header() {
                     type="text"
                     placeholder="Search..."
                     maxLength={40000}
+                    name="search"
                 />
             </div>
 

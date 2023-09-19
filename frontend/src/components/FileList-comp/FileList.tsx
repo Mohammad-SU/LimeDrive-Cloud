@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import "./FileList.scss"
 import { useFileContext } from '../../contexts/FileContext'
 import Folder from "../Folder-comp/Folder"
@@ -7,14 +7,28 @@ import File from "../File-comp/File"
 function FileList() {
     const { files, folders } = useFileContext()
 
-    const foldersMapped = folders.map(folder => {
+    const sortedFiles = useMemo(() => {
+        return files.slice().sort((a, b) => { // Sort so most recent files will be at the beginning
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateB.getTime() - dateA.getTime();
+        });
+    }, [files]);
+
+    const sortedFolders = useMemo(() => {
+        return folders.slice().sort((a, b) => {
+            return a.name.localeCompare(b.name); // Sort a-z by folder name
+        });
+    }, [folders]);
+
+    const foldersMapped = sortedFolders.map(folder => {
         return <Folder 
             key={folder.id}
             folder={folder} // map entire folder object
         />
     })
 
-    const filesMapped = files.map(file => {
+    const filesMapped = sortedFiles.map(file => {
         return <File 
             key={file.id}
             file={file}

@@ -18,7 +18,7 @@ function Sidebar() {
             <div className="space-left">
                 <h1>Space Left</h1>
                 <div className="bar"></div>
-                <p className="label">null bytes of null bytes used</p>
+                <p className="label">x bytes of x bytes used</p>
             </div>
         </div>
     )

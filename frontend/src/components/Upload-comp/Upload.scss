@@ -29,6 +29,15 @@
         border: .0625rem solid lime;
         cursor: pointer;
 
+        .spinner-after {
+            &::after {
+                content: '';
+                margin-right: 3.8rem;
+                animation: rotateLine 0.5s linear infinite;
+                animation-play-state: running;
+            }
+        }
+
         &__icons-cont {
             display: flex;
             align-items: center;
