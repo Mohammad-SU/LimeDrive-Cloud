@@ -1,4 +1,4 @@
-fix file upload progress and reuploading when new files are selected
+allow cancelling file uploads and implement error/connection error handling for upload list
 file previews
 folders
 file sharing

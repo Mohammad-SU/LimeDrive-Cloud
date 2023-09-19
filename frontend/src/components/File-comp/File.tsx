@@ -1,13 +1,13 @@
-import { memo } from 'react'
+import { memo, useState, useEffect } from 'react'
 import "./File.scss"
 import { FileType } from '../../types/index.ts';
+import { useFileContext } from '../../contexts/FileContext.tsx';
 
 interface FileProps {
     file: FileType;
 }
 
 function File({ file }: FileProps) {
-
     function formatBytes(bytes: number) {
         if (bytes < 1048576) {
             return (bytes / 1024).toFixed(2) + " KB";
@@ -34,14 +34,34 @@ function File({ file }: FileProps) {
         const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes; // Pad minutes with leading zeros if needed
       
         return `${formattedDay}/${formattedMonth}/${year} ${hours}:${formattedMinutes}${amPm}`;
-      }
+    }
 
-      const date = new Date(file.date) // Parse ISO 8601
-      const dateToFormat = date;
-      const formattedDate = formatDate(dateToFormat);
+    const date = new Date(file.date) // Parse ISO 8601
+    const dateToFormat = date;
+    const formattedDate = formatDate(dateToFormat);
+
+    const { addToSelectedFiles, removeFromSelectedFiles } = useFileContext()
+    const [isSelected, setIsSelected] = useState(false);
+
+    function handleFileClick() {
+        setIsSelected(prevBool => !prevBool)
+    }
+    useEffect(() => { // useEffect instead of function due to async state problems
+        if (isSelected) {
+            addToSelectedFiles(file)
+        } 
+        else {
+            removeFromSelectedFiles(file)
+        }
+    }, [isSelected])
 
     return (
-        <div className="File">
+        <div className={`File ${isSelected ? 'selected' : ''}`} onClick={handleFileClick}>
+            <input
+                type="checkbox"
+                checked={isSelected}
+                readOnly
+            />
             <p className="file-name">{file.name}</p>
             <p>{file.type}</p>
             <p>{file.extension}</p>

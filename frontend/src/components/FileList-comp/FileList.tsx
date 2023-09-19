@@ -5,7 +5,7 @@ import Folder from "../Folder-comp/Folder"
 import File from "../File-comp/File"
 
 function FileList() {
-    const { files, folders } = useFileContext()
+    const { files, folders, selectedFiles } = useFileContext()
 
     const sortedFiles = useMemo(() => {
         return files.slice().sort((a, b) => { // Sort so most recent files will be at the beginning
@@ -17,7 +17,7 @@ function FileList() {
 
     const sortedFolders = useMemo(() => {
         return folders.slice().sort((a, b) => {
-            return a.name.localeCompare(b.name); // Sort a-z by folder name
+            return a.name.localeCompare(b.name); // Sort A-Z by folder name
         });
     }, [folders]);
 
@@ -34,6 +34,8 @@ function FileList() {
             file={file}
         />
     })
+
+    console.log(selectedFiles)
 
     return (
         <div className="FileList">

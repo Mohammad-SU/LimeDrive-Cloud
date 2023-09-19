@@ -10,7 +10,7 @@ function Sidebar() {
             <nav>
                 <Link to="/home">All Files</Link>
                 <Link to="/shared">Shared</Link>
-                <Link to="/images-%26-media">Images & Media</Link>
+                <Link to="/media-gallery">Media Gallery</Link>
                 <Link to="/starred">Starred</Link>
                 <Link to="/recycle-bin">Recycle Bin</Link>
             </nav>
