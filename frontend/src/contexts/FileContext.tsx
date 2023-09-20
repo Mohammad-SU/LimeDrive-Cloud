@@ -5,24 +5,20 @@ import { FolderType } from '../types'
 interface FileContextType {
   files: FileType[]
   folders: FolderType[]
+  setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
+  setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
 
   addFiles: (files: FileType[]) => void;
   addFolders: (folders: FolderType[]) => void
 
-  setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
-  setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
-
-  selectedFiles: FileType[];
-  addToSelectedFiles: (file: FileType) => void; // add to selectedFiles array, etc.
-  removeFromSelectedFiles: (file: FileType) => void;
-
-  selectedFolders: FolderType[];
-  addToSelectedFolders: (folder: FolderType) => void;
-  removeFromSelectedFolders: (folder: FolderType) => void;
+  selectedItems: (FileType | FolderType)[];
+  setSelectedItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
+  addToSelectedItems: (item: FileType | FolderType) => void;
+  removeFromSelectedItems: (item: FileType | FolderType) => void;
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined)
-
+// CHECK IF ARRAY IS DUPLICATED OR ONLY FILELIST MAP
 export function useFileContext() {
     const context = useContext(FileContext)
     if (!context) {
@@ -36,48 +32,43 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const [folders, setFolders] = useState<FolderType[]>([])
 
     const addFiles = (newFiles: FileType[]) => {
-        let filesToAdd = Array.isArray(newFiles) ? newFiles : [newFiles]
-        setFiles((prevFiles) => [...prevFiles, ...filesToAdd])
-        filesToAdd = [] // Empty to prevent duplicates due to re-renders
+        console.trace('addFiles function called');
+        setFiles((prevFiles) => [...prevFiles, ...newFiles]);
     }
     const addFolders = (newFolders: FolderType[]) => {
-        let foldersToAdd = Array.isArray(newFolders) ? newFolders : [newFolders]
-        setFolders((prevFolders) => [...prevFolders, ...foldersToAdd])
-        foldersToAdd = []
+        setFolders((prevFolders) => [...prevFolders, ...newFolders]);
     }
 
-    const [selectedFiles, setSelectedFiles] = useState<FileType[]>([])
-    const [selectedFolders, setSelectedFolders] = useState<FolderType[]>([])
+    const [selectedItems, setSelectedItems] = useState<(FileType | FolderType)[]>([]);
 
-    const addToSelectedFiles = (file: FileType) => {
-        setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, file])
+    const addToSelectedItems = (item: FileType | FolderType) => {
+        setSelectedItems((prevSelected) => {
+            if (prevSelected.some((selectedItem) => selectedItem.id === item.id)) {
+                return prevSelected
+            }
+            return [...prevSelected, item]
+        })
     }
-    const removeFromSelectedFiles = (file: FileType) => {
-        setSelectedFiles((prevSelectedFiles) => prevSelectedFiles.filter((f) => f.id !== file.id))
+    const removeFromSelectedItems = (item: FileType | FolderType) => {
+        setSelectedItems((prevSelected) => {
+            return prevSelected.filter((selectedItem) => selectedItem.id !== item.id);
+        })
     }
-    const addToSelectedFolders = (folder: FolderType) => {
-        setSelectedFolders((prevSelectedFolders) => [...prevSelectedFolders, folder])
-    }
-    const removeFromSelectedFolders = (folder: FolderType) => {
-        setSelectedFolders((prevSelectedFolders) =>
-            prevSelectedFolders.filter((f) => f.id !== folder.id)
-        )
-    }
-
+    
     return (
         <FileContext.Provider value={{
             files,
             folders,
             setFiles,
             setFolders,
+
             addFiles,
             addFolders,
-            selectedFiles,
-            addToSelectedFiles,
-            removeFromSelectedFiles,
-            selectedFolders,
-            addToSelectedFolders,
-            removeFromSelectedFolders,
+
+            selectedItems,
+            setSelectedItems,
+            addToSelectedItems,
+            removeFromSelectedItems
         }}>
             {children}
         </FileContext.Provider>

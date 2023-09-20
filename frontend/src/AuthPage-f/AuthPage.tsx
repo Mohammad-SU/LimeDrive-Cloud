@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import "./AuthPage.scss"
 import { adjectives } from '../data/adjectives.ts'
 import { nouns } from '../data/nouns.ts'
+import { useUserContext } from '../contexts/UserContext.tsx'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
-import { useCookies } from '../hooks/useCookies';
 import LimeDriveAscii from '../assets/images/ascii/LimeDrive-ascii.png'
 import LoadingBar from "../components/LoadingBar-COMPS/LoadingBar.tsx"
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
@@ -15,7 +15,7 @@ import RegisterForm from '../components/auth-COMPS/RegisterForm.tsx'
 
 function AuthPage() {
     const navigate = useNavigate()
-    const [token] = useCookies('auth_token', null);
+    const { token } = useUserContext()
 
     useEffect(() => { // Redirect if user is logged in
         if (token) {

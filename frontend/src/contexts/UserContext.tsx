@@ -2,9 +2,9 @@ import { useState, createContext, useContext, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
 import api from '../axios-config';
 import { UserType } from '../types';
-import { useCookies } from '../hooks/useCookies';
 import { useFileContext } from './FileContext';
 import LoadingPage from '../components/LoadingPage-comp/LoadingPage';
+import Cookies from 'js-cookie';
 
 interface UserContextType {
     user: UserType;
@@ -24,7 +24,8 @@ export function useUserContext() {
 }
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-    const [token, setToken] = useCookies<string | null>('auth_token', null, {secure: true,})
+    const initialToken = Cookies.get('auth_token') || null;
+    const [token, setToken] = useState<string | null>(initialToken);
     const [user, setUser] = useState<UserType>({ id: null, username: null, email: null })
     const [loadUser, setLoadUser] = useState(true)
     const [backendError, setBackendError] = useState<AxiosError | null>(null);

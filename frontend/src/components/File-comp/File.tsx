@@ -5,9 +5,10 @@ import { useFileContext } from '../../contexts/FileContext.tsx';
 
 interface FileProps {
     file: FileType;
+    onSelect: (item: FileType, event: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>, isItemSelected: boolean) => void;
 }
 
-function File({ file }: FileProps) {
+function File({ file, onSelect }: FileProps) {
     function formatBytes(bytes: number) {
         if (bytes < 1048576) {
             return (bytes / 1024).toFixed(2) + " KB";
@@ -40,27 +41,26 @@ function File({ file }: FileProps) {
     const dateToFormat = date;
     const formattedDate = formatDate(dateToFormat);
 
-    const { addToSelectedFiles, removeFromSelectedFiles } = useFileContext()
-    const [isSelected, setIsSelected] = useState(false);
+    const [isSelected, setIsSelected] = useState(false)
+    const { selectedItems } = useFileContext()
 
-    function handleFileClick() {
-        setIsSelected(prevBool => !prevBool)
+    function handleFileClick(event: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
+        event.preventDefault();
+        const newIsSelected = !isSelected;
+        setIsSelected(newIsSelected);
+        onSelect(file, event, newIsSelected)
     }
-    useEffect(() => { // useEffect instead of function due to async state problems
-        if (isSelected) {
-            addToSelectedFiles(file)
-        } 
-        else {
-            removeFromSelectedFiles(file)
-        }
-    }, [isSelected])
+
+    useEffect(() => { // Ensure correct rendering of selected file
+        setIsSelected(selectedItems.some(selectedItem => selectedItem.id === file.id));
+    }, [selectedItems]);
 
     return (
         <div className={`File ${isSelected ? 'selected' : ''}`} onClick={handleFileClick}>
-            <input
+            <input className="list-checkbox"
                 type="checkbox"
                 checked={isSelected}
-                readOnly
+                onChange={handleFileClick}
             />
             <p className="file-name">{file.name}</p>
             <p>{file.type}</p>

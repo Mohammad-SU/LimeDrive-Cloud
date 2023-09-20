@@ -7,10 +7,10 @@ const api: AxiosInstance = axios.create({
 
 const handleInvalidToken = (error: AxiosError) => {
 	if (error?.response?.status === 401) {
-		console.error('Invalid token detected. Logging out...')
+		console.error('Invalid token. Logging out...')
 		Cookies.remove("auth_token")
 		window.location.href = "/auth"
-		throw new Error("Invalid token detected.");
+		throw new Error("Invalid token.");
 	}
   	return Promise.reject(error)
 }

@@ -3,8 +3,11 @@ import { useFileContext } from '../../../contexts/FileContext'
 import "./MainToolbar.scss"
 
 function MainToolbar() {
+    const { selectedFiles } = useFileContext()
+
     return (
         <div className="MainToolbar">
+            <button></button>
         </div>
     )
 }
