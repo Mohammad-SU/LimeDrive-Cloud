@@ -64,7 +64,10 @@ function FileList() {
     };
 
     useEffect(() => { // Makes sure header-row checkbox looks correct based on items
-        if (selectedItems.length < files.length + folders.length) { 
+        if (files.length + folders.length == 0) {
+            setSelectAll(false)
+        }
+        else if (selectedItems.length < files.length + folders.length) { 
             setSelectAll(false)
             setShowDeselectAll(true)
         }
@@ -115,7 +118,7 @@ function FileList() {
     })
 
     const filesMapped = sortedFiles.map(file => {
-        return <File 
+        return <File
             key={file.id}
             file={file}
             onSelect={handleItemSelection}
@@ -126,8 +129,8 @@ function FileList() {
         <div className="FileList">
             <div className="header-row">
                 <Checkbox 
-                    className="list-checkbox" 
-                    checked={selectAll} 
+                    className={`list-checkbox ${selectAll || showDeselectAll ? "show-checkbox" : "hide-checkbox"}`}
+                    checked={selectAll}
                     onClick={handleHeaderCheckboxClick}
                     showMinus={showDeselectAll}
                 />

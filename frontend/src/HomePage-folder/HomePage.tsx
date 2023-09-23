@@ -18,7 +18,7 @@ function HomePage() {
         }
     }, [token]);
 
-    if (!token) {
+    if (!token && !user) {
         return null
     }
 

@@ -1,6 +1,7 @@
 @import "../../../global";
 
 .Checkbox {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,6 +10,27 @@
     border: .0625rem solid lime;
     @include selection-styles;
     cursor: pointer;
+
+    &:after { // Expand clickable area
+        content: '';
+        position: absolute;
+        top: -1.2rem; 
+        bottom: -1.2rem; 
+        left: -0.7rem; 
+        right: -0.5rem; 
+    }
+
+    &:hover {
+        background-color: rgba(0, 255, 0, 0.25);
+    }
+
+    &.hide-checkbox {
+        opacity: 0;
+    }
+
+    &.show-checkbox {
+        opacity: 1;
+    }
 
     .checkbox-icon {
         padding: .0625rem;

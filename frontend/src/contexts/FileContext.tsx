@@ -31,9 +31,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
 
-    const addFiles = (newFiles: FileType[]) => { // Filter out new files that already exist in the current state
+    const addFiles = (newFiles: FileType | FileType[]) => { // Filter out new files that already exist in the current state
         setFiles((prevFiles) => {
-            const uniqueNewFiles = newFiles.filter((newFile) => {
+            const newFilesArray = Array.isArray(newFiles) ? newFiles : [newFiles];
+            const uniqueNewFiles = newFilesArray.filter((newFile) => {
                 return !prevFiles.some((prevFile) => prevFile.id === newFile.id);
             });
 
@@ -41,9 +42,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const addFolders = (newFolders: FolderType[]) => {
+    const addFolders = (newFolders: FolderType | FolderType[]) => {
         setFolders((prevFolders) => {
-            const uniqueNewFolders = newFolders.filter((newFolder) => {
+            const newFoldersArray = Array.isArray(newFolders) ? newFolders : [newFolders];
+            const uniqueNewFolders = newFoldersArray.filter((newFolder) => {
                 return !prevFolders.some((prevFolder) => prevFolder.id === newFolder.id);
             });
         

@@ -10,11 +10,19 @@
         display: flex;
         align-items: center;
 
-        margin: 0 0.65rem;
-        padding: 0;
+        margin: 0 2.6rem;
         padding-bottom: 1rem;
         border-bottom: .125rem solid lime;
-        overflow: auto;
+
+        .list-checkbox {
+            position: absolute;
+            margin-left: -1.8rem;
+            margin-right: 0.8rem;
+        }
+
+        &:hover .list-checkbox {
+            opacity: 1;
+        }
     
         p {
             padding: 0 0.2rem;
@@ -24,6 +32,7 @@
             box-sizing: border-box;
 
             &.name-header {
+                margin-left: 0.2rem;
                 flex: 3;
             }
         }
@@ -31,12 +40,12 @@
 
     .main-list {
         overflow-y: auto;
-        max-height: calc(100vh - 8.4rem);
-
+        max-height: calc(100vh - 8.2rem);
         scrollbar-gutter: stable both-edges;
+        margin-right: 1.9rem;
 
         &::-webkit-scrollbar:vertical{ 
-            width: 0.6rem;
+            width: 0.7rem;
         }
         &::-webkit-scrollbar-thumb {
             background-image: url("data:image/svg+xml,%3Csvg fill='%2300ff00' version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1792 1792' xml:space='preserve' stroke='%2300ff00'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Cpolygon points='773.8,1415.2 520.6,1415.2 895.6,1792.6 1272.2,1414.4 1009.5,1414.4 1009.5,376.1 1017.4,376.1 1272.2,376.1 895.6,-0.6 519.8,376.1 773.8,376.1 '%3E%3C/polygon%3E%3C/g%3E%3C/svg%3E");
@@ -48,11 +57,35 @@
 
         .File, .Folder {
             @include selection-styles;
-        }
-    }
 
-    .list-checkbox {
-        position: absolute;
-        margin-left: -1.7rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 1.3rem 0;
+            margin-left: 1.9rem;
+            border-bottom: .0625rem solid rgba(0, 255, 0, 0.700);
+
+            &:hover .list-checkbox {
+                opacity: 1;
+            }
+        
+            .list-checkbox {
+                margin-left: -1.8rem;
+                margin-right: 0.8rem;
+            }
+        
+            p {
+                padding: 0 0.2rem;
+                margin: 0;
+                flex: 1;
+        
+                &.name {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    flex: 3;
+                }
+            }
+        }
     }
 }

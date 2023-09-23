@@ -11,23 +11,39 @@ interface FolderProps {
 
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
+    const [showCheckbox, setShowCheckbox] = useState(false)
     const { selectedItems } = useFileContext()
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
         event.preventDefault();
-        const newIsSelected = true;
+        const isCtrlPressed = event.ctrlKey || event.metaKey;
+        const isShiftPressed = event.shiftKey;
+        const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
+        let newIsSelected;
+
+        if (isCtrlPressed || isCheckboxClicked) {
+            newIsSelected = !isSelected
+        }
+        else {
+            newIsSelected = true
+        }
+
         setIsSelected(newIsSelected);
         onSelect(folder, event, newIsSelected)
     }
 
     useEffect(() => { // Ensure correct rendering of selected folder
         setIsSelected(selectedItems.some(selectedItem => selectedItem.id === folder.id));
+        selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
     
     return (
         <div className={`Folder ${isSelected ? 'selected' : ''}`} onClick={handleFolderClick}>
-            <Checkbox checked={isSelected}/>
-            <p className="folder-name">{folder.name}</p>
+            <Checkbox 
+                className={`list-checkbox ${showCheckbox ? "show-checkbox" : 'hide-checkbox'}`} 
+                checked={isSelected}
+            />
+            <p className="name">{folder.name}</p>
         </div>
     )
 }

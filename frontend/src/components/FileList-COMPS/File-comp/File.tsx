@@ -43,6 +43,7 @@ function File({ file, onSelect }: FileProps) {
     const formattedDate = formatDate(dateToFormat);
 
     const [isSelected, setIsSelected] = useState(false)
+    const [showCheckbox, setShowCheckbox] = useState(false)
     const { selectedItems } = useFileContext()
 
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
@@ -58,19 +59,23 @@ function File({ file, onSelect }: FileProps) {
         else {
             newIsSelected = true
         }
-        
+
         setIsSelected(newIsSelected);
         onSelect(file, event, newIsSelected)
     }
 
     useEffect(() => { // Ensure correct rendering of selected file
         setIsSelected(selectedItems.some(selectedItem => selectedItem.id === file.id));
+        selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
 
     return (
         <div className={`File ${isSelected ? 'selected' : ''}`} onClick={handleFileClick}>
-            <Checkbox className="list-checkbox" checked={isSelected}/>
-            <p className="file-name">{file.name}</p>
+            <Checkbox 
+                className={`list-checkbox ${showCheckbox ? "show-checkbox" : "hide-checkbox"}`} 
+                checked={isSelected}
+            />
+            <p className="name">{file.name}</p>
             <p>{file.type}</p>
             <p>{file.extension}</p>
             <p>{formattedSize}</p>
