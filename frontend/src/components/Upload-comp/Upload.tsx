@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, memo } from 'react'
 import "../../global.scss"
 import "./Upload.scss"
 import axios, { AxiosError } from 'axios'
-import api from '../../axios-config.ts'
 import { Link } from 'react-router-dom'
 import { useUserContext } from '../../contexts/UserContext.tsx'
 import { useFileContext } from '../../contexts/FileContext';
@@ -43,7 +42,7 @@ function Upload() {
         setCurrentUploadIndex(0)
     }
 
-    const { token } = useUserContext();
+    const { api, token } = useUserContext();
     const { addFiles } = useFileContext()
     
     const uploadFile = async (file: File) => {

@@ -1,12 +1,12 @@
 .Folder {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
 
     padding: 1rem 0;
     border-bottom: .0625rem solid rgba(0, 255, 0, 0.700);
 
     p {
-        padding: 0 0.55rem;
+        padding: 0 0.2rem;
         margin: 0;
         flex: 1;
 

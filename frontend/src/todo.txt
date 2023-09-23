@@ -1,6 +1,9 @@
 allow cancelling file uploads and implement error/connection error handling for upload list
+test invalid token handling and login
+shift click for item selection
 file previews
 folders
+file moving
 file sharing
 settings page
 malware check
@@ -11,6 +14,6 @@ email verification
 allow Google and Facebook to be used for logins? (OAuth)
 change database info after deployment
 remove useState import from all files where it's not used
-change env secret file for render.com if changed
+change backend env secret file for render.com if changed
 add more automated tests
 implement Redis?

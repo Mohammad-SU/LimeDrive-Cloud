@@ -1,5 +1,5 @@
 import "./LoadingPage.scss"
-import LoadingBar from "../LoadingBar-COMPS/LoadingBar";
+import LoadingBar from "../LoadingBar";
 
 interface LoadingPageProps {
     message: string;

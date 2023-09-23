@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import api from '../axios-config.ts'
 import axios, { AxiosError } from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import "./AuthPage.scss"
 import { adjectives } from '../data/adjectives.ts'
 import { nouns } from '../data/nouns.ts'
@@ -15,13 +14,14 @@ import RegisterForm from '../components/auth-COMPS/RegisterForm.tsx'
 
 function AuthPage() {
     const navigate = useNavigate()
-    const { token } = useUserContext()
+    const location = useLocation()
+    const { api, token } = useUserContext()
 
-    useEffect(() => { // Redirect if user is logged in
-        if (token) {
+    useEffect(() => {
+        if (token && location.pathname !== "/auth") {
             navigate('/home');
         }
-    }, [navigate, token]);
+    }, [token]);
 
     if (token) {
         return null

@@ -1,19 +1,21 @@
 import { memo, useState, useEffect } from 'react'
 import "./Folder.scss"
-import { FolderType } from '../../types';
-import { useFileContext } from '../../contexts/FileContext';
+import { FolderType } from '../../../types';
+import { useFileContext } from '../../../contexts/FileContext';
+import Checkbox from '../Checkbox-comp/Checkbox';
 
 interface FolderProps {
     folder: FolderType;
-    onSelect: (item: FolderType, event: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>, isItemSelected: boolean) => void;
+    onSelect: (item: FolderType, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => void;
 }
 
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const { selectedItems } = useFileContext()
 
-    function handleFolderClick(event: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
-        const newIsSelected = !isSelected;
+    function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
+        event.preventDefault();
+        const newIsSelected = true;
         setIsSelected(newIsSelected);
         onSelect(folder, event, newIsSelected)
     }
@@ -24,11 +26,7 @@ function Folder({ folder, onSelect }: FolderProps) {
     
     return (
         <div className={`Folder ${isSelected ? 'selected' : ''}`} onClick={handleFolderClick}>
-            <input className="list-checkbox"
-                type="checkbox"
-                checked={isSelected}
-                onChange={handleFolderClick}
-            />
+            <Checkbox checked={isSelected}/>
             <p className="folder-name">{folder.name}</p>
         </div>
     )

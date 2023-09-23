@@ -1,11 +1,12 @@
 import { memo, useState, useEffect } from 'react'
 import "./File.scss"
-import { FileType } from '../../types/index.ts';
-import { useFileContext } from '../../contexts/FileContext.tsx';
+import { FileType } from '../../../types/index.ts';
+import { useFileContext } from '../../../contexts/FileContext.tsx';
+import Checkbox from '../Checkbox-comp/Checkbox.tsx';
 
 interface FileProps {
     file: FileType;
-    onSelect: (item: FileType, event: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>, isItemSelected: boolean) => void;
+    onSelect: (item: FileType, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => void;
 }
 
 function File({ file, onSelect }: FileProps) {
@@ -44,9 +45,20 @@ function File({ file, onSelect }: FileProps) {
     const [isSelected, setIsSelected] = useState(false)
     const { selectedItems } = useFileContext()
 
-    function handleFileClick(event: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>) {
+    function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
         event.preventDefault();
-        const newIsSelected = !isSelected;
+        const isCtrlPressed = event.ctrlKey || event.metaKey;
+        const isShiftPressed = event.shiftKey;
+        const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
+        let newIsSelected;
+
+        if (isCtrlPressed || isCheckboxClicked) {
+            newIsSelected = !isSelected
+        }
+        else {
+            newIsSelected = true
+        }
+        
         setIsSelected(newIsSelected);
         onSelect(file, event, newIsSelected)
     }
@@ -57,11 +69,7 @@ function File({ file, onSelect }: FileProps) {
 
     return (
         <div className={`File ${isSelected ? 'selected' : ''}`} onClick={handleFileClick}>
-            <input className="list-checkbox"
-                type="checkbox"
-                checked={isSelected}
-                onChange={handleFileClick}
-            />
+            <Checkbox className="list-checkbox" checked={isSelected}/>
             <p className="file-name">{file.name}</p>
             <p>{file.type}</p>
             <p>{file.extension}</p>

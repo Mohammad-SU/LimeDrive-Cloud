@@ -1,3 +1,5 @@
+@import '../../global';
+
 .FileList {
     display: flex;
     flex-direction: column;
@@ -6,16 +8,16 @@
 
     .header-row {
         display: flex;
-        justify-content: space-between;
-    
-        padding: 1rem 0;
-        padding-top: 0;
+        align-items: center;
+
+        margin: 0 0.65rem;
+        padding: 0;
+        padding-bottom: 1rem;
         border-bottom: .125rem solid lime;
         overflow: auto;
-        scrollbar-gutter: stable both-edges;
     
         p {
-            padding: 0 0.55rem;
+            padding: 0 0.2rem;
             flex: 1;
             margin: 0;
             font-weight: bold;
@@ -44,9 +46,13 @@
             cursor: pointer !important;
         }
 
-        .list-checkbox {
-            height: 1rem;
-            width: 1rem;
+        .File, .Folder {
+            @include selection-styles;
         }
+    }
+
+    .list-checkbox {
+        position: absolute;
+        margin-left: -1.7rem;
     }
 }

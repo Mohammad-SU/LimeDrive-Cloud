@@ -1,6 +1,5 @@
 import { useState, memo } from 'react'
 import axios, { AxiosError } from 'axios';
-import api from '../../axios-config.ts';
 import "./Form.scss"
 import { useUserContext } from '../../contexts/UserContext';
 import { useNavigate } from "react-router-dom";
@@ -13,7 +12,7 @@ function LoginForm() {
         usernameOrEmailLog: '',
         passwordLog: '',
     })
-    const { setUser, setToken } = useUserContext();
+    const { api, setUser, setToken } = useUserContext();
     const navigate = useNavigate();
     var backendError: AxiosError | null = null
     var backendErrorMsg: string | null = null

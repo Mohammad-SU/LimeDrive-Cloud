@@ -13,8 +13,8 @@ interface FileContextType {
 
   selectedItems: (FileType | FolderType)[];
   setSelectedItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
-  addToSelectedItems: (item: FileType | FolderType) => void;
-  removeFromSelectedItems: (item: FileType | FolderType) => void;
+  addToSelectedItems: (item: (FileType | FolderType)[]) => void;
+  removeFromSelectedItems: (item: (FileType | FolderType)[]) => void;
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined)
@@ -31,29 +31,47 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
 
-    const addFiles = (newFiles: FileType[]) => {
-        console.trace('addFiles function called');
-        setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    }
+    const addFiles = (newFiles: FileType[]) => { // Filter out new files that already exist in the current state
+        setFiles((prevFiles) => {
+            const uniqueNewFiles = newFiles.filter((newFile) => {
+                return !prevFiles.some((prevFile) => prevFile.id === newFile.id);
+            });
+
+            return [...prevFiles, ...uniqueNewFiles];
+        });
+    };
+
     const addFolders = (newFolders: FolderType[]) => {
-        setFolders((prevFolders) => [...prevFolders, ...newFolders]);
-    }
+        setFolders((prevFolders) => {
+            const uniqueNewFolders = newFolders.filter((newFolder) => {
+                return !prevFolders.some((prevFolder) => prevFolder.id === newFolder.id);
+            });
+        
+            return [...prevFolders, ...uniqueNewFolders];
+        });
+    };
 
     const [selectedItems, setSelectedItems] = useState<(FileType | FolderType)[]>([]);
 
-    const addToSelectedItems = (item: FileType | FolderType) => {
+    const addToSelectedItems = (items: (FileType | FolderType) | (FileType | FolderType)[]) => {
         setSelectedItems((prevSelected) => {
-            if (prevSelected.some((selectedItem) => selectedItem.id === item.id)) {
-                return prevSelected
-            }
-            return [...prevSelected, item]
-        })
-    }
-    const removeFromSelectedItems = (item: FileType | FolderType) => {
+            const itemsArray = Array.isArray(items) ? items : [items]; // Convert singular to array
+            const newItems = itemsArray.filter((item) => // Filter out items that are already selected
+                !prevSelected.some((selectedItem) => selectedItem.id === item.id)
+            );
+            return [...prevSelected, ...newItems];
+        });
+    };
+
+    const removeFromSelectedItems = (items: (FileType | FolderType) | (FileType | FolderType)[]) => {
         setSelectedItems((prevSelected) => {
-            return prevSelected.filter((selectedItem) => selectedItem.id !== item.id);
-        })
-    }
+            const itemsArray = Array.isArray(items) ? items : [items];
+            const newSelected = prevSelected.filter((prevItem) => // Filter out items to be removed
+                !itemsArray.some((item) => item.id === prevItem.id)
+            );
+            return newSelected;
+        });
+    };
     
     return (
         <FileContext.Provider value={{

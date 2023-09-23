@@ -1,24 +1,26 @@
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useState, useEffect } from 'react'
 import "./FileList.scss"
 import { useFileContext } from '../../contexts/FileContext'
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
-import Folder from "../Folder-comp/Folder"
-import File from "../File-comp/File"
+import Checkbox from './Checkbox-comp/Checkbox'
+import Folder from "./Folder-comp/Folder"
+import File from "./File-comp/File"
 
 function FileList() {
     const { files, folders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
 
-    const handleItemSelection = (item: FileType | FolderType, event: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>, isItemSelected: boolean) => {
+    const handleItemSelection = (item: FileType | FolderType, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
-    
-        if (isCtrlPressed || event.type === 'change') { // Multiple selections with separated file locations, also logic for checkbox clicks
+        const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
+
+        if (isCtrlPressed || isCheckboxClicked) { // Multiple selections with separated file locations, also logic for specific checkbox clicks
             if (isItemSelected) {
-                addToSelectedItems(item);
-            } 
+                addToSelectedItems([item]);
+            }
             else {
-                removeFromSelectedItems(item);
+                removeFromSelectedItems([item]);
             }
         } 
         // else if (isShiftPressed && lastClickedItem) { // Multiple selections with files together in a range
@@ -37,17 +39,58 @@ function FileList() {
     
         //     setSelectedItems(itemToSelect);
         // }
-        else if (event.type != 'change') { // Regular item click logic
-            if (isItemSelected) {
-                setSelectedItems([item])
-            }
-            else {
-                setSelectedItems([])
-            }
+        else { // Regular item click logic
+            setSelectedItems([item])
         }
     
         // setLastClickedItem(Item)
     }
+
+    const [selectAll, setSelectAll] = useState(false);
+    const [showDeselectAll, setShowDeselectAll] = useState(false)
+
+    const handleHeaderCheckboxClick = () => {
+        if (!selectAll && !showDeselectAll) {
+            setSelectAll(true)
+            addToSelectedItems(files)
+            addToSelectedItems(folders)
+        }
+        else {
+            setSelectAll(false)
+            setShowDeselectAll(false)
+            removeFromSelectedItems(files)
+            removeFromSelectedItems(folders)
+        }
+    };
+
+    useEffect(() => { // Makes sure header-row checkbox looks correct based on items
+        if (selectedItems.length < files.length + folders.length) { 
+            setSelectAll(false)
+            setShowDeselectAll(true)
+        }
+        else {
+            setShowDeselectAll(false)
+            setSelectAll(true)
+        }
+
+        if (selectedItems.length == 0) {
+            setShowDeselectAll(false)
+        }
+    }, [selectedItems]);
+
+    useEffect(() => {
+        const handleEscapeKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setSelectedItems([]);
+            }
+        };
+      
+        window.addEventListener('keydown', handleEscapeKey)
+      
+        return () => {
+            window.removeEventListener('keydown', handleEscapeKey)
+        }
+    }, [selectedItems]);
 
     const sortedFiles = useMemo(() => {
         return files.slice().sort((a, b) => { // Sort so most recent files will be at the beginning
@@ -79,11 +122,15 @@ function FileList() {
         />
     })
 
-    console.log(selectedItems)
-
     return (
         <div className="FileList">
             <div className="header-row">
+                <Checkbox 
+                    className="list-checkbox" 
+                    checked={selectAll} 
+                    onClick={handleHeaderCheckboxClick}
+                    showMinus={showDeselectAll}
+                />
                 <p className="name-header">Name</p>
                 <p>Type</p>
                 <p>Extension</p>

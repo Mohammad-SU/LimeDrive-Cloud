@@ -1,16 +1,16 @@
 import { useState, createContext, useContext, useEffect } from 'react';
-import axios, { AxiosError } from 'axios';
-import api from '../axios-config';
+import axios, { AxiosInstance, AxiosError } from 'axios';
 import { UserType } from '../types';
 import { useFileContext } from './FileContext';
-import LoadingPage from '../components/LoadingPage-comp/LoadingPage';
+import LoadingPage from '../components/LoadingBar-COMPS/LoadingPage-comp/LoadingPage';
 import Cookies from 'js-cookie';
 
 interface UserContextType {
+    api: AxiosInstance;
     user: UserType;
     setUser: React.Dispatch<React.SetStateAction<UserType>>;
     token: string | null;
-    setToken: React.Dispatch<React.SetStateAction<string | null>>;
+    setToken: (newToken: string | null) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -24,6 +24,26 @@ export function useUserContext() {
 }
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
+    const api: AxiosInstance = axios.create({
+        baseURL: import.meta.env.VITE_API_URL,
+    });
+
+    const handleInvalidToken = (error: AxiosError) => {
+        if (error?.response?.status === 401) {
+            console.error('Invalid token. Logging out...');
+            setToken(null);
+            setUser({ id: null, username: null, email: null });
+            window.location.href = "/auth"
+            throw new Error("Invalid token.");
+        }
+        return Promise.reject(error);
+    };
+
+    api.interceptors.response.use(
+        (response) => response,
+        (error) => handleInvalidToken(error)
+    );
+
     const initialToken = Cookies.get('auth_token') || null;
     const [token, setToken] = useState<string | null>(initialToken);
     const [user, setUser] = useState<UserType>({ id: null, username: null, email: null })
@@ -45,6 +65,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             addFiles(files)
             addFolders(folders)
             setBackendError(null)
+            if (window.location.pathname !== "/home") {
+                window.location.href = "/home"
+            }
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {
@@ -59,19 +82,32 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
 
     useEffect(() => {
-        if (token && backendError?.response?.status != 401) {
+        if (token && backendError?.response?.status !== 401) {
             fetchUserData()
         }
         else {
             setLoadUser(false)
+            setBackendError(null)
         }
     }, [token])
 
+    const setTokenInCookie = (newToken: string | null) => {
+        if (newToken) {
+            Cookies.set('auth_token', newToken);
+            setToken(newToken)
+        } 
+        else {
+            Cookies.remove('auth_token');
+            setToken(null)
+        }
+    };
+
     const contextValue: UserContextType = {
+        api,
         user,
         setUser,
         token,
-        setToken,
+        setToken: setTokenInCookie
     }
 
     return (

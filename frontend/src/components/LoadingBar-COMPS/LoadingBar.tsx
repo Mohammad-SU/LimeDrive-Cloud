@@ -3,13 +3,12 @@ import "./LoadingBar.scss"
 
 interface LoadingBarProps {
     loading: boolean
-    className?: string
 }
 
-function LoadingBar({ loading, className }: LoadingBarProps) {
+function LoadingBar({ loading }: LoadingBarProps) {
     return (
         loading ?
-            <span className={`LoadingBar ${className}`}>
+            <span className="LoadingBar">
                 <span className="spinner-before"></span>
                 <span className="loading-bar"></span> 
                 <span className="spinner-after"></span>

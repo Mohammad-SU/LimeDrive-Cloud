@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef, memo } from 'react';
-import Cookies from 'js-cookie';
 import axios, { AxiosError } from 'axios';
-import api from '../../axios-config';
 import "./Header.scss";
 import { useFileContext } from '../../contexts/FileContext';
 import { useUserContext } from '../../contexts/UserContext';
@@ -10,12 +8,12 @@ import LimeDriveAscii_header from '../../assets/images/ascii/LimeDrive-ascii-hea
 import { GiOrange } from "react-icons/gi";
 import { BsPersonFillGear } from "react-icons/bs";
 import { BsSearch } from "react-icons/bs";
-import LoadingPage from '../LoadingPage-comp/LoadingPage';
+import LoadingPage from '../LoadingBar-COMPS/LoadingPage-comp/LoadingPage';
 
 
 function Header() {
-    const { user, token } = useUserContext()
-    const { setFiles } = useFileContext()
+    const { api, user, setUser, token, setToken } = useUserContext()
+    const { setFiles, setFolders } = useFileContext()
     const [dropdownVisible, setDropdownVisible] = useState(false)
     const dropdownRef = useRef<HTMLDivElement | null>(null)
     const [backendError, setBackendError] = useState<AxiosError | null>(null);
@@ -50,7 +48,9 @@ function Header() {
                 }
             })
             setFiles([])
-            Cookies.remove('auth_token')
+            setFolders([])
+            setUser({id: null, username: null, email: null})
+            setToken(null)
             navigate("/auth")
         } 
         catch (error) {

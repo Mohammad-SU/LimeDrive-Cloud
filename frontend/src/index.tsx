@@ -4,9 +4,9 @@ import {createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import "./global.scss"
 import { UserProvider } from "./contexts/UserContext"
 import { FileProvider } from './contexts/FileContext';
-import AuthPage from "./AuthPage-f/AuthPage"
-import HomePage from "./HomePage-f/HomePage"
-import FileList from './components/FileList-comp/FileList'
+import AuthPage from "./AuthPage-folder/AuthPage"
+import HomePage from "./HomePage-folder/HomePage"
+import FileList from './components/FileList-COMPS/FileList';
 
 const router = createBrowserRouter([
     {
@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <FileProvider>
             <UserProvider>
-                <RouterProvider router={router} />
+                    <RouterProvider router={router} />
             </UserProvider>
         </FileProvider>
     </React.StrictMode>,

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import "./HomePage.scss"
-import { useNavigate } from "react-router-dom";
-import { useUserContext } from '../contexts/UserContext';
+import { useNavigate, useLocation } from "react-router-dom";
+import { useUserContext } from '../contexts/UserContext.tsx';
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header-comp/Header.tsx"
 import Sidebar from "../components/Sidebar-comp/Sidebar.tsx"
@@ -9,15 +9,16 @@ import Sidebar from "../components/Sidebar-comp/Sidebar.tsx"
 
 function HomePage() {
     const navigate = useNavigate();
-    const { user } = useUserContext();
+    const location = useLocation()
+    const { token } = useUserContext();
 
-    useEffect(() => { // Redirect the user if not logged in
-        if (!user.username) {
-            navigate("/auth")
+    useEffect(() => {
+        if (!token && location.pathname == "/home") {
+            navigate('/auth');
         }
-    }, [user.username, navigate])
+    }, [token]);
 
-    if (!user.username) {
+    if (!token) {
         return null
     }
 

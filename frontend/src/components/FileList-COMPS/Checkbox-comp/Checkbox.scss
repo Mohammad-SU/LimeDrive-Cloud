@@ -1,0 +1,19 @@
+@import "../../../global";
+
+.Checkbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1rem;
+    width: 1rem;
+    border: .0625rem solid lime;
+    @include selection-styles;
+    cursor: pointer;
+
+    .checkbox-icon {
+        padding: .0625rem;
+        color: lime;
+        stroke-width: 3rem;
+        z-index: -1;
+    }
+}
