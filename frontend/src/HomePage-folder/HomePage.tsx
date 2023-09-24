@@ -10,7 +10,7 @@ import Sidebar from "../components/Sidebar-comp/Sidebar.tsx"
 function HomePage() {
     const navigate = useNavigate();
     const location = useLocation()
-    const { token } = useUserContext();
+    const { token, user } = useUserContext();
 
     useEffect(() => {
         if (!token && location.pathname == "/home") {
@@ -18,7 +18,7 @@ function HomePage() {
         }
     }, [token]);
 
-    if (!token && !user) {
+    if (!token || !user.username) {
         return null
     }
 

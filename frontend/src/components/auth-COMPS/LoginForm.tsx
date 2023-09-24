@@ -31,8 +31,7 @@ function LoginForm() {
 
                 if (response.data.message == "Login successful.") {
                     setFormError(null)
-                    const { user, token } = response.data
-                    setUser(user)
+                    const { token } = response.data
                     setToken(token)
                     navigate("/home")
                 }

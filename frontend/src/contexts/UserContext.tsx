@@ -9,7 +9,7 @@ interface UserContextType {
     api: AxiosInstance;
     user: UserType;
     setUser: React.Dispatch<React.SetStateAction<UserType>>;
-    token: string | null;
+    token: () => string | null;
     setToken: (newToken: string | null) => void;
 }
 
@@ -20,10 +20,16 @@ export function useUserContext() {
     if (!context) {
         throw new Error('useUserContext must be used within a UserProvider');
     }
-    return context;
+
+    const token = context.token();
+
+    return { ...context, token };
 }
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
+    const { setFiles, setFolders, addFiles, addFolders } = useFileContext();
+    const [invalidToken, setInvalidToken] = useState(false)
+
     const api: AxiosInstance = axios.create({
         baseURL: import.meta.env.VITE_API_URL,
     });
@@ -31,15 +37,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const handleInvalidToken = (error: AxiosError) => {
         if (error?.response?.status === 401) {
             console.error('Invalid token. Logging out...');
-            setToken(null);
+            setInvalidToken(true)
             setUser({ id: null, username: null, email: null });
-            window.location.href = "/auth"
-            throw new Error("Invalid token.");
+            setFiles([])
+            setFolders([])
+            setTimeout(() => {
+                setTokenInCookie(null);
+                window.location.href = "/auth";
+                setInvalidToken(false)
+            }, 5000);
         }
         return Promise.reject(error);
     };
 
-    api.interceptors.response.use(
+    api.interceptors.response.use (
         (response) => response,
         (error) => handleInvalidToken(error)
     );
@@ -49,7 +60,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<UserType>({ id: null, username: null, email: null })
     const [loadUser, setLoadUser] = useState(true)
     const [backendError, setBackendError] = useState<AxiosError | null>(null);
-    const { addFiles, addFolders } = useFileContext();
     
     async function fetchUserData() {
         setLoadUser(true)
@@ -73,7 +83,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             if (axios.isAxiosError(error)) {
                 setBackendError(error)
                 console.error(error)
-                if (error.status == 401) setToken(null)
             }
         }
         finally {
@@ -91,9 +100,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
     }, [token])
 
+    const getTokenFromCookie = () => {
+        return Cookies.get('auth_token') || null;
+    };
+
     const setTokenInCookie = (newToken: string | null) => {
         if (newToken) {
-            Cookies.set('auth_token', newToken);
+            Cookies.set('auth_token', newToken, { secure: true });
             setToken(newToken)
         } 
         else {
@@ -106,16 +119,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         api,
         user,
         setUser,
-        token,
+        token: getTokenFromCookie,
         setToken: setTokenInCookie
     }
 
     return (
         <UserContext.Provider value={contextValue}>
-            {!loadUser && !backendError ? children
+            {!loadUser && !backendError && !invalidToken ? children
+                : invalidToken ? <LoadingPage message="Invalid access token. Redirecting in a few seconds..." loading={invalidToken}/>
                 : loadUser && token && !backendError ? <LoadingPage message="Fetching data..." loading={loadUser}/>
-                : backendError?.status == 500 ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
-                : children
+                : backendError?.response?.status == 500 ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
+                : null
             }
         </UserContext.Provider>
     )

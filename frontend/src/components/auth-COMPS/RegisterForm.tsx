@@ -52,8 +52,7 @@ function RegisterForm() {
 
                 if (response.data.message == "Registration successful.") {
                     setFormError(null)
-                    const { user, token } = response.data;
-                    setUser(user);
+                    const { token } = response.data;
                     setToken(token);
                     navigate("/home")
                 }
