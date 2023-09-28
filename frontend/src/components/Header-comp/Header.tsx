@@ -96,8 +96,8 @@ function Header() {
                 />
                 {dropdownVisible &&
                     <div className="user-dropdown" ref={dropdownRef}>
-                        <button className="logout-btn" onClick={logout}>Logout</button>
                         <Link className="settings-link" to="/settings">Settings</Link>
+                        <button className="logout-btn" onClick={logout}>Logout</button>
                     </div>
                 }
             </div>

@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, useEffect } from 'react';
+import { useMemo, useState, createContext, useContext, useEffect } from 'react';
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { UserType } from '../types';
 import { useFileContext } from './FileContext';
@@ -75,9 +75,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             addFiles(files)
             addFolders(folders)
             setBackendError(null)
-            if (window.location.pathname !== "/home") {
-                window.location.href = "/home"
-            }
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {
@@ -91,7 +88,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
 
     useEffect(() => {
-        if (token && backendError?.response?.status !== 401) {
+        if (token && !user.username && backendError?.response?.status !== 401) {
             fetchUserData()
         }
         else {
@@ -115,13 +112,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const contextValue: UserContextType = {
-        api,
-        user,
-        setUser,
-        token: getTokenFromCookie,
-        setToken: setTokenInCookie
-    }
+    const contextValue: UserContextType = useMemo(() => {
+        return {
+            api,
+            user,
+            setUser,
+            token: getTokenFromCookie,
+            setToken: setTokenInCookie
+        };
+    }, [api, user, setUser, getTokenFromCookie, setTokenInCookie]);
 
     return (
         <UserContext.Provider value={contextValue}>

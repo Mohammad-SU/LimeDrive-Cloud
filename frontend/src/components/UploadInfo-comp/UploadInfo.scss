@@ -1,17 +1,4 @@
-.upload-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    gap: 0.4rem;
-    height: 5rem;
-    margin: 1.8rem;
-    margin-bottom: 0;
-    border: .125rem dashed lime;
-    padding-right: 0.5rem;
-}
-
-.upload-info {
+.UploadInfo {
     position: absolute;
     width: 23rem;
     bottom: 0;
@@ -32,7 +19,7 @@
         .spinner-after {
             &::after {
                 content: '';
-                margin-right: 3.8rem;
+                margin-right: 5.7rem;
                 animation: rotateLine 0.5s linear infinite;
                 animation-play-state: running;
             }
@@ -109,6 +96,10 @@
                 white-space: nowrap;
                 border: 1px solid lime;
                 margin-left: auto;
+
+                &.cancel-btn {
+                    border: 2px dashed lime;
+                }
             }
         }
 

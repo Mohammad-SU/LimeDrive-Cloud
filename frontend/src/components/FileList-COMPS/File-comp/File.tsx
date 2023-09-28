@@ -1,4 +1,5 @@
 import { memo, useState, useEffect } from 'react'
+import { DateTime } from 'luxon';
 import "./File.scss"
 import { FileType } from '../../../types/index.ts';
 import { useFileContext } from '../../../contexts/FileContext.tsx';
@@ -17,30 +18,15 @@ function File({ file, onSelect }: FileProps) {
             return (bytes / 1048576).toFixed(2) + " MB";
         }
     }
-
     const formattedSize = formatBytes(file.size);
 
     function formatDate(date: Date) {
-        const day = date.getDate();
-        const month = date.getMonth() + 1; // Months are 0-indexed, so add 1
-        const year = date.getFullYear();
-        let hours = date.getHours();
-        const minutes = date.getMinutes();
-      
-        const amPm = hours >= 12 ? 'pm' : 'am'; // Convert to 12-hour format
-        hours = hours % 12;
-        hours = hours === 0 ? 12 : hours; // Convert 0 to 12
-      
-        const formattedDay = day;
-        const formattedMonth = month;
-        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes; // Pad minutes with leading zeros if needed
-      
-        return `${formattedDay}/${formattedMonth}/${year} ${hours}:${formattedMinutes}${amPm}`;
+        const dateTime = DateTime.fromJSDate(date).toLocal();
+        return dateTime.toFormat('dd/MM/yyyy HH:mm');
     }
+    const formattedDate = formatDate(new Date(file.date));
 
-    const date = new Date(file.date) // Parse ISO 8601
-    const dateToFormat = date;
-    const formattedDate = formatDate(dateToFormat);
+    console.log(file.date)
 
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
@@ -67,6 +53,14 @@ function File({ file, onSelect }: FileProps) {
     useEffect(() => { // Ensure correct rendering of selected file
         setIsSelected(selectedItems.some(selectedItem => selectedItem.id === file.id));
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
+
+        if (isSelected && showCheckbox) {
+            // Add the CSS class for selected and clicked state
+            const fileElement = document.querySelector(`.File[data-file-id="${file.id}"]`);
+            if (fileElement) {
+              fileElement.classList.add('selected-clicked');
+            }
+          }
     }, [selectedItems]);
 
     return (
@@ -77,7 +71,6 @@ function File({ file, onSelect }: FileProps) {
             />
             <p className="name">{file.name}</p>
             <p>{file.type}</p>
-            <p>{file.extension}</p>
             <p>{formattedSize}</p>
             <p>{formattedDate}</p>
         </div>

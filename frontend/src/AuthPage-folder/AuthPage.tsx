@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { memo, useState, useEffect } from 'react'
 import axios, { AxiosError } from 'axios'
 import { useNavigate, useLocation } from 'react-router-dom'
 import "./AuthPage.scss"
@@ -18,7 +18,7 @@ function AuthPage() {
     const { api, token } = useUserContext()
 
     useEffect(() => {
-        if (token && location.pathname !== "/auth") {
+        if (token && location.pathname == "/auth") {
             navigate('/home');
         }
     }, [token]);
@@ -196,4 +196,4 @@ function AuthPage() {
     )
 }
 
-export default AuthPage
+export default memo(AuthPage)

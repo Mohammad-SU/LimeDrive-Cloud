@@ -7,32 +7,33 @@ interface ProgressBarProps {
 
 function ProgressBar({ progress }: ProgressBarProps) {
     const [showFinalising, setShowFinalising] = useState<boolean>(false)
+    const [filled, setFilled] = useState("")
+    const [empty, setEmpty] = useState("") 
 
-    let filled
-    let empty
-
-    if (progress != null) {
-        useEffect(() => {
-            if (progress != null) {
-                if (progress === 100) {
-                    const delay = 1000
-                    setTimeout(() => {
-                        setShowFinalising(true)
-                    }, delay)
-                } 
-                else {
-                    setShowFinalising(false)
-                }
+    useEffect(() => {
+        if (progress != null) {
+            if (!showFinalising) {
+                const maxSteps = 18
+                const filledSteps = Math.round((progress / 100) * maxSteps)
+                const emptySteps = maxSteps - filledSteps
+            
+                setFilled("#".repeat(filledSteps))
+                setEmpty("-".repeat(emptySteps))
             }
-        }, [progress])
 
-        const maxSteps = 18;
-        const filledSteps = Math.round((progress / 100) * maxSteps);
-        const emptySteps = maxSteps - filledSteps;
-
-        filled = '#'.repeat(filledSteps);
-        empty = '-'.repeat(emptySteps);
-    }
+            if (progress >= 100) {
+                const delay = 1000
+                const timer = setTimeout(() => {
+                    setShowFinalising(true)
+                }, delay)
+        
+                return () => clearTimeout(timer) // Clear the timer when the component unmounts or when progress changes.
+            } 
+            else {
+                setShowFinalising(false)
+            }
+        }
+    }, [progress])
 
     return (
         progress != null ?

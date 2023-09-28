@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { useMemo, createContext, useContext, useState } from 'react'
 import { FileType } from '../types'
 import { FolderType } from '../types'
 
@@ -30,6 +30,7 @@ export function useFileContext() {
 export function FileProvider({ children }: { children: React.ReactNode }) {
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
+    const [selectedItems, setSelectedItems] = useState<(FileType | FolderType)[]>([]);
 
     const addFiles = (newFiles: FileType | FileType[]) => { // Filter out new files that already exist in the current state
         setFiles((prevFiles) => {
@@ -53,8 +54,6 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const [selectedItems, setSelectedItems] = useState<(FileType | FolderType)[]>([]);
-
     const addToSelectedItems = (items: (FileType | FolderType) | (FileType | FolderType)[]) => {
         setSelectedItems((prevSelected) => {
             const itemsArray = Array.isArray(items) ? items : [items]; // Convert singular to array
@@ -75,8 +74,8 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
     
-    return (
-        <FileContext.Provider value={{
+    const contextValue: FileContextType = useMemo(() => {
+        return {
             files,
             folders,
             setFiles,
@@ -89,7 +88,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             setSelectedItems,
             addToSelectedItems,
             removeFromSelectedItems
-        }}>
+        };
+    }, [files, folders, selectedItems])
+
+    return (
+        <FileContext.Provider value={contextValue}>
             {children}
         </FileContext.Provider>
     )

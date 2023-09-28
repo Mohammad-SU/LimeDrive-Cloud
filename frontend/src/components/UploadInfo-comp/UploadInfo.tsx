@@ -1,23 +1,18 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import "../../global.scss"
-import "./Upload.scss"
-import axios from 'axios'
+import "./UploadInfo.scss"
+import axios, { CancelTokenSource, CancelToken } from 'axios';
 import { Link } from 'react-router-dom'
 import { useUserContext } from '../../contexts/UserContext.tsx'
-import { useFileContext } from '../../contexts/FileContext';
-import { AiOutlineUpload, AiFillFileText } from 'react-icons/ai'
+import { useFileContext } from '../../contexts/FileContext.tsx';
+import { AiFillFileText } from 'react-icons/ai'
 import { IoChevronDownSharp, IoChevronUpSharp } from 'react-icons/io5'
 import { IoMdClose } from 'react-icons/io'
 import ProgressBar from '../LoadingBar-COMPS/ProgressBar.tsx'
 
-function Upload() {
-    const [collapseUploadList, setCollapseUploadList] = useState<boolean>(false)
-    const fileInputRef = useRef<HTMLInputElement | null>(null)
-    const handleUploadClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click()
-        }
-    }
+function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputElement> }) {
+    const [showUploadlist, setShowUploadList] = useState(true)
+    const { addFiles, addFolders, files, folders } = useFileContext()
     
     const [fileErrors, setFileErrors] = useState(new Map());
     const [app_path, setApp_path] = useState('all-files/');
@@ -28,6 +23,7 @@ function Upload() {
     const [currentUploadIndex, setCurrentUploadIndex] = useState<number>(-1); // Current file to be uploaded in uploadQueue (negative means no files in uploadQueue)
     const [successfulUploadNum, setSuccessfulUploadNum] = useState<number>(0);
     const [currentFileProgress, setCurrentFileProgress] = useState<number | null>(0);
+    const cancelTokenSource = useRef<CancelTokenSource | null>(null);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files
@@ -69,13 +65,15 @@ function Upload() {
         }
     }
 
-    const { api, token } = useUserContext();
-    const { addFiles } = useFileContext()
+    const { api, token } = useUserContext()
     
     const uploadFile = async (file: File) => {
         const formData = new FormData();
         formData.append('files[]', file)
         formData.append('app_path', app_path)
+
+        const source = axios.CancelToken.source();
+        cancelTokenSource.current = source;
     
         try {
             const response = await api.post('/uploadFiles', formData, {
@@ -92,20 +90,22 @@ function Upload() {
                         setCurrentFileProgress(0);
                     }
                 },
+                cancelToken: source.token,
             })
             
             addFiles(response.data[0])
             setSuccessfulUploadNum(current => current + 1)
         } 
         catch (error) {
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error) && !axios.isCancel(error)) {
                 setFileErrors((prevErrors) => new Map(prevErrors).set(file, error));
             }
         }
         finally {
-            setCurrentlyUploadingFile(null)
             setCurrentUploadIndex((prevIndex) => prevIndex + 1);
             setCurrentFileProgress(0);
+            setCurrentlyUploadingFile(null);
+            cancelTokenSource.current = null;
         }
     }
 
@@ -114,21 +114,64 @@ function Upload() {
             const fileToUpload = uploadQueue[currentUploadIndex];
             if (fileToUpload !== currentlyUploadingFile) {
                 setCurrentlyUploadingFile(fileToUpload);
+                setShowUploadList(true)
                 uploadFile(fileToUpload);
             }
         }
-        else if (currentUploadIndex === uploadQueue.length) { // End if equals since arrays start at 0 index
+        else if (currentUploadIndex === uploadQueue.length) { // arrays start at 0 index, so if index equals array length it means it is complete
             setCurrentlyUploadingFile(null)
         }
     }, [currentlyUploadingFile]);
+
+    const onRetryClick = () => { // Causes all failed files in uploadQueue to be added back to the queue
+        const successfulFiles = uploadQueue.filter (
+            (file, index) => !fileErrors.has(file) && index < currentUploadIndex
+        )
+        
+        const filesToRetry: File[] = uploadQueue.filter((file) => fileErrors.has(file));
+
+        const queuedFiles = uploadQueue.filter (
+            (file, index) => index > currentUploadIndex && !successfulFiles.includes(file)
+        )
+
+        const newFileErrors = new Map()
+        setFileErrors(newFileErrors);
+
+        const updatedUploadQueue: File[] = [
+            uploadQueue[currentUploadIndex], // Move true/original 'currently uploading file' to front
+            ...filesToRetry,
+            ...queuedFiles,
+        ]
+
+        setUploadQueue(updatedUploadQueue);
+        setCurrentUploadIndex(0);
+        setCurrentlyUploadingFile(null) // Trigger useEffect to run
+        setPrevUploadedFiles((prevFiles: File[]) => [...successfulFiles, ...prevFiles]);
+    }
+    
+    const onCancelClick = (fileToRemove: File) => {
+        const updatedUploadQueue = uploadQueue.filter((file) => file !== fileToRemove);
+
+        if (fileToRemove === currentlyUploadingFile) {
+            cancelTokenSource?.current?.cancel('Upload canceled by user');
+            setCurrentUploadIndex((prevValue) => prevValue - 1);
+        }
+        
+        setUploadQueue(updatedUploadQueue);
+        setUploadListFilesNum((prevValue) => prevValue - 1);
+    }
+
+    const [collapseUploadList, setCollapseUploadList] = useState<boolean>(false)
+
+    const onCloseClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.stopPropagation()
+        if (currentlyUploadingFile) return
+        setShowUploadList(false)
+    }
     
 
     return (
         <>
-            <button className="upload-btn" onClick={handleUploadClick}>
-                <AiOutlineUpload className="upload-icon" />
-                Upload
-            </button>
             <input
                 ref={fileInputRef}
                 type="file"
@@ -136,9 +179,8 @@ function Upload() {
                 onChange={handleFileSelect}
                 multiple
             />
-
-            {uploadListFilesNum > 0 &&
-                <div className="upload-info">
+            {uploadListFilesNum > 0 && showUploadlist &&
+                <div className="UploadInfo">
                     <div className="header" onClick={() => setCollapseUploadList(prevState => !prevState)}>
                         {successfulUploadNum} of {uploadListFilesNum} {uploadListFilesNum > 1 ? 'uploads' : 'upload'} complete
                         {currentlyUploadingFile && collapseUploadList &&
@@ -150,7 +192,7 @@ function Upload() {
                                 <IoChevronDownSharp className="icon" />
                                 : <IoChevronUpSharp className="icon" />
                             }
-                            <IoMdClose className="icon" />
+                            {!currentlyUploadingFile && <IoMdClose onClick={onCloseClick} className="icon" />}
                         </div>
                     </div>
                     
@@ -175,7 +217,15 @@ function Upload() {
                                                 }
                                             </div>
                                         </div>
-                                        <button>Copy Link</button>
+                                        {index >= currentUploadIndex && !fileErrors.has(file) ?
+                                            <button className="cancel-btn" onClick={() => onCancelClick(file)}>Cancel</button>
+                                            
+                                            : fileErrors.has(file) ? 
+                                                <button className="retry-btn" onClick={onRetryClick}>Retry</button>
+                                            
+                                            : <button>Copy Link</button>
+                                        }
+                                        
                                     </div>
                             ))}
                             {prevUploadedFiles.map((file, index) => (
@@ -198,4 +248,4 @@ function Upload() {
     )
 }
 
-export default memo(Upload)
+export default memo(UploadInfo)

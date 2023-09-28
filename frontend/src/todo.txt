@@ -1,20 +1,26 @@
-allow cancelling file uploads for upload list, and check for duplication (add (1) or more numbers to end of file name)
+implement toolbar scss
+move scrollbar outside and optomise padding/spacings in FileList
+check for duplication add (1) or more numbers to end of file name if duplicate
+fix date
 decrease header sizings?
 underline/bold sidebar links if user is on that page
 file list sorting based on header row label/arrow icon clicks
-test invalid token handling and login
 shift click for item selection
 implement space left
+add file renaming
+add left click dropdown
 file previews
 folders
-double click files/folders to add
+double click files/folders to view
 file moving
 file sharing
 settings page
+react virtualisation for large lists
 gallery
 starred
 recycle bin
 malware check
+check if file extension column is not needed and then remove
 responsive CSS
 make tokens expire in a month and make frontend delete token if expired
 store username on database as case sensitive, convert username to case insensitive for checks?
@@ -25,3 +31,4 @@ remove useState import from all files where it's not used
 change backend env secret file for render.com if changed
 add more automated tests
 implement Redis?
+test all features of entire app

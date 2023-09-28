@@ -3,6 +3,7 @@ import "./FileList.scss"
 import { useFileContext } from '../../contexts/FileContext'
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
+import MainToolbar from '../Toolbar-COMPS/MainToolbar-comp/MainToolbar'
 import Checkbox from './Checkbox-comp/Checkbox'
 import Folder from "./Folder-comp/Folder"
 import File from "./File-comp/File"
@@ -15,7 +16,7 @@ function FileList() {
         const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
 
-        if (isCtrlPressed || isCheckboxClicked) { // Multiple selections with separated file locations, also logic for specific checkbox clicks
+        if (isCtrlPressed || isCheckboxClicked) { // Multiple selections with possibly separated file locations, also logic for checkbox clicks
             if (isItemSelected) {
                 addToSelectedItems([item]);
             }
@@ -127,8 +128,10 @@ function FileList() {
 
     return (
         <div className="FileList">
+            <MainToolbar />
+
             <div className="header-row">
-                <Checkbox 
+                <Checkbox
                     className={`list-checkbox ${selectAll || showDeselectAll ? "show-checkbox" : "hide-checkbox"}`}
                     checked={selectAll}
                     onClick={handleHeaderCheckboxClick}
@@ -136,9 +139,8 @@ function FileList() {
                 />
                 <p className="name-header">Name</p>
                 <p>Type</p>
-                <p>Extension</p>
                 <p>Size</p>
-                <p>Date (D/M/Y)</p>
+                <p>Date (D/M/Y, 24hr)</p>
             </div>
             <div className="main-list">
                 {foldersMapped}
