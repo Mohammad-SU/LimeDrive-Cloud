@@ -26,7 +26,7 @@ function File({ file, onSelect }: FileProps) {
     }
     const formattedDate = formatDate(new Date(file.date));
 
-    console.log(file.date)
+    // console.log(file.date)
 
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
@@ -53,14 +53,6 @@ function File({ file, onSelect }: FileProps) {
     useEffect(() => { // Ensure correct rendering of selected file
         setIsSelected(selectedItems.some(selectedItem => selectedItem.id === file.id));
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
-
-        if (isSelected && showCheckbox) {
-            // Add the CSS class for selected and clicked state
-            const fileElement = document.querySelector(`.File[data-file-id="${file.id}"]`);
-            if (fileElement) {
-              fileElement.classList.add('selected-clicked');
-            }
-          }
     }, [selectedItems]);
 
     return (

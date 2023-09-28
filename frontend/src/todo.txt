@@ -1,7 +1,7 @@
 implement toolbar scss
 move scrollbar outside and optomise padding/spacings in FileList
 check for duplication add (1) or more numbers to end of file name if duplicate
-fix date
+fix date (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
 decrease header sizings?
 underline/bold sidebar links if user is on that page
 file list sorting based on header row label/arrow icon clicks

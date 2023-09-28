@@ -79,15 +79,19 @@ body {
         height: .5rem;
     }
     ::-webkit-scrollbar {
-        width: .5rem;
+        width: .8rem;
     }
         ::-webkit-scrollbar-track {
-            background: transparent;
+            background: black;
             outline: .125rem dashed lime;
         }
         ::-webkit-scrollbar-thumb {
-            background-color: black;
-            outline: .125rem solid lime;
+            background-image: url("data:image/svg+xml,%3Csvg fill='%2300ff00' version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1792 1792' xml:space='preserve' stroke='%2300ff00'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Cpolygon points='773.8,1415.2 520.6,1415.2 895.6,1792.6 1272.2,1414.4 1009.5,1414.4 1009.5,376.1 1017.4,376.1 1272.2,376.1 895.6,-0.6 519.8,376.1 773.8,376.1 '%3E%3C/polygon%3E%3C/g%3E%3C/svg%3E");
+            background-size: 1rem;
+            background-position: center, center;
+            background-repeat: no-repeat;
+            outline: 2px solid lime;
+            border-right: 2px solid lime;
             cursor: pointer !important;
             
             &:hover {

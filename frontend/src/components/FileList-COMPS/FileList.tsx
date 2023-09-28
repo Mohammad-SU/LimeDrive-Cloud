@@ -128,20 +128,23 @@ function FileList() {
 
     return (
         <div className="FileList">
-            <MainToolbar />
+            <div className="FileList-main-header">
+                <MainToolbar />
 
-            <div className="header-row">
-                <Checkbox
-                    className={`list-checkbox ${selectAll || showDeselectAll ? "show-checkbox" : "hide-checkbox"}`}
-                    checked={selectAll}
-                    onClick={handleHeaderCheckboxClick}
-                    showMinus={showDeselectAll}
-                />
-                <p className="name-header">Name</p>
-                <p>Type</p>
-                <p>Size</p>
-                <p>Date (D/M/Y, 24hr)</p>
+                <div className="list-header-row">
+                    <Checkbox
+                        className={`list-checkbox ${selectAll || showDeselectAll ? "show-checkbox" : "hide-checkbox"}`}
+                        checked={selectAll}
+                        onClick={handleHeaderCheckboxClick}
+                        showMinus={showDeselectAll}
+                    />
+                    <p className="name-header">Name</p>
+                    <p>Type</p>
+                    <p>Size</p>
+                    <p>Date (D/M/Y, 24hr)</p>
+                </div>
             </div>
+
             <div className="main-list">
                 {foldersMapped}
                 {filesMapped}

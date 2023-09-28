@@ -3,66 +3,68 @@
 .FileList {
     display: flex;
     flex-direction: column;
-    width: 100%;
     box-sizing: border-box;
 
-    .header-row {
-        display: flex;
-        align-items: center;
+    .FileList-main-header {
+        position: sticky;
+        margin-right: 0.1rem;
+        top: 0;
+        z-index: 1;
+        background: black;
 
-        margin: 0 2.6rem;
-        padding-bottom: 1rem;
-        border-bottom: .125rem solid lime;
-
-        .list-checkbox {
-            position: absolute;
-            margin-left: -1.8rem;
-            margin-right: 0.8rem;
+        .MainToolbar {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1.4rem;
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
         }
 
-        &:hover .list-checkbox {
-            opacity: 1;
-        }
+        .list-header-row {
+            display: flex;
+            align-items: center;
+            padding-top: 1.2rem;
+            padding-bottom: 1.1rem;
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
     
-        p {
-            padding: 0 0.2rem;
-            flex: 1;
-            margin: 0;
-            font-weight: bold;
-            box-sizing: border-box;
-
-            &.name-header {
-                margin-left: 0.2rem;
-                flex: 3;
+            background: black;
+            border-bottom: .125rem solid lime;
+    
+            .list-checkbox {
+                position: relative;
+                margin-left: -1.8rem;
+                margin-right: 0.8rem;
+                z-index: 2;
+            }
+    
+            &:hover .list-checkbox {
+                opacity: 1;
+            }
+        
+            p {
+                padding: 0 0.2rem;
+                flex: 1;
+                margin: 0;
+                font-weight: bold;
+                box-sizing: border-box;
+    
+                &.name-header {
+                    flex: 3;
+                }
             }
         }
     }
 
     .main-list {
-        overflow-y: auto;
-        max-height: 30rem;
-        scrollbar-gutter: stable both-edges;
-        margin-right: 1.9rem;
-
-        &::-webkit-scrollbar:vertical{ 
-            width: 0.7rem;
-        }
-        &::-webkit-scrollbar-thumb {
-            background-image: url("data:image/svg+xml,%3Csvg fill='%2300ff00' version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 1792 1792' xml:space='preserve' stroke='%2300ff00'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Cpolygon points='773.8,1415.2 520.6,1415.2 895.6,1792.6 1272.2,1414.4 1009.5,1414.4 1009.5,376.1 1017.4,376.1 1272.2,376.1 895.6,-0.6 519.8,376.1 773.8,376.1 '%3E%3C/polygon%3E%3C/g%3E%3C/svg%3E");
-            background-size: 1rem;
-            background-position: center, center;
-            background-repeat: no-repeat;
-            cursor: pointer !important;
-        }
+        margin: 0 2.5rem;
 
         .File, .Folder {
             @include selection-styles;
-
             position: relative;
             display: flex;
             align-items: center;
             padding: 1.3rem 0;
-            margin-left: 1.9rem;
             border-bottom: .0625rem solid rgba(0, 255, 0, 0.700);
 
             &:hover .list-checkbox {

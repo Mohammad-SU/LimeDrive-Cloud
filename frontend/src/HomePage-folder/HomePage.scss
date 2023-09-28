@@ -9,8 +9,13 @@
 
     .content {
         width: 100%;
-        padding: 1.7rem 0;
+        overflow-y: auto;
         border-top: none;
         border-left: none;
+
+        .FileList {
+            width: 100%;
+            padding: 0 0 0.2rem 0;
+        }
     }
 }
