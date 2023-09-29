@@ -36,7 +36,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     const handleInvalidToken = (error: AxiosError) => {
         if (error?.response?.status === 401) {
-            console.error('Invalid token. Logging out...');
+            console.error('Invalid/expired token. Logging out...');
             setInvalidToken(true)
             setUser({ id: null, username: null, email: null });
             setFiles([])
@@ -125,7 +125,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return (
         <UserContext.Provider value={contextValue}>
             {!loadUser && !backendError && !invalidToken ? children
-                : invalidToken ? <LoadingPage message="Invalid access token. Redirecting in a few seconds..." loading={invalidToken}/>
+                : invalidToken ? <LoadingPage message="Invalid/expired session, please login again. Redirecting in a few seconds..." loading={invalidToken}/>
                 : loadUser && token && !backendError ? <LoadingPage message="Fetching data..." loading={loadUser}/>
                 : backendError?.response?.status == 500 ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
                 : null

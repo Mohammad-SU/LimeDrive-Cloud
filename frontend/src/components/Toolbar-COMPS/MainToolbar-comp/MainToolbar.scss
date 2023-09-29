@@ -4,8 +4,30 @@
         gap: 1rem;
 
         button {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 1.05rem;
             padding: 0.5rem;
+            padding-right: 0.6rem;
             border: 1px solid lime;
+
+            .tool-icon {
+                font-size: 1.4rem;
+
+                &.decrease {
+                    font-size: 1.25rem;
+                }
+
+                &.link {
+                    font-size: 1.4rem;
+                    margin-bottom: -0.1rem;
+                }
+
+                &.share {
+                    font-size: 1.2rem;
+                }
+            }
         }
 
         .divider {

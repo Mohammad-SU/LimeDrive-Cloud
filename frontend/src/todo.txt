@@ -32,3 +32,4 @@ change backend env secret file for render.com if changed
 add more automated tests
 implement Redis?
 test all features of entire app
+clear laravel storage log

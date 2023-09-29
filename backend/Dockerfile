@@ -18,4 +18,6 @@ RUN composer install
 
 EXPOSE 8000
 
+RUN echo "0 0 * * * php /app/artisan schedule:run" | crontab -
+
 CMD ["php", "artisan", "serve", "--host", "0.0.0.0", "--port", "8000"]
