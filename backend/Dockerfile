@@ -12,7 +12,7 @@ RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env
 
 COPY . .
 
-RUN apt-get update && apt-get install -y git zip unzip
+RUN apt-get update && apt-get install -y git zip unzip cron
 
 RUN composer install
 
