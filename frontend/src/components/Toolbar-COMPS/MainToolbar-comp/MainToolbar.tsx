@@ -17,11 +17,11 @@ function MainToolbar() {
                     Download
                 </button>
                 <button>
-                    <BsEye className="tool-icon decrease"/>
+                    <BsEye className="tool-icon eye"/>
                     Preview
                 </button>
                 <button>
-                    <SlTrash className="tool-icon decrease"/>
+                    <SlTrash className="tool-icon decrease trash"/>
                     Delete
                 </button>
                 <div className="divider" />

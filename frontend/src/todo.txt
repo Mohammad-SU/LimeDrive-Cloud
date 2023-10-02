@@ -1,16 +1,21 @@
-implement toolbar scss
-move scrollbar outside and optomise padding/spacings in FileList
-check for duplication add (1) or more numbers to end of file name if duplicate
+folders
+test if laravel schedule cronjob is working properly (change config and schedule to 1 minute)
+
+implement sorting categories in the place of toolbar when no files are selected
+implement DynamicClip animations for more components (consider increaing useDelayedExit to be more than animationDuration? check if it makes a difference)
+implement current path display - above toolbar/sorting categories
+implement server-side validation for files and folders (size, allowed characters)
+check for duplication - add (1) or more numbers to end of file name if duplicate
 fix date (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
 decrease header sizings?
 underline/bold sidebar links if user is on that page
 file list sorting based on header row label/arrow icon clicks
 shift click for item selection
-implement space left
-add file renaming
-add left click dropdown
+implement "space left" on bottom left corner
+implement all toolbar functions
+add left click dropdown menu
+add tooltips in gap inside toolbar/space after sorting categories
 file previews
-folders
 double click files/folders to view
 file moving
 file sharing
@@ -20,13 +25,12 @@ gallery
 starred
 recycle bin
 malware check
-check if file extension column is not needed and then remove
-responsive CSS
-make tokens expire in a month and make frontend delete token if expired
-store username on database as case sensitive, convert username to case insensitive for checks?
+check if file extension column is not needed on database and then remove if so
+add backgrounds/more details for loading pages
+responsive CSS and check if correct on other browsers
 email verification
 allow Google and Facebook to be used for logins? (OAuth)
-change database info after deployment
+change database info after deployment?
 remove useState import from all files where it's not used
 change backend env secret file for render.com if changed
 add more automated tests

@@ -51,6 +51,8 @@ body {
 
     input {
         color: inherit;
+        font-family: inherit;
+        background-color: inherit;
         
         &::placeholder {
             color: rgba(0, 255, 0, 0.605);

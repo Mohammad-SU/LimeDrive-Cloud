@@ -15,7 +15,7 @@ function RegisterForm() {
         passwordReg_confirmation: '',
     })
     const [loading, setLoading] = useState<boolean>(false)
-    const { api, setUser, setToken } = useUserContext();
+    const { api, setToken } = useUserContext();
     const navigate = useNavigate(); 
     var backendError: AxiosError | null = null
     var backendErrorMsg: string | null = null
@@ -54,7 +54,7 @@ function RegisterForm() {
                     setFormError(null)
                     const { token } = response.data;
                     setToken(token);
-                    navigate("/home")
+                    navigate("/all-files")
                 }
             }
             catch (error) {
@@ -84,12 +84,13 @@ function RegisterForm() {
             <h2 className="form__heading">Register</h2>
 
             <div className="form__input-cont">
-                <div className="form__input-label emailReg-label">Email:</div>
+                <label className="form__input-label emailReg-label" htmlFor="email-register">Email:</label>
                 <input
                     className="form__emailReg"
+                    id="email-register"
                     name="emailReg"
                     value={formData.emailReg}
-                    onChange={handleInputChange}
+                    onChange={(e) => handleInputChange(e, 255)}
                     maxLength={255}
                     autoComplete="email"
                     spellCheck="false"
@@ -98,12 +99,13 @@ function RegisterForm() {
                 />
             </div>
             <div className="form__input-cont">
-                <div className="form__input-label usernameReg-label">Username:</div>
+                <label className="form__input-label usernameReg-label" htmlFor="username-register">Username:</label>
                 <input
                     className="form__usernameReg"
+                    id="username-register"
                     name="usernameReg"
                     value={formData.usernameReg}
-                    onChange={handleInputChange}
+                    onChange={(e) => handleInputChange(e, 30)}
                     maxLength={30}
                     placeholder="Can contain a-z, A-Z, 0-9, -, _"
                     autoComplete="username"
@@ -113,13 +115,14 @@ function RegisterForm() {
                 />
             </div>
             <div className="form__input-cont">
-                <div className="form__input-label passwordReg-label">Password:</div>
+                <label className="form__input-label passwordReg-label" htmlFor="password-register">Password:</label>
                 <input
                     className="form__passwordReg"
+                    id="password-register"
                     name="passwordReg"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.passwordReg}
-                    onChange={handleInputChange}
+                    onChange={(e) => handleInputChange(e, 72)}
                     maxLength={72}
                     placeholder="Must contain at least 8 characters"
                     autoComplete="new-password"
@@ -134,13 +137,14 @@ function RegisterForm() {
                 }
             </div>
             <div className="form__input-cont">
-                <div className="form__input-label passwordReg_confirmation-label">Confirm password:</div>
+                <label className="form__input-label passwordReg_confirmation-label" htmlFor="password-confirmation">Confirm password:</label>
                 <input
                     className="form__passwordReg_confirmation"
+                    id="password-confirmation"
                     name="passwordReg_confirmation"
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={formData.passwordReg_confirmation}
-                    onChange={handleInputChange}
+                    onChange={(e) => handleInputChange(e, 72)}
                     maxLength={72}
                     spellCheck="false"
                     required

@@ -1,5 +1,5 @@
 import { memo, useEffect } from 'react'
-import "./HomePage.scss"
+import "./MainPage.scss"
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUserContext } from '../contexts/UserContext.tsx';
 import { Outlet } from "react-router-dom";
@@ -7,13 +7,13 @@ import Header from "../components/Header-comp/Header.tsx"
 import Sidebar from "../components/Sidebar-comp/Sidebar.tsx"
 
 
-function HomePage() {
+function MainPage() {
     const navigate = useNavigate();
     const location = useLocation()
     const { token, user } = useUserContext();
 
     useEffect(() => {
-        if (!token && location.pathname == "/home") {
+        if (!token && location.pathname == "/all-files") {
             navigate('/auth');
         }
     }, [token]);
@@ -23,7 +23,7 @@ function HomePage() {
     }
 
     return (
-        <div className="HomePage">
+        <div className="MainPage">
             <Header />
             <div className="main-content">
                 <Sidebar />
@@ -35,4 +35,4 @@ function HomePage() {
     )
 }
 
-export default memo(HomePage)
+export default memo(MainPage)

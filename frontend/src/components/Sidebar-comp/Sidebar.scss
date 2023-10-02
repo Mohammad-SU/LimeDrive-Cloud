@@ -107,3 +107,84 @@
         }
     }
 }
+
+.new-folder-modal {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    width: 22.5rem;
+    height: 13rem;
+    padding: 1.4rem;
+    padding-top: 1.1rem;
+    padding-bottom: 1.5rem;
+    margin: 0 auto;
+    z-index: 999;
+
+    top: 15rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    background: black;
+    border: 1px solid lime;
+    clip-path: url(#newFolderModalClip);
+
+    .heading-cont {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.2rem;
+        margin-left: -0.1rem;
+
+        .modal-icon {
+            font-size: 2.4rem;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin: 0;
+        }
+    }
+
+    .input-cont {
+        margin: auto 0;
+
+        label {
+            display: block;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.4rem;
+            margin-top: 0.3rem;
+            font-size: 1rem;
+            border: .0625rem solid lime;
+            box-sizing: border-box;
+        }
+    }
+
+    .btn-cont {
+        margin-top: auto;
+        display: flex;
+        width: 100%;
+        justify-content: flex-end;
+        gap: 1rem;
+
+        button {
+            padding: 0.5rem;
+        }
+
+        .cancel-btn {
+            border: 2px dashed lime;
+        }
+
+        .create-btn {
+            border: 1px solid lime;
+            font-weight: bold;
+        }
+    }
+}

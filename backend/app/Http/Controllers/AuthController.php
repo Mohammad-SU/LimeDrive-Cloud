@@ -36,12 +36,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $rules = [
-            'usernameReg' => 'required|regex:/^[a-zA-Z0-9_-]+$/|unique:users,username',
-            'passwordReg' => 'required|string|min:8',
+            'usernameReg' => 'required|regex:/^[a-zA-Z0-9_-]+$/|unique:users,username|max:30',
+            'passwordReg' => 'required|string|min:8|max:72',
         ];
     
         if ($request->has('emailReg')) { // If the request has an email field, also require password confirmation
-            $rules['emailReg'] = 'required|email|unique:users,email';
+            $rules['emailReg'] = 'required|email|unique:users,email|max:255';
             $rules['passwordReg'] .= '|confirmed';
         }
     

@@ -13,6 +13,7 @@
   "dependencies": {
     "@types/react-icons": "^3.0.0",
     "axios": "^1.4.0",
+    "framer-motion": "^10.16.4",
     "friendly-username-generator": "^2.0.4",
     "jest-environment-jsdom": "^29.7.0",
     "js-cookie": "^3.0.5",
@@ -21,7 +22,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
     "react-router-dom": "^6.14.2",
-    "react-virtualized": "^9.22.5"
+    "react-virtualized": "^9.22.5",
+    "resize-observer-polyfill": "^1.5.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.3",

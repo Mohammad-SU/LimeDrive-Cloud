@@ -14,7 +14,7 @@ class UploadController extends Controller
         $uploadedFiles = [];
         $app_path = $request->input('app_path');
         $user_id = $request->user()->id;
-        $app_path_replaced = str_replace('all-files', (string)$user_id, $app_path);
+        $app_path_replaced = str_replace('all-files', (string)$user_id, $app_path); // "all-files/" ==> "<user_id>/" in b2 bucket
 
         foreach ($request->file('files') as $uploadedFile) {
             $name = $uploadedFile->getClientOriginalName();

@@ -19,7 +19,7 @@ function AuthPage() {
 
     useEffect(() => {
         if (token && location.pathname == "/auth") {
-            navigate('/home');
+            navigate('/all-files');
         }
     }, [token]);
 

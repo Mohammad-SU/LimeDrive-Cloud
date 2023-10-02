@@ -12,7 +12,7 @@ function LoginForm() {
         usernameOrEmailLog: '',
         passwordLog: '',
     })
-    const { api, setUser, setToken } = useUserContext();
+    const { api, setToken } = useUserContext();
     const navigate = useNavigate();
     var backendError: AxiosError | null = null
     var backendErrorMsg: string | null = null
@@ -33,7 +33,7 @@ function LoginForm() {
                     setFormError(null)
                     const { token } = response.data
                     setToken(token)
-                    navigate("/home")
+                    navigate("/all-files")
                 }
             } 
             catch (error) {
@@ -64,12 +64,13 @@ function LoginForm() {
             <h2 className="form__heading">Login</h2>
 
             <div className="form__input-cont">
-                <div className="form__input-label usernameOrEmailLog-label">Username/email:</div>
+                <label className="form__input-label usernameOrEmailLog-label" htmlFor="usernameOrEmail-login">Username/email:</label>
                 <input
                     className="form__usernameOrEmailLog"
+                    id="usernameOrEmail-login"
                     name="usernameOrEmailLog"
                     value={formData.usernameOrEmailLog}
-                    onChange={handleInputChange}
+                    onChange={(e) => handleInputChange(e, 255)}
                     maxLength={255}
                     autoComplete="username email"
                     spellCheck="false"
@@ -80,13 +81,14 @@ function LoginForm() {
             </div>
 
             <div className="form__input-cont">
-                <div className="form__input-label passwordLog-label">Password:</div>
+                <label className="form__input-label passwordLog-label" htmlFor="password-login">Password:</label>
                 <input
                     className="form__passwordLog"
+                    id="password-login"
                     name="passwordLog"
                     type={showPassword ? 'text' : 'password'}
                     value={formData.passwordLog}
-                    onChange={handleInputChange}
+                    onChange={(e) => handleInputChange(e, 72)}
                     maxLength={72}
                     autoComplete="current-password"
                     spellCheck="false"

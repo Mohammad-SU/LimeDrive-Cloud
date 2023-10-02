@@ -5,7 +5,7 @@ import "./global.scss"
 import { UserProvider } from "./contexts/UserContext"
 import { FileProvider } from './contexts/FileContext';
 import AuthPage from "./AuthPage-folder/AuthPage"
-import HomePage from "./HomePage-folder/HomePage"
+import MainPage from "./MainPage-folder/MainPage"
 import FileList from './components/FileList-COMPS/FileList';
 
 const router = createBrowserRouter([
@@ -18,11 +18,11 @@ const router = createBrowserRouter([
         element: <AuthPage />,
     },
     {
-        path: "/home",
-        element: <HomePage />,
+        path: "/all-files",
+        element: <MainPage />,
         children: [
             {
-                path: "/home",
+                path: "/all-files",
                 element: <FileList />,
             },
         ],
