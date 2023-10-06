@@ -12,10 +12,9 @@ import ProgressBar from '../LoadingBar-COMPS/ProgressBar.tsx'
 
 function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputElement> }) {
     const [showUploadlist, setShowUploadList] = useState(true)
-    const { addFiles, addFolders, files, folders } = useFileContext()
+    const { currentPath, addFiles, addFolders } = useFileContext()
     
     const [fileErrors, setFileErrors] = useState(new Map());
-    const [appPathDirectory, setAppPathDirectory] = useState('all-files/');
     const [currentlyUploadingFile, setCurrentlyUploadingFile] = useState<File | null>(null);
     const [prevUploadedFiles, setPrevUploadedFiles] = useState<File[]>([]); // Files in the list that have been successfully uploaded and will not be sent again
     const [uploadQueue, setUploadQueue] = useState<File[]>([]); // Files in the list to be sent to backend
@@ -65,21 +64,18 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         }
     }
 
-    const { api, token } = useUserContext()
+    const { apiSecure } = useUserContext()
     
     const uploadFile = async (file: File) => {
         const formData = new FormData();
-        formData.append('files[]', file)
-        formData.append('app_path', `${appPathDirectory}/${file.name}`)
+        formData.append('file', file)
+        formData.append('app_path', currentPath + file.name) // e.g. app_path = all-files/LimeDrive.txt
 
         const source = axios.CancelToken.source();
         cancelTokenSource.current = source;
     
         try {
-            const response = await api.post('/uploadFiles', formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
+            const response = await apiSecure.post('/uploadFile', formData, {
                 onUploadProgress: (progressEvent) => {
                     if (progressEvent.total != undefined) {
                         const percentCompleted = Math.round(
@@ -92,11 +88,12 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                 },
                 cancelToken: source.token,
             })
-            
-            addFiles(response.data[0])
+                        
+            addFiles(response.data)
             setSuccessfulUploadNum(current => current + 1)
         } 
         catch (error) {
+            console.error(error)
             if (axios.isAxiosError(error) && !axios.isCancel(error)) {
                 setFileErrors((prevErrors) => new Map(prevErrors).set(file, error));
             }
@@ -153,7 +150,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         const updatedUploadQueue = uploadQueue.filter((file) => file !== fileToRemove);
 
         if (fileToRemove === currentlyUploadingFile) {
-            cancelTokenSource?.current?.cancel('Upload canceled by user');
+            cancelTokenSource?.current?.cancel('Upload cancelled by user');
             setCurrentUploadIndex((prevValue) => prevValue - 1);
         }
         

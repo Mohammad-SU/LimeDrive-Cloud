@@ -12,13 +12,13 @@ class File extends Model
     protected $table = 'files';
 
     protected $fillable = [
-        'user_id', 
-        'name', 
-        'cloud_path', 
-        'app_path', 
-        'type', 
-        'extension', 
-        'size', 
+        'user_id',
+        'name',
+        'cloud_path',
+        'app_path',
+        'type',
+        'extension',
+        'size',
         'date'
     ];
 

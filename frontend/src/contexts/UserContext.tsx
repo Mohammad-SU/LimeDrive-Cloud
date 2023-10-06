@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 
 interface UserContextType {
     api: AxiosInstance;
+    apiSecure: AxiosInstance;
     user: UserType;
     setUser: React.Dispatch<React.SetStateAction<UserType>>;
     token: () => string | null;
@@ -28,11 +29,10 @@ export function useUserContext() {
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
     const { setFiles, setFolders, addFiles, addFolders } = useFileContext();
-    const [invalidToken, setInvalidToken] = useState(false)
 
-    const api: AxiosInstance = axios.create({
-        baseURL: import.meta.env.VITE_API_URL,
-    });
+    const initialToken = Cookies.get('auth_token') || null;
+    const [token, setToken] = useState<string | null>(initialToken);
+    const [invalidToken, setInvalidToken] = useState(false)
 
     const handleInvalidToken = (error: AxiosError) => {
         if (error?.response?.status === 401) {
@@ -50,13 +50,27 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         return Promise.reject(error);
     };
 
+    const api = axios.create({
+        baseURL: import.meta.env.VITE_API_URL,
+    });
+
+    const apiSecure = axios.create({
+        baseURL: import.meta.env.VITE_API_URL,
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
     api.interceptors.response.use (
         (response) => response,
         (error) => handleInvalidToken(error)
     );
 
-    const initialToken = Cookies.get('auth_token') || null;
-    const [token, setToken] = useState<string | null>(initialToken);
+    apiSecure.interceptors.response.use (
+        (response) => response,
+        (error) => handleInvalidToken(error)
+    );
+
     const [user, setUser] = useState<UserType>({ id: null, username: null, email: null })
     const [loadUser, setLoadUser] = useState(true)
     const [backendError, setBackendError] = useState<AxiosError | null>(null);
@@ -65,11 +79,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setLoadUser(true)
         
         try {            
-            const response = await api.get('/user', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await apiSecure.get('/user');
             const { user, files, folders } = response.data
             setUser(user)
             addFiles(files)
@@ -115,12 +125,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const contextValue: UserContextType = useMemo(() => {
         return {
             api,
+            apiSecure,
             user,
             setUser,
             token: getTokenFromCookie,
             setToken: setTokenInCookie
         };
-    }, [api, user, setUser, getTokenFromCookie, setTokenInCookie]);
+    }, [api, apiSecure, user, setUser, getTokenFromCookie, setTokenInCookie]);
 
     return (
         <UserContext.Provider value={contextValue}>

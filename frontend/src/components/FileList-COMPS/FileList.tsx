@@ -97,7 +97,7 @@ function FileList() {
     }, [selectedItems]);
 
     const sortedFiles = useMemo(() => {
-        return files.slice().sort((a, b) => { // Sort so most recent files will be at the beginning
+        return files.slice().sort((a, b) => { // Sort so most recently uploaded files will be at the beginning
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);
             return dateB.getTime() - dateA.getTime();
@@ -113,7 +113,7 @@ function FileList() {
     const foldersMapped = sortedFolders.map(folder => {
         return <Folder
             key={folder.id}
-            folder={folder} // map entire object
+            folder={folder}
             onSelect={handleItemSelection}
         />
     })

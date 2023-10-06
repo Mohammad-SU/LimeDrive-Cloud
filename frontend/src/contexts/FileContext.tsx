@@ -3,22 +3,24 @@ import { FileType } from '../types'
 import { FolderType } from '../types'
 
 interface FileContextType {
-  files: FileType[]
-  folders: FolderType[]
-  setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
-  setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
+    currentPath: string
 
-  addFiles: (files: FileType[]) => void;
-  addFolders: (folders: FolderType[]) => void
+    files: FileType[]
+    folders: FolderType[]
+    setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
+    setFolders: React.Dispatch<React.SetStateAction<FolderType[]>>;
 
-  selectedItems: (FileType | FolderType)[];
-  setSelectedItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
-  addToSelectedItems: (item: (FileType | FolderType)[]) => void;
-  removeFromSelectedItems: (item: (FileType | FolderType)[]) => void;
+    addFiles: (files: FileType[]) => void;
+    addFolders: (folders: FolderType[]) => void
+
+    selectedItems: (FileType | FolderType)[];
+    setSelectedItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
+    addToSelectedItems: (item: (FileType | FolderType)[]) => void;
+    removeFromSelectedItems: (item: (FileType | FolderType)[]) => void;
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined)
-// CHECK IF ARRAY IS DUPLICATED OR ONLY FILELIST MAP
+
 export function useFileContext() {
     const context = useContext(FileContext)
     if (!context) {
@@ -28,6 +30,8 @@ export function useFileContext() {
 }
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
+    const [currentPath, setCurrentPath] = useState('all-files/'); // Change whenever user opens a folder, e.g. to all-files/documents/. Should be set to all-files/ by default/when user is on a separate page
+
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
     const [selectedItems, setSelectedItems] = useState<(FileType | FolderType)[]>([]);
@@ -76,6 +80,8 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     
     const contextValue: FileContextType = useMemo(() => {
         return {
+            currentPath,
+
             files,
             folders,
             setFiles,
@@ -89,7 +95,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             addToSelectedItems,
             removeFromSelectedItems
         };
-    }, [files, folders, selectedItems])
+    }, [currentPath, files, folders, selectedItems])
 
     return (
         <FileContext.Provider value={contextValue}>

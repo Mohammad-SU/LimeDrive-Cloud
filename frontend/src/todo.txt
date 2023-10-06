@@ -1,7 +1,11 @@
-test file uploads
-folders and folder uploads
+check if logout error handling works
+folders and folder uploads (fix logic to be better for single folders)
+
+add currentPath to file context, change currentPath state whenever user opens a folder, and set to root (all-files/) when user goes to different page 
 test if laravel schedule cronjob is working properly (change config and schedule to 1 minute)
-remove need for app_path columns in database (delete column and from file/folder models, only deal with it in logic - when mapping in FileList, etc.)
+file previews
+implement all toolbar functions
+
 Make "in <folder>" in uploadInfo a jump link and highlight/blink the file after jumping to it
 implement sorting categories in the place of toolbar when no files are selected
 implement DynamicClip animations for more components (consider increaing useDelayedExit to be more than animationDuration? check if it makes a difference)
@@ -15,10 +19,8 @@ underline/bold sidebar links if user is on that page
 file list sorting based on header row label/arrow icon clicks
 shift click for item selection
 implement "space left" on bottom left corner
-implement all toolbar functions
 add left click dropdown menu
-add tooltips in gap inside toolbar/space after sorting categories
-file previews
+add tooltips (in gap inside toolbar/space after sorting categories?)
 double click files/folders to view
 file moving
 file sharing

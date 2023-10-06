@@ -6,6 +6,8 @@ import { AiOutlineClockCircle, AiOutlineStar, AiOutlinePicture, AiOutlinePlus, A
 import { TfiFiles } from 'react-icons/tfi'
 import { SlTrash } from 'react-icons/sl'
 import { IoArrowUpSharp, IoPeopleOutline } from 'react-icons/io5'
+import { useUserContext } from '../../contexts/UserContext.tsx';
+import { useFileContext } from '../../contexts/FileContext.tsx';
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import useDelayedExit from '../../hooks/useDelayedExit.ts';
 import UploadInfo from '../UploadInfo-comp/UploadInfo'
@@ -13,6 +15,8 @@ import Backdrop from '../Backdrop-comp/Backdrop.tsx'
 import DynamicClip from '../DynamicClip.tsx';
 
 function Sidebar() {
+    const { apiSecure } = useUserContext()
+    const { currentPath, addFolders } = useFileContext()
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [showNewMenu, setShowNewMenu] = useState(false)
     
@@ -29,6 +33,28 @@ function Sidebar() {
             folderNameInputRef.current?.focus()
         }
     }, [isNewfolderModalVisible]);
+
+    const handleCreateFolder = async () => {
+        if (!isFolderNameValid) {
+            return;
+        }
+        const name = formData.newFolderName
+
+        const requestFormData = new FormData();
+        requestFormData.append('folders[]', name)
+        requestFormData.append('app_path', currentPath + name)
+    
+        try {
+            const response = await apiSecure.post('/uploadFolder', requestFormData);
+    
+            addFolders(response.data)
+            setShowNewFolderModal(false);
+        } 
+        catch (error) {
+            console.error(error);
+        }
+    };
+    
 
     return (
         <>
@@ -123,7 +149,7 @@ function Sidebar() {
 
                         <div className="btn-cont">
                             <button className='cancel-btn' onClick={() => setShowNewFolderModal(false)}>Cancel</button>
-                            <button className='create-btn'>Create</button>
+                            <button className='create-btn' onClick={handleCreateFolder}>Create</button>
                         </div>
                         
                         <DynamicClip

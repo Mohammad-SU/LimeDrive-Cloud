@@ -12,7 +12,7 @@ import LoadingPage from '../LoadingBar-COMPS/LoadingPage-comp/LoadingPage';
 
 
 function Header() {
-    const { api, user, setUser, token, setToken } = useUserContext()
+    const { apiSecure, user, setUser, setToken } = useUserContext()
     const { setFiles, setFolders } = useFileContext()
     const [dropdownVisible, setDropdownVisible] = useState(false)
     const dropdownRef = useRef<HTMLDivElement | null>(null)
@@ -42,11 +42,7 @@ function Header() {
     async function logout() {
         try {
             setLoadLogout(true);
-            await api.post('/logout', null, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
+            await apiSecure.post('/logout', null)
             setFiles([])
             setFolders([])
             setUser({id: null, username: null, email: null})

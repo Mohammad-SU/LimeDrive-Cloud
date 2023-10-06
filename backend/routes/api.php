@@ -21,8 +21,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/user', [UserController::class, 'getUserData']);
     Route::post('/logout', [UserController::class, 'logout']);
 
-    Route::post('/uploadFiles', [UploadController::class, 'uploadFiles']);
-    Route::post('/uploadFolders', [UploadController::class, 'uploadFolders']);
+    Route::post('/uploadFile', [UploadController::class, 'uploadFile']);
+    Route::post('/uploadFolder', [UploadController::class, 'uploadFolder']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
