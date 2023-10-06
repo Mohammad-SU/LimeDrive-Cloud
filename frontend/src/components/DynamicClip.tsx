@@ -4,7 +4,7 @@ interface DynamicClipProps {
     clipPathId: string;
     animation: boolean;
     numRects: number;
-    incrementProportion: number;
+    incrementProportion?: number;
     animationDuration?: number;
 }
 
@@ -12,11 +12,11 @@ const isOdd = (num: number) => num % 2 !== 0;
 
 function DynamicClip({
     numRects,
-    incrementProportion,
+    incrementProportion = 0.1,
     animationDuration = 300,
     clipPathId,
     animation,
-}: DynamicClipProps) { // To get this animation to work, make sure clippath: url(#clipPathID) is set in desired element's css
+}: DynamicClipProps) { // To get the animation to work, make sure clippath: url(#clipPathID) is set in desired element's css
     if (incrementProportion < 0 || incrementProportion > 1) {
         throw new Error("incrementProportion must be between 0 and 1.");
     }
@@ -26,7 +26,7 @@ function DynamicClip({
 
     const [clipPathValues, setClipPathValues] = useState(
         Array.from({ length: numRects }, (_, index) => ({
-            width: isOdd(index) ? 1 : 0,
+            width: isOdd(index) ? 1 : 0, // Note that "odd" here is based on the zero-index array, so in the html this would actually apply to even elements
             x: isOdd(index) ? 1 : 0,
             y: index * rectHeight,
         }))
@@ -38,8 +38,7 @@ function DynamicClip({
         interval = setInterval(() => {
             setClipPathValues((prevValues) =>
                 prevValues.map((value, index) => {
-                    if (animation) {
-                        // Increment width and decrement x while staying within bounds
+                    if (animation) { // Increment width and decrement x while staying within bounds
                         const newWidth = Math.min(value.width + incrementProportion, 1);
                         const newX = Math.max(value.x - incrementProportion, 0);
                         return {
@@ -48,8 +47,7 @@ function DynamicClip({
                             y: value.y,
                         };
                     } 
-                    else {
-                        // Decrement width and increment x while staying within bounds
+                    else { // (reverse animation) Decrement width and increment x while staying within bounds
                         const newWidth = Math.max(value.width - incrementProportion, 0);
                         const newX = Math.min(value.x + incrementProportion, 1);
                         return {
@@ -81,17 +79,17 @@ function DynamicClip({
     return (
         <svg width="0" height="0">
             <defs>
-                <clipPath id={clipPathId} clipPathUnits="objectBoundingBox">
-                    {clipPathValues.map((value, index) => (
-                        <rect
-                            key={index}
-                            x={value.x}
-                            y={value.y}
-                            width={value.width}
-                            height={rectHeight}
-                        />
-                    ))}
-                </clipPath>
+            <clipPath id={clipPathId} clipPathUnits="objectBoundingBox">
+                {clipPathValues.map((value, index) => (
+                    <rect
+                        key={index}
+                        x={value.x.toFixed(3)}
+                        y={value.y.toFixed(5)}
+                        width={value.width.toFixed(3)}
+                        height={rectHeight.toFixed(5)}
+                    />
+                ))}
+            </clipPath>
             </defs>
         </svg>
     );

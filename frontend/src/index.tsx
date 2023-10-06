@@ -18,7 +18,7 @@ const router = createBrowserRouter([
         element: <AuthPage />,
     },
     {
-        path: "/all-files",
+        path: "/",
         element: <MainPage />,
         children: [
             {

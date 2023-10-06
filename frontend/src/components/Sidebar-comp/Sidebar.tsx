@@ -1,9 +1,11 @@
-import { memo, useState, useRef } from 'react'
+import { memo, useState, useRef, useEffect} from 'react'
 import "./Sidebar.scss"
 import { Link } from "react-router-dom"
 import { AnimatePresence } from "framer-motion";
-import { AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile } from 'react-icons/ai'
-import { IoArrowUpSharp } from 'react-icons/io5'
+import { AiOutlineClockCircle, AiOutlineStar, AiOutlinePicture, AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile, AiOutlineClose } from 'react-icons/ai'
+import { TfiFiles } from 'react-icons/tfi'
+import { SlTrash } from 'react-icons/sl'
+import { IoArrowUpSharp, IoPeopleOutline } from 'react-icons/io5'
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import useDelayedExit from '../../hooks/useDelayedExit.ts';
 import UploadInfo from '../UploadInfo-comp/UploadInfo'
@@ -13,12 +15,20 @@ import DynamicClip from '../DynamicClip.tsx';
 function Sidebar() {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [showNewMenu, setShowNewMenu] = useState(false)
+    
     const [showNewFolderModal, setShowNewFolderModal] = useState(false)
     const { isVisible: isNewfolderModalVisible } = useDelayedExit(showNewFolderModal, 300);
-
+    const folderNameInputRef = useRef<HTMLInputElement | null>(null);
     const { formData, handleInputChange } = useFormLogic({
         newFolderName: '',
     })
+    const isFolderNameValid = /^[a-zA-Z0-9\s-_]+$/.test(formData.newFolderName)
+
+    useEffect(() => {
+        if (isNewfolderModalVisible) {
+            folderNameInputRef.current?.focus()
+        }
+    }, [isNewfolderModalVisible]);
 
     return (
         <>
@@ -53,11 +63,30 @@ function Sidebar() {
                 }
                 
                 <nav>
-                    <Link to="/all-files">All Files</Link>
-                    <Link to="/shared">Shared</Link>
-                    <Link to="/media-gallery">Media Gallery</Link>
-                    <Link to="/starred">Starred</Link>
-                    <Link to="/recycle-bin">Recycle Bin</Link>
+                    <Link to="/all-files">
+                        <TfiFiles className="nav-icon all-files" />
+                        All Files
+                    </Link>
+                    <Link to="/shared">
+                        <IoPeopleOutline className="nav-icon shared" />
+                        Shared
+                    </Link>
+                    <Link to="/recent">
+                        <AiOutlineClockCircle className="nav-icon" />
+                        Recent
+                    </Link>
+                    <Link to="/starred">
+                        <AiOutlineStar className="nav-icon starred" />
+                        Starred
+                    </Link>
+                    <Link to="/media-gallery">
+                        <AiOutlinePicture className="nav-icon media-gallery"/>
+                        Media Gallery
+                    </Link>
+                    <Link to="/recycle-bin">
+                        <SlTrash className="nav-icon recycle-bin"/>
+                        Recycle Bin
+                    </Link>
                 </nav>
 
                 <div className="space-left">
@@ -68,15 +97,15 @@ function Sidebar() {
             </div>
 
             { isNewfolderModalVisible &&
-                <>
                     <div className="new-folder-modal">
+                        <AiOutlineClose className="close-icon icon-btn" onClick={() => setShowNewFolderModal(false)}/>
                         <div className="heading-cont">
                             <AiFillFolderAdd className="modal-icon" />
                             <h1>Create folder</h1>
                         </div>
 
                         <div className="input-cont">
-                            <label htmlFor="folder-name-input">Folder name:</label>
+                            <label htmlFor="folder-name-input">Folder name</label>
                             <input
                                 type="text"
                                 id="folder-name-input"
@@ -85,27 +114,30 @@ function Sidebar() {
                                 value={formData.newFolderName}
                                 onChange={(e) => handleInputChange(e, 255)}
                                 maxLength={255}
+                                ref={folderNameInputRef}
                             />
+                            {!isFolderNameValid && formData.newFolderName !='' && (
+                                <p className="error-message">Invalid folder name format.</p>
+                            )}
                         </div>
 
                         <div className="btn-cont">
                             <button className='cancel-btn' onClick={() => setShowNewFolderModal(false)}>Cancel</button>
                             <button className='create-btn'>Create</button>
                         </div>
+                        
+                        <DynamicClip
+                            clipPathId={"newFolderModalClip"}
+                            animation={showNewFolderModal}
+                            numRects={10}
+                        />
                     </div>
-                </>
             }
+            <div className={`new-folder-modal-shadow ${showNewFolderModal ? 'delayed-shadow' : ''}`}></div>
 
             <AnimatePresence>
                 {showNewFolderModal && <Backdrop onClick={() => setShowNewFolderModal(false)}/>} {/* Use showNewFolderModal as condition as backdrop should be invisible faster*/} 
             </AnimatePresence>
-
-            <DynamicClip 
-                clipPathId={"newFolderModalClip"}
-                animation={showNewFolderModal}
-                numRects={10}
-                incrementProportion={0.05}
-            />
 
             <UploadInfo fileInputRef={fileInputRef}/>
         </>

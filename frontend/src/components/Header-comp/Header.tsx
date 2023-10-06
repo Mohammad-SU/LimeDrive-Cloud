@@ -90,14 +90,14 @@ function Header() {
             <div className="user-cont">
                 <h1 className="username">{user.username}</h1>
                 <BsPersonFillGear 
-                    className="user-settings-icon" 
+                    className="user-settings-icon icon-btn" 
                     onClick={toggleDropdown}
                     onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
                 />
                 {dropdownVisible &&
                     <div className="user-dropdown" ref={dropdownRef}>
                         <Link className="settings-link" to="/settings">Settings</Link>
-                        <button className="logout-btn" onClick={logout}>Logout</button>
+                        <button className="logout-btn text-btn" onClick={logout}>Logout</button>
                     </div>
                 }
             </div>

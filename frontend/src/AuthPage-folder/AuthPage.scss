@@ -29,16 +29,11 @@
             margin-right: 3.3rem;
             text-align: center;
 
-            button {
+            &__btn {
                 font-size: 1.1rem;
                 margin-bottom: 0.2rem;
                 text-decoration: underline;
                 text-underline-offset: 0.2rem;
-
-                &:hover {
-                    opacity: 0.7;
-                    background-color: black;
-                }
             }
 
             &__details-cont {
@@ -61,7 +56,6 @@
                         width: 1.3rem;
                         height: 1.3rem;
                         margin-left: 0.6rem;
-                        cursor: pointer;
                     }
                 }
             }
@@ -87,15 +81,10 @@
         background-color: black;
     }
 
-    &__changeFormBtn {
+    &__change-form-btn {
         font-size: 1.1rem;
         margin-top: 1.3rem;
         text-decoration: underline;
         text-underline-offset: 0.2rem;
-
-        &:hover {
-            background-color: black;
-            opacity: 0.7;
-        }
     }
 }

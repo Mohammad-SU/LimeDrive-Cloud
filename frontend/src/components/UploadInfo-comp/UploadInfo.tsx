@@ -15,7 +15,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const { addFiles, addFolders, files, folders } = useFileContext()
     
     const [fileErrors, setFileErrors] = useState(new Map());
-    const [app_path, setApp_path] = useState('all-files/');
+    const [appPathDirectory, setAppPathDirectory] = useState('all-files/');
     const [currentlyUploadingFile, setCurrentlyUploadingFile] = useState<File | null>(null);
     const [prevUploadedFiles, setPrevUploadedFiles] = useState<File[]>([]); // Files in the list that have been successfully uploaded and will not be sent again
     const [uploadQueue, setUploadQueue] = useState<File[]>([]); // Files in the list to be sent to backend
@@ -70,7 +70,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const uploadFile = async (file: File) => {
         const formData = new FormData();
         formData.append('files[]', file)
-        formData.append('app_path', app_path)
+        formData.append('app_path', `${appPathDirectory}/${file.name}`)
 
         const source = axios.CancelToken.source();
         cancelTokenSource.current = source;
@@ -189,10 +189,10 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
 
                         <div className="header__icons-cont">
                             {!collapseUploadList ?
-                                <IoChevronDownSharp className="icon" />
-                                : <IoChevronUpSharp className="icon" />
+                                <IoChevronDownSharp className="icon-btn" />
+                                : <IoChevronUpSharp className="icon-btn" />
                             }
-                            {!currentlyUploadingFile && <IoMdClose onClick={onCloseClick} className="icon" />}
+                            {!currentlyUploadingFile && <IoMdClose onClick={onCloseClick} className="icon-btn" />}
                         </div>
                     </div>
                     

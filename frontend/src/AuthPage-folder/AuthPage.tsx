@@ -147,7 +147,7 @@ function AuthPage() {
                 <div className="generator"> 
                     <p>Don't want to register an account? Generate one! <br/> You can change the details later.</p>
                     
-                    <button className="generator__button" onClick={attemptRegistration}>
+                    <button className="generator__btn text-btn" onClick={attemptRegistration}>
                         {cooldown ? `Wait (${cooldown})` : "Generate"}
                     </button>
 
@@ -164,9 +164,9 @@ function AuthPage() {
                             <p><strong>Password:</strong> 
                                 {showPassword ? generatedPassword : generatedPassword!.replace(/./g, '•')}
                                 {showPassword ? 
-                                    (<BsEyeSlash className="eye-icon" onClick={togglePasswordVisibility} />)
+                                    (<BsEyeSlash className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
                                     : 
-                                    (<BsEye className="eye-icon" onClick={togglePasswordVisibility} />)
+                                    (<BsEye className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
                                 }
                             </p>
                         </div>
@@ -185,7 +185,7 @@ function AuthPage() {
                 <div className="form-cont">
                     {showLoginForm && <LoginForm />}
                     {showRegisterForm && <RegisterForm />}
-                    <button className="AuthPage__changeFormBtn" onClick={handleFormChange}>
+                    <button className="AuthPage__change-form-btn text-btn" onClick={handleFormChange}>
                         {showLoginForm ? "Create an account" : "Login to LimeDrive"}
                     </button>
                 </div>

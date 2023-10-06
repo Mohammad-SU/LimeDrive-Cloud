@@ -74,13 +74,53 @@
         display: flex;
         flex-direction: column;
         padding-top: 1.6rem;
-        padding-left: 1.7rem;
-        gap: 1rem;
+        padding-left: 1.1rem;
+        gap: 1.4rem;
 
         a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
             font-size: 1.4rem;
+            width: 12.5rem;
             text-decoration: none;
             color: lime;
+
+            .nav-icon {
+                font-size: 1.5rem;
+
+                &.all-files {
+                    font-size: 1.3rem;
+                    margin-bottom: -0.1rem;
+                    margin-right: 0.16rem;
+                    margin-left: 0.2rem;
+                }
+
+                &.shared {
+                    font-size: 1.6rem;
+                    margin-bottom: -0.1rem;
+                    margin-right: -0.03rem;
+                }
+
+                &.starred {
+                    font-size: 1.65rem;
+                    margin-top: -0.01rem;
+                    margin-right: -0.06rem;
+                    margin-left: -0.1rem;
+                }
+
+                &.media-gallery {
+                    margin-bottom: -0.05rem;
+                    margin-right: 0.03rem;
+                    margin-left: -0.03rem;
+                }
+
+                &.recycle-bin {
+                    font-size: 1.45rem;
+                    margin-top: -0.11rem;
+                    margin-left: -0.03rem;
+                }
+            }
         }
     }
   
@@ -115,7 +155,7 @@
     justify-content: center;
 
     width: 22.5rem;
-    height: 13rem;
+    height: 15rem;
     padding: 1.4rem;
     padding-top: 1.1rem;
     padding-bottom: 1.5rem;
@@ -130,12 +170,20 @@
     background: black;
     border: 1px solid lime;
     clip-path: url(#newFolderModalClip);
+    overflow: visible;
+
+    .close-icon {
+        position: absolute;
+        font-size: 1.5rem;
+        top: .5rem;
+        right: .5rem;
+    }
 
     .heading-cont {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.3rem;
         margin-left: -0.1rem;
 
         .modal-icon {
@@ -165,6 +213,12 @@
             border: .0625rem solid lime;
             box-sizing: border-box;
         }
+
+        .error-message {
+            position: absolute;
+            margin: 0;
+            margin-top: 0.3rem;
+        }
     }
 
     .btn-cont {
@@ -187,4 +241,21 @@
             font-weight: bold;
         }
     }
+}
+
+.new-folder-modal-shadow {
+    position: fixed;
+    width: 25.4rem;
+    height: 1.2rem;
+    margin: 0 auto;
+    z-index: 998;
+
+    top: 31.5rem;
+    left: 0rem;
+    right: 0;
+    bottom: 0;
+    
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.403);
+    opacity: 0;
+    transition: opacity 0.3s;
 }

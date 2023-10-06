@@ -12,9 +12,10 @@ class Folder extends Model
     protected $table = 'folders';
 
     protected $fillable = [
-        'user_id', 
-        'name',  
-        'app_path',  
+        'user_id',
+        'name',
+        'cloud_path',
+        'app_path', 
         'date'
     ];
 

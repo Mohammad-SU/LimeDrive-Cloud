@@ -58,7 +58,6 @@ export const adjectives: Array<string> = [
     "hot",
     "humid",
     "irregular",
-    "itchy",
     "jagged",
     "juicy",
     "lacy",

@@ -97,9 +97,9 @@ function LoginForm() {
                     data-testid="passwordInput"
                 />
                 {showPassword ? 
-                    (<BsEyeSlash className="eye-icon" onClick={togglePasswordVisibility} />)
+                    (<BsEyeSlash className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
                     : 
-                    (<BsEye className="eye-icon" onClick={togglePasswordVisibility} />)
+                    (<BsEye className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
                 }
             </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />

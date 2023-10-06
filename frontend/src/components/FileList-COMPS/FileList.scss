@@ -60,12 +60,13 @@
         margin: 0 2.5rem;
 
         .File, .Folder {
-            @include selection-styles;
+            @include btn-selection-styles;
             position: relative;
             display: flex;
             align-items: center;
             padding: 1.3rem 0;
             border-bottom: .0625rem solid rgba(0, 255, 0, 0.700);
+            cursor: default;
 
             &:hover .list-checkbox {
                 opacity: 1;

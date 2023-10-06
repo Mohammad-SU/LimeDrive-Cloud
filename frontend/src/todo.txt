@@ -1,13 +1,16 @@
-folders
+test file uploads
+folders and folder uploads
 test if laravel schedule cronjob is working properly (change config and schedule to 1 minute)
-
+remove need for app_path columns in database (delete column and from file/folder models, only deal with it in logic - when mapping in FileList, etc.)
+Make "in <folder>" in uploadInfo a jump link and highlight/blink the file after jumping to it
 implement sorting categories in the place of toolbar when no files are selected
 implement DynamicClip animations for more components (consider increaing useDelayedExit to be more than animationDuration? check if it makes a difference)
 implement current path display - above toolbar/sorting categories
 implement server-side validation for files and folders (size, allowed characters)
-check for duplication - add (1) or more numbers to end of file name if duplicate
+check for duplication when uploading - add (1) or more numbers to end of file name if duplicate
 fix date (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
 decrease header sizings?
+box shadows?
 underline/bold sidebar links if user is on that page
 file list sorting based on header row label/arrow icon clicks
 shift click for item selection
@@ -30,7 +33,6 @@ add backgrounds/more details for loading pages
 responsive CSS and check if correct on other browsers
 email verification
 allow Google and Facebook to be used for logins? (OAuth)
-change database info after deployment?
 remove useState import from all files where it's not used
 change backend env secret file for render.com if changed
 add more automated tests

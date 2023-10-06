@@ -131,9 +131,9 @@ function RegisterForm() {
                     disabled={loading}
                 />
                 {showPassword ? 
-                    (<BsEyeSlash className="eye-icon" onClick={togglePasswordVisibility} />)
+                    (<BsEyeSlash className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
                     : 
-                    (<BsEye className="eye-icon" onClick={togglePasswordVisibility} />)
+                    (<BsEye className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
                 }
             </div>
             <div className="form__input-cont">
@@ -151,9 +151,9 @@ function RegisterForm() {
                     disabled={loading}
                 />
                 {showConfirmPassword ? 
-                    (<BsEyeSlash className="eye-icon" onClick={toggleConfirmPasswordVisibility} />)
+                    (<BsEyeSlash className="eye-icon icon-btn" onClick={toggleConfirmPasswordVisibility} />)
                     : 
-                    (<BsEye className="eye-icon" onClick={toggleConfirmPasswordVisibility} />)
+                    (<BsEye className="eye-icon icon-btn" onClick={toggleConfirmPasswordVisibility} />)
                 }
             </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
