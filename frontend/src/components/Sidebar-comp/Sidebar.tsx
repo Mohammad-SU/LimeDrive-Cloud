@@ -34,20 +34,24 @@ function Sidebar() {
         }
     }, [isNewfolderModalVisible]);
 
+    const closeNewFolderModal = () => {
+        setShowNewFolderModal(false)
+        formData.newFolderName = ''
+    }
+
     const handleCreateFolder = async () => {
         if (!isFolderNameValid) {
             return;
         }
-        const name = formData.newFolderName
-
-        const requestFormData = new FormData();
-        requestFormData.append('folders[]', name)
-        requestFormData.append('app_path', currentPath + name)
     
         try {
-            const response = await apiSecure.post('/uploadFolder', requestFormData);
+            const response = await apiSecure.post('/uploadFolder', {
+                name: formData.newFolderName,
+                app_path: currentPath + formData.newFolderName,
+            });
     
             addFolders(response.data)
+            console.log(response.data)
             setShowNewFolderModal(false);
         } 
         catch (error) {
@@ -124,7 +128,7 @@ function Sidebar() {
 
             { isNewfolderModalVisible &&
                     <div className="new-folder-modal">
-                        <AiOutlineClose className="close-icon icon-btn" onClick={() => setShowNewFolderModal(false)}/>
+                        <AiOutlineClose className="close-icon icon-btn" onClick={closeNewFolderModal}/>
                         <div className="heading-cont">
                             <AiFillFolderAdd className="modal-icon" />
                             <h1>Create folder</h1>
@@ -148,7 +152,7 @@ function Sidebar() {
                         </div>
 
                         <div className="btn-cont">
-                            <button className='cancel-btn' onClick={() => setShowNewFolderModal(false)}>Cancel</button>
+                            <button className='cancel-btn' onClick={closeNewFolderModal}>Cancel</button>
                             <button className='create-btn' onClick={handleCreateFolder}>Create</button>
                         </div>
                         
@@ -162,7 +166,7 @@ function Sidebar() {
             <div className={`new-folder-modal-shadow ${showNewFolderModal ? 'delayed-shadow' : ''}`}></div>
 
             <AnimatePresence>
-                {showNewFolderModal && <Backdrop onClick={() => setShowNewFolderModal(false)}/>} {/* Use showNewFolderModal as condition as backdrop should be invisible faster*/} 
+                {showNewFolderModal && <Backdrop onClick={closeNewFolderModal}/>} {/* Use showNewFolderModal as condition as backdrop should be invisible faster*/} 
             </AnimatePresence>
 
             <UploadInfo fileInputRef={fileInputRef}/>

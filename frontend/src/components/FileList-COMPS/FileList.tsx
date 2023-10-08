@@ -80,9 +80,9 @@ function FileList() {
         if (selectedItems.length == 0) {
             setShowDeselectAll(false)
         }
-    }, [selectedItems]);
 
-    useEffect(() => {
+        console.log(selectedItems)
+
         const handleEscapeKey = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 setSelectedItems([]);
@@ -141,7 +141,7 @@ function FileList() {
                     <p className="name-header">Name</p>
                     <p>Type</p>
                     <p>Size</p>
-                    <p>Date (D/M/Y, 24hr)</p>
+                    <p>Upload Date (D/M/Y)</p>
                 </div>
             </div>
 

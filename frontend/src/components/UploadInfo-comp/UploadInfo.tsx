@@ -88,7 +88,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                 },
                 cancelToken: source.token,
             })
-                        
+
             addFiles(response.data)
             setSuccessfulUploadNum(current => current + 1)
         } 
@@ -118,7 +118,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         else if (currentUploadIndex === uploadQueue.length) { // arrays start at 0 index, so if index equals array length it means it is complete
             setCurrentlyUploadingFile(null)
         }
-    }, [currentlyUploadingFile]);
+    }, [currentlyUploadingFile, uploadQueue]);
 
     const onRetryClick = () => { // Causes all failed files in uploadQueue to be added back to the queue
         const successfulFiles = uploadQueue.filter (
@@ -215,7 +215,13 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                                             </div>
                                         </div>
                                         {index >= currentUploadIndex && !fileErrors.has(file) ?
-                                            <button className="cancel-btn" onClick={() => onCancelClick(file)}>Cancel</button>
+                                            <button 
+                                                className="cancel-btn" 
+                                                onClick={() => onCancelClick(file)}
+                                                disabled={index === currentUploadIndex && currentFileProgress === 100}
+                                            >
+                                                Cancel
+                                            </button>
                                             
                                             : fileErrors.has(file) ? 
                                                 <button className="retry-btn" onClick={onRetryClick}>Retry</button>

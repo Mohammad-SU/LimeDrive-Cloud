@@ -37,24 +37,20 @@ class UploadController extends Controller
 
     public function uploadFolder(Request $request)
     {
-        $uploadedFolders = [];
-
-        $user_id = $request->user()->id; 
+        $user_id = $request->user()->id;
         $app_path = $request->input('app_path');
-        $cloud_path = str_replace('all-files', (string)$user_id, $app_path);
+        $cloud_path = str_replace('all-files', (string)$user_id, $app_path); // "all-files/" ==> "<user_id>/" in B2 bucket
     
-        foreach ($request->input('folders') as $uploadedFolder) {
-            $uploadedFolders[] = Folder::create([
-                'user_id' => $user_id,
-                'name' => $uploadedFolder['name'],
-                'cloud_path' => $cloud_path,
-                'app_path' => $app_path,
-                'date' => now(),
-            ]);
+        $uploadedFolder = Folder::create([
+            'user_id' => $user_id,
+            'name' => $request->input('name'),
+            'cloud_path' => $cloud_path,
+            'app_path' => $app_path,
+            'date' => now(),
+        ]);
 
-            Storage::disk('s3')->makeDirectory($cloud_path);
-        }
+        Storage::disk('s3')->put($cloud_path . '/.keep', ''); // .keep indicates that the folder is intentionally technically empty or keeps the folder if there are no other files in it (in the b2 bucket, folders are deleted if their only item is removed)
     
-        return response()->json($uploadedFolders);
+        return response()->json($uploadedFolder);
     }
 }

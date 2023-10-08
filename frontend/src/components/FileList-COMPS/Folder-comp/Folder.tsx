@@ -1,4 +1,5 @@
 import { memo, useState, useEffect } from 'react'
+import { DateTime } from 'luxon';
 import "./Folder.scss"
 import { FolderType } from '../../../types';
 import { useFileContext } from '../../../contexts/FileContext';
@@ -13,6 +14,12 @@ function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
     const { selectedItems } = useFileContext()
+
+    function formatDate(date: Date) {
+        const dateTime = DateTime.fromJSDate(date).toLocal();
+        return dateTime.toFormat('dd/MM/yyyy HH:mm');
+    }
+    const formattedDate = formatDate(new Date(folder.date));
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
         event.preventDefault();
@@ -44,6 +51,9 @@ function Folder({ folder, onSelect }: FolderProps) {
                 checked={isSelected}
             />
             <p className="name">{folder.name}</p>
+            <p>--</p>
+            <p>0 B</p>
+            <p>{formattedDate}</p>
         </div>
     )
 }

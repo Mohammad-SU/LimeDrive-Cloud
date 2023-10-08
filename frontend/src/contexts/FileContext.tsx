@@ -50,10 +50,16 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const addFolders = (newFolders: FolderType | FolderType[]) => {
         setFolders((prevFolders) => {
             const newFoldersArray = Array.isArray(newFolders) ? newFolders : [newFolders];
-            const uniqueNewFolders = newFoldersArray.filter((newFolder) => {
+
+            const foldersWithPrefixedIds = newFoldersArray.map((folder) => ({ // Add the "d_" prefix to the IDs of the new folders to prevent conflicts with file IDs
+                ...folder,
+                id: `d_${folder.id}`,
+            }));
+
+            const uniqueNewFolders = foldersWithPrefixedIds.filter((newFolder) => {
                 return !prevFolders.some((prevFolder) => prevFolder.id === newFolder.id);
             });
-        
+
             return [...prevFolders, ...uniqueNewFolders];
         });
     };
