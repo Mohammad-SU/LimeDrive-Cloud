@@ -21,7 +21,9 @@ function Sidebar() {
     const [showNewMenu, setShowNewMenu] = useState(false)
     
     const [showNewFolderModal, setShowNewFolderModal] = useState(false)
-    const { isVisible: isNewfolderModalVisible } = useDelayedExit(showNewFolderModal, 300);
+    const { isVisible: isNewfolderModalVisible } = useDelayedExit(showNewFolderModal, 300, () => {
+        formData.newFolderName = ''; // Clear formData.newFolderName after the delay
+    });
     const folderNameInputRef = useRef<HTMLInputElement | null>(null);
     const { formData, handleInputChange } = useFormLogic({
         newFolderName: '',
@@ -33,11 +35,6 @@ function Sidebar() {
             folderNameInputRef.current?.focus()
         }
     }, [isNewfolderModalVisible]);
-
-    const closeNewFolderModal = () => {
-        setShowNewFolderModal(false)
-        formData.newFolderName = ''
-    }
 
     const handleCreateFolder = async () => {
         if (!isFolderNameValid) {
@@ -59,7 +56,6 @@ function Sidebar() {
         }
     };
     
-
     return (
         <>
             <div className="Sidebar">
@@ -128,7 +124,7 @@ function Sidebar() {
 
             { isNewfolderModalVisible &&
                     <div className="new-folder-modal">
-                        <AiOutlineClose className="close-icon icon-btn" onClick={closeNewFolderModal}/>
+                        <AiOutlineClose className="close-icon icon-btn" onClick={() => setShowNewFolderModal(false)}/>
                         <div className="heading-cont">
                             <AiFillFolderAdd className="modal-icon" />
                             <h1>Create folder</h1>
@@ -152,7 +148,7 @@ function Sidebar() {
                         </div>
 
                         <div className="btn-cont">
-                            <button className='cancel-btn' onClick={closeNewFolderModal}>Cancel</button>
+                            <button className='cancel-btn' onClick={() => setShowNewFolderModal(false)}>Cancel</button>
                             <button className='create-btn' onClick={handleCreateFolder}>Create</button>
                         </div>
                         
@@ -166,7 +162,7 @@ function Sidebar() {
             <div className={`new-folder-modal-shadow ${showNewFolderModal ? 'delayed-shadow' : ''}`}></div>
 
             <AnimatePresence>
-                {showNewFolderModal && <Backdrop onClick={closeNewFolderModal}/>} {/* Use showNewFolderModal as condition as backdrop should be invisible faster*/} 
+                {showNewFolderModal && <Backdrop onClick={() => setShowNewFolderModal(false)}/>} {/* Use showNewFolderModal as condition as backdrop should be invisible faster*/} 
             </AnimatePresence>
 
             <UploadInfo fileInputRef={fileInputRef}/>

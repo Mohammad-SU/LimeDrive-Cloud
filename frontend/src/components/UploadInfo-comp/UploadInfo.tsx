@@ -147,6 +147,10 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     }
     
     const onCancelClick = (fileToRemove: File) => {
+        if (fileToRemove == currentlyUploadingFile && currentFileProgress === 100) {
+            return
+        }
+
         const updatedUploadQueue = uploadQueue.filter((file) => file !== fileToRemove);
 
         if (fileToRemove === currentlyUploadingFile) {

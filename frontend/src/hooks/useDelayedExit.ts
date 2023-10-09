@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-function useDelayedExit(shouldRender: boolean, delayMs: number) {
+function useDelayedExit(shouldRender: boolean, delayMs: number, onExitCallback?: () => void) {
     const [isVisible, setIsVisible] = useState(shouldRender);
 
     useEffect(() => {
@@ -9,9 +9,12 @@ function useDelayedExit(shouldRender: boolean, delayMs: number) {
         if (!shouldRender) {
             timeoutId = setTimeout(() => {
                 setIsVisible(false);
+
+                if (onExitCallback) { // Execute the callback function if provided
+                    onExitCallback();
+                }
             }, delayMs);
-        } 
-        else {
+        } else {
             setIsVisible(true);
         }
 
@@ -20,7 +23,7 @@ function useDelayedExit(shouldRender: boolean, delayMs: number) {
                 clearTimeout(timeoutId);
             }
         };
-    }, [delayMs, shouldRender]);
+    }, [delayMs, shouldRender, onExitCallback]);
 
     return { isVisible };
 }

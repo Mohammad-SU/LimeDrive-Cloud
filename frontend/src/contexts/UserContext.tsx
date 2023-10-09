@@ -34,6 +34,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(initialToken);
     const [invalidToken, setInvalidToken] = useState(false)
 
+    const getTokenFromCookie = () => {
+        return Cookies.get('auth_token') || null;
+    };
+
+    const setTokenInCookie = (newToken: string | null) => {
+        if (newToken) {
+            Cookies.set('auth_token', newToken, { secure: true });
+            setToken(newToken)
+        } 
+        else {
+            Cookies.remove('auth_token');
+            setToken(null)
+        }
+    };
+
     const handleInvalidToken = (error: AxiosError) => {
         if (error?.response?.status === 401) {
             console.error('Invalid/expired token. Logging out...');
@@ -43,7 +58,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             setFolders([])
             setTimeout(() => {
                 setTokenInCookie(null);
-                window.location.href = "/auth";
+                if (window.location.pathname !== "/auth") {
+                    window.location.href = "/auth";
+                }
                 setInvalidToken(false)
             }, 5000);
         }
@@ -56,14 +73,24 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     const apiSecure = axios.create({
         baseURL: import.meta.env.VITE_API_URL,
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
     });
 
     api.interceptors.response.use (
         (response) => response,
         (error) => handleInvalidToken(error)
+    );
+
+    apiSecure.interceptors.request.use(
+        (config) => {
+            const token = getTokenFromCookie();
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        },
+        (error) => {
+            return Promise.reject(error);
+        }
     );
 
     apiSecure.interceptors.response.use (
@@ -107,21 +134,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
     }, [token])
 
-    const getTokenFromCookie = () => {
-        return Cookies.get('auth_token') || null;
-    };
-
-    const setTokenInCookie = (newToken: string | null) => {
-        if (newToken) {
-            Cookies.set('auth_token', newToken, { secure: true });
-            setToken(newToken)
-        } 
-        else {
-            Cookies.remove('auth_token');
-            setToken(null)
-        }
-    };
-
     const contextValue: UserContextType = useMemo(() => {
         return {
             api,
@@ -131,12 +143,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             token: getTokenFromCookie,
             setToken: setTokenInCookie
         };
-    }, [api, apiSecure, user, setUser, getTokenFromCookie, setTokenInCookie]);
+    }, [api, apiSecure, user, setUser, token, setToken]);
 
     return (
         <UserContext.Provider value={contextValue}>
             {!loadUser && !backendError && !invalidToken ? children
-                : invalidToken ? <LoadingPage message="Invalid/expired session, please login again. Redirecting in a few seconds..." loading={invalidToken}/>
+                : invalidToken ? <LoadingPage message="Invalid/expired session. Redirecting in a few seconds..." loading={invalidToken}/>
                 : loadUser && token && !backendError ? <LoadingPage message="Fetching data..." loading={loadUser}/>
                 : backendError?.response?.status == 500 ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
                 : null
