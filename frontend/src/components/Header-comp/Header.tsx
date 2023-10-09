@@ -1,42 +1,32 @@
-import { useState, useEffect, useRef, memo } from 'react';
+import { useState, useRef, memo } from 'react';
 import axios, { AxiosError } from 'axios';
 import "./Header.scss";
 import { useFileContext } from '../../contexts/FileContext';
 import { useUserContext } from '../../contexts/UserContext';
 import { useNavigate, Link } from 'react-router-dom'; 
+import useClickOutside from '../../hooks/useClickOutside';
+import useDelayedExit from '../../hooks/useDelayedExit';
 import LimeDriveAscii_header from '../../assets/images/ascii/LimeDrive-ascii-header.png';
 import { GiOrange } from "react-icons/gi";
 import { BsPersonFillGear } from "react-icons/bs";
 import { BsSearch } from "react-icons/bs";
+import DynamicClip from '../DynamicClip';
 import LoadingPage from '../LoadingBar-COMPS/LoadingPage-comp/LoadingPage';
 
-
 function Header() {
+    const [showDropdown, setShowDropdown] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement | null>(null)
+    const { isVisible: isDropdownVisible } = useDelayedExit({
+        shouldRender: showDropdown,
+        delayMs: 300,
+    });
+    useClickOutside(dropdownRef, () => {
+        setShowDropdown(false);
+    });
+
     const { apiSecure, user, setUser, setToken } = useUserContext()
     const { setFiles, setFolders } = useFileContext()
-    const [dropdownVisible, setDropdownVisible] = useState(false)
-    const dropdownRef = useRef<HTMLDivElement | null>(null)
     const [backendError, setBackendError] = useState<AxiosError | null>(null);
-
-    const toggleDropdown = (event: React.MouseEvent) => {
-        event.stopPropagation();
-        setDropdownVisible(!dropdownVisible)
-    }
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as HTMLDivElement)) {
-                setDropdownVisible(false)
-            }
-        }
-
-        document.addEventListener('mousedown', handleClickOutside)
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [])
-
     const navigate = useNavigate();
     const [loadLogout, setLoadLogout] = useState(false);
     async function logout() {
@@ -50,6 +40,7 @@ function Header() {
             navigate("/auth")
         } 
         catch (error) {
+            console.error(error)
             if (axios.isAxiosError(error)) {
                 setBackendError(error)
             }
@@ -87,13 +78,17 @@ function Header() {
                 <h1 className="username">{user.username}</h1>
                 <BsPersonFillGear 
                     className="user-settings-icon icon-btn" 
-                    onClick={toggleDropdown}
-                    onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+                    onClick={() => setShowDropdown(!showDropdown)}
                 />
-                {dropdownVisible &&
+                {isDropdownVisible &&
                     <div className="user-dropdown" ref={dropdownRef}>
                         <Link className="settings-link" to="/settings">Settings</Link>
                         <button className="logout-btn text-btn" onClick={logout}>Logout</button>
+                        <DynamicClip
+                            clipPathId={"userDropdownClip"}
+                            animation={showDropdown}
+                            numRects={6}
+                        />
                     </div>
                 }
             </div>

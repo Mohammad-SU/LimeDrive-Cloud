@@ -14,8 +14,8 @@ function LoginForm() {
     })
     const { api, setToken } = useUserContext();
     const navigate = useNavigate();
-    var backendError: AxiosError | null = null
-    var backendErrorMsg: string | null = null
+    let backendError: AxiosError | null = null
+    let backendErrorMsg: string | null = null
     const [formError, setFormError] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const isPasswordValid = formData.passwordLog.length >= 8
@@ -33,7 +33,7 @@ function LoginForm() {
                     setFormError(null)
                     const { token } = response.data
                     setToken(token)
-                    navigate("/all-files")
+                    navigate("/LimeDrive")
                 }
             } 
             catch (error) {

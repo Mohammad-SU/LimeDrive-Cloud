@@ -1,5 +1,6 @@
 import { memo, useState, useRef, useEffect} from 'react'
 import "./Sidebar.scss"
+import axios, { AxiosError } from 'axios';
 import { Link } from "react-router-dom"
 import { AnimatePresence } from "framer-motion";
 import { AiOutlineClockCircle, AiOutlineStar, AiOutlinePicture, AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile, AiOutlineClose } from 'react-icons/ai'
@@ -10,25 +11,50 @@ import { useUserContext } from '../../contexts/UserContext.tsx';
 import { useFileContext } from '../../contexts/FileContext.tsx';
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import useDelayedExit from '../../hooks/useDelayedExit.ts';
+import useClickOutside from '../../hooks/useClickOutside.ts';
 import UploadInfo from '../UploadInfo-comp/UploadInfo'
+import LoadingBar from '../LoadingBar-COMPS/LoadingBar.tsx';
 import Backdrop from '../Backdrop-comp/Backdrop.tsx'
 import DynamicClip from '../DynamicClip.tsx';
 
 function Sidebar() {
     const { apiSecure } = useUserContext()
     const { currentPath, addFolders } = useFileContext()
-    const fileInputRef = useRef<HTMLInputElement | null>(null)
+    const [backendError, setBackendError] = useState<AxiosError | null>(null)
+    const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
+
+    const newMenuRef = useRef<HTMLUListElement | null>(null)
     const [showNewMenu, setShowNewMenu] = useState(false)
+    const { isVisible: isNewMenuVisible } = useDelayedExit({
+        shouldRender: showNewMenu,
+        delayMs: 300,
+    });
+    useClickOutside(newMenuRef, () => {
+        setShowNewMenu(false);
+    });
+
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
     
     const [showNewFolderModal, setShowNewFolderModal] = useState(false)
-    const { isVisible: isNewfolderModalVisible } = useDelayedExit(showNewFolderModal, 300, () => {
-        formData.newFolderName = ''; // Clear formData.newFolderName after the delay
+    const { isVisible: isNewfolderModalVisible } = useDelayedExit({
+        shouldRender: showNewFolderModal,
+        delayMs: 300,
+        onExitCallback: () => {
+            formData.newFolderName = '';
+            setBackendError(null)
+            setBackendErrorMsg(null)
+        },
     });
+
     const folderNameInputRef = useRef<HTMLInputElement | null>(null);
     const { formData, handleInputChange } = useFormLogic({
         newFolderName: '',
+    }, (event) => {
+        setBackendError(null);
+        setBackendErrorMsg(null);
     })
     const isFolderNameValid = /^[a-zA-Z0-9\s-_]+$/.test(formData.newFolderName)
+    const [loading, setLoading] = useState<boolean>(false)
 
     useEffect(() => {
         if (isNewfolderModalVisible) {
@@ -42,6 +68,7 @@ function Sidebar() {
         }
     
         try {
+            setLoading(true)
             const response = await apiSecure.post('/uploadFolder', {
                 name: formData.newFolderName,
                 app_path: currentPath + formData.newFolderName,
@@ -53,24 +80,41 @@ function Sidebar() {
         } 
         catch (error) {
             console.error(error);
+            if (axios.isAxiosError(error)) {
+                setBackendError(error)
+                setBackendErrorMsg(error?.response?.data.message)
+                console.log(backendErrorMsg)
+            }
+        }
+        finally {
+            setLoading(false)
         }
     };
     
     return (
         <>
             <div className="Sidebar">
-                <button className="new-btn" onClick={() => setShowNewMenu(current => !current)}>
+                <button 
+                    className="new-btn" 
+                    onClick={() => setShowNewMenu(!showNewMenu)}
+                >
                     <AiOutlinePlus className="plus-icon" />
                     New
                 </button>
-                {showNewMenu &&
-                    <ul className="new-menu">
-                        <button onClick={() => setShowNewFolderModal(true)}>
+                {isNewMenuVisible &&
+                    <ul className="new-menu" ref={newMenuRef}>
+                        <button onClick={() => {
+                            setShowNewFolderModal(true)
+                            setShowNewMenu(false)
+                        }}>
                             <AiFillFolderAdd className="menu-icon" />
                             New folder
                         </button>
 
-                        <button onClick={() => fileInputRef?.current?.click()}>
+                        <button onClick={() => {
+                            fileInputRef?.current?.click()
+                            setShowNewMenu(false)
+                        }}>
                             <div className="menu-icon">
                                 <AiFillFile className="outer-icon"/>
                                 <IoArrowUpSharp className="inner-icon"/>
@@ -78,18 +122,27 @@ function Sidebar() {
                             File upload
                         </button>
 
-                        <button>
+                        <button onClick={() => {
+                            fileInputRef?.current?.click()
+                            setShowNewMenu(false)
+                        }}>
                             <div className="menu-icon">
                                 <AiFillFolder className="outer-icon"/>
                                 <IoArrowUpSharp className="inner-icon"/>
                             </div>
                             Folder upload
                         </button>
+
+                        <DynamicClip
+                            clipPathId={"newMenuClip"}
+                            animation={showNewMenu}
+                            numRects={6}
+                        />
                     </ul>
                 }
                 
                 <nav>
-                    <Link to="/all-files">
+                    <Link to="/LimeDrive">
                         <TfiFiles className="nav-icon all-files" />
                         All Files
                     </Link>
@@ -142,14 +195,32 @@ function Sidebar() {
                                 maxLength={255}
                                 ref={folderNameInputRef}
                             />
-                            {!isFolderNameValid && formData.newFolderName !='' && (
-                                <p className="error-message">Invalid folder name format.</p>
-                            )}
+                            <p className="error-and-loading">
+                            {loading ?
+                                <LoadingBar loading={loading}/>
+                                
+                                : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
+                                    <>Invalid folder name format.</>
+
+                                : backendError ?
+                                    <>Error. Please check connection.</>
+
+                                : null
+                            }
+                            </p>
                         </div>
 
                         <div className="btn-cont">
-                            <button className='cancel-btn' onClick={() => setShowNewFolderModal(false)}>Cancel</button>
-                            <button className='create-btn' onClick={handleCreateFolder}>Create</button>
+                            <button className='cancel-btn' onClick={() => setShowNewFolderModal(false)}>
+                                Cancel
+                            </button>
+                            <button 
+                                className='create-btn' 
+                                onClick={handleCreateFolder}
+                                disabled={formData.newFolderName == '' || backendError != null || !isFolderNameValid}
+                            >
+                                Create
+                            </button>
                         </div>
                         
                         <DynamicClip

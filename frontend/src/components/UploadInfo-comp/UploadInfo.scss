@@ -94,11 +94,6 @@
 
                 &.cancel-btn {
                     border: 2px dashed lime;
-
-                    &:disabled {
-                        opacity: 0.8;
-                        cursor: not-allowed;
-                    }
                 }
             }
         }

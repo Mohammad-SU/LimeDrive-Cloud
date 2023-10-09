@@ -4,6 +4,7 @@ import { FolderType } from '../types'
 
 interface FileContextType {
     currentPath: string
+    setCurrentPath: React.Dispatch<React.SetStateAction<string>>
 
     files: FileType[]
     folders: FolderType[]
@@ -30,7 +31,7 @@ export function useFileContext() {
 }
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
-    const [currentPath, setCurrentPath] = useState('all-files/'); // Change whenever user opens a folder, e.g. to all-files/documents/. Should be set to all-files/ by default/when user is on a separate page
+    const [currentPath, setCurrentPath] = useState("LimeDrive/"); // Change whenever user opens a folder, e.g. to LimeDrive/documents. Should be set to LimeDrive/ by default/when user is on a separate page
 
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
@@ -87,6 +88,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const contextValue: FileContextType = useMemo(() => {
         return {
             currentPath,
+            setCurrentPath,
 
             files,
             folders,

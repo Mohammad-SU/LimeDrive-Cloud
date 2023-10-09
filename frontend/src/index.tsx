@@ -22,7 +22,7 @@ const router = createBrowserRouter([
         element: <MainPage />,
         children: [
             {
-                path: "/all-files",
+                path: "/LimeDrive/*",
                 element: <FileList />,
             },
         ],

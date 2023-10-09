@@ -1,5 +1,6 @@
 import { memo, useMemo, useState, useEffect } from 'react'
 import "./FileList.scss"
+import { useLocation } from 'react-router-dom'
 import { useFileContext } from '../../contexts/FileContext'
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
@@ -9,7 +10,18 @@ import Folder from "./Folder-comp/Folder"
 import File from "./File-comp/File"
 
 function FileList() {
-    const { files, folders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
+    const [refresh, setRefresh] = useState(false);
+    useEffect(() => { // Trigger re-render when browser's back button is clicked
+        const handlePopstate = () => {
+            setRefresh((prevRefresh) => !prevRefresh);
+        };
+        window.addEventListener('popstate', handlePopstate);
+        return () => {
+            window.removeEventListener('popstate', handlePopstate);
+        };
+    }, []);
+
+    const { currentPath, setCurrentPath, files, folders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
 
     const handleItemSelection = (item: FileType | FolderType, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
@@ -95,20 +107,29 @@ function FileList() {
             window.removeEventListener('keydown', handleEscapeKey)
         }
     }, [selectedItems]);
+   
+    // Correct slashes to match app_paths
+    var path = window.location.pathname.slice(1);
+    path == "LimeDrive" ? path = "LimeDrive/" : path;
+    setCurrentPath(path)
+
+    const sortedFolders = useMemo(() => {
+        const filteredFolders = folders.filter(folder => folder.app_path.replace(folder.name, '') === currentPath);
+        return filteredFolders.slice().sort((a, b) => { // Sort A-Z by folder name
+            return a.name.localeCompare(b.name);
+        });
+    }, [folders, currentPath]);
 
     const sortedFiles = useMemo(() => {
-        return files.slice().sort((a, b) => { // Sort so most recently uploaded files will be at the beginning
+        const filteredFiles = files.filter(file => file.app_path.replace(file.name, '') === currentPath);
+        return filteredFiles.slice().sort((a, b) => { // Sort so most recently uploaded files will be at the beginning
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);
             return dateB.getTime() - dateA.getTime();
         });
-    }, [files]);
+    }, [files, currentPath]);
 
-    const sortedFolders = useMemo(() => {
-        return folders.slice().sort((a, b) => { // Sort A-Z by folder name
-            return a.name.localeCompare(b.name);
-        });
-    }, [folders]);
+    console.log(currentPath)
     
     const foldersMapped = sortedFolders.map(folder => {
         return <Folder

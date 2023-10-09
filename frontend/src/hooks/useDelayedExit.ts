@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 
-function useDelayedExit(shouldRender: boolean, delayMs: number, onExitCallback?: () => void) {
+interface DelayedExitProps {
+    shouldRender: boolean;
+    delayMs: number;
+    onExitCallback?: () => void;
+}
+
+function useDelayedExit({ shouldRender, delayMs, onExitCallback }: DelayedExitProps) {
     const [isVisible, setIsVisible] = useState(shouldRender);
 
     useEffect(() => {

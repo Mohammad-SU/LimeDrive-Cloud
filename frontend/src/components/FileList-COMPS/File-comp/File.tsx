@@ -61,7 +61,7 @@ function File({ file, onSelect }: FileProps) {
                 className={`list-checkbox ${showCheckbox ? "show-checkbox" : "hide-checkbox"}`} 
                 checked={isSelected}
             />
-            <p className="name">{file.name}</p>
+            <p className="name"><span>{file.name}</span></p>
             <p>{file.type}</p>
             <p>{formattedSize}</p>
             <p>{formattedDate}</p>

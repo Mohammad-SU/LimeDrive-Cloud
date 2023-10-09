@@ -69,7 +69,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const uploadFile = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file)
-        formData.append('app_path', currentPath + file.name) // e.g. app_path = all-files/LimeDrive.txt
+        formData.append('app_path', currentPath + file.name) // e.g. app_path = LimeDrive/LimeDrive.txt
 
         const source = axios.CancelToken.source();
         cancelTokenSource.current = source;
@@ -214,7 +214,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                                                     : fileErrors.has(file) ? 
                                                         <span>Error. Check connection.</span>
 
-                                                    : <>In <span className="link"><Link to={`all-files/${file.name}`}>all-files</Link></span></>
+                                                    : <>In <span className="link"><Link to={`LimeDrive/${file.name}`}>LimeDrive</Link></span></>
                                                 }
                                             </div>
                                         </div>
@@ -241,7 +241,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                                     <div className="file-info">
                                         <div className="name">{file.name}</div>
                                         <div className="location">
-                                            In <span className="link"><Link to={`all-files/${file.name}`}>all-files</Link></span>
+                                            In <span className="link"><Link to={`LimeDrive/${file.name}`}>LimeDrive</Link></span>
                                         </div>
                                     </div>
                                     <button>Copy Link</button>

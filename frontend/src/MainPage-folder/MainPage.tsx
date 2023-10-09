@@ -13,8 +13,11 @@ function MainPage() {
     const { token, user } = useUserContext();
 
     useEffect(() => {
-        if (!token && location.pathname == "/all-files") {
+        if (!token && location.pathname != "/auth") {
             navigate('/auth');
+        }
+        else if (token && location.pathname == "/") {
+            navigate('/LimeDrive');
         }
     }, [token]);
 

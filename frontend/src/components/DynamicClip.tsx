@@ -77,7 +77,7 @@ function DynamicClip({
     }, [animation]);
 
     return (
-        <svg width="0" height="0">
+        <svg width="0" height="0" style={{position: "absolute"}}>
             <defs>
             <clipPath id={clipPathId} clipPathUnits="objectBoundingBox">
                 {clipPathValues.map((value, index) => (

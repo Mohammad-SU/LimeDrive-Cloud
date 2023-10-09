@@ -127,6 +127,11 @@ body {
 
 button {
     @include btn-selection-styles;
+
+    &:disabled {
+        opacity: 0.8;
+        cursor: not-allowed;
+    }
 }
 
 .icon-btn {

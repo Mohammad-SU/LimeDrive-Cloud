@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useMemo } from 'react';
 
-export function useFormLogic<T>(initialState: T) {
+export function useFormLogic<T>(initialState: T, callback?: (event: ChangeEvent<HTMLInputElement>) => void) {
     const [formData, setFormData] = useState<T>(initialState);
 
     const handleInputChange = (
@@ -14,6 +14,10 @@ export function useFormLogic<T>(initialState: T) {
             ...prevData,
             [name]: trimmedValue,
         }));
+
+        if (callback) {
+            callback(event);
+        }
     }
 
     const memoizedFormData = useMemo(() => formData, [formData]);

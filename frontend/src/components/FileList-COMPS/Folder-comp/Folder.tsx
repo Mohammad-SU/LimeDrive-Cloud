@@ -1,5 +1,6 @@
 import { memo, useState, useEffect } from 'react'
 import { DateTime } from 'luxon';
+import { useNavigate, useLocation } from 'react-router-dom';
 import "./Folder.scss"
 import { FolderType } from '../../../types';
 import { useFileContext } from '../../../contexts/FileContext';
@@ -13,7 +14,7 @@ interface FolderProps {
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const { selectedItems } = useFileContext()
+    const { currentPath, setCurrentPath, selectedItems } = useFileContext()
 
     function formatDate(date: Date) {
         const dateTime = DateTime.fromJSDate(date).toLocal();
@@ -39,18 +40,28 @@ function Folder({ folder, onSelect }: FolderProps) {
         onSelect(folder, event, newIsSelected)
     }
 
+    const navigate = useNavigate()
+
+    const openFolder = () => {
+        navigate(folder.name)
+    }
+
     useEffect(() => { // Ensure correct rendering of selected folder
         setIsSelected(selectedItems.some(selectedItem => selectedItem.id === folder.id));
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
     
     return (
-        <div className={`Folder ${isSelected ? 'selected' : ''}`} onClick={handleFolderClick}>
+        <div 
+            className={`Folder ${isSelected ? 'selected' : ''}`} 
+            onClick={handleFolderClick}
+            onDoubleClick={openFolder}
+        >
             <Checkbox 
                 className={`list-checkbox ${showCheckbox ? "show-checkbox" : 'hide-checkbox'}`} 
                 checked={isSelected}
             />
-            <p className="name">{folder.name}</p>
+            <p className="name" onClick={openFolder}><span>{folder.name}</span></p>
             <p>--</p>
             <p>0 B</p>
             <p>{formattedDate}</p>

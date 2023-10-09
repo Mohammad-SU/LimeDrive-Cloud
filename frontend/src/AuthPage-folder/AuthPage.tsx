@@ -19,7 +19,7 @@ function AuthPage() {
 
     useEffect(() => {
         if (token && location.pathname == "/auth") {
-            navigate('/all-files');
+            navigate('/LimeDrive');
         }
     }, [token]);
 

@@ -87,6 +87,11 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                     flex: 3;
+
+                    span:hover {
+                        text-decoration: underline;
+                        cursor: pointer;
+                    }
                 }
             }
         }

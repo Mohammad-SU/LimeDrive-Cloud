@@ -17,8 +17,8 @@ function RegisterForm() {
     const [loading, setLoading] = useState<boolean>(false)
     const { api, setToken } = useUserContext();
     const navigate = useNavigate(); 
-    var backendError: AxiosError | null = null
-    var backendErrorMsg: string | null = null
+    let backendError: AxiosError | null = null
+    let backendErrorMsg: string | null = null
     const [formError, setFormError] = useState<string | null>(null)
 
     const isEmailValid = /^\S+@\S+\.\S+$/.test(formData.emailReg)
@@ -54,7 +54,7 @@ function RegisterForm() {
                     setFormError(null)
                     const { token } = response.data;
                     setToken(token);
-                    navigate("/all-files")
+                    navigate("/LimeDrive")
                 }
             }
             catch (error) {
