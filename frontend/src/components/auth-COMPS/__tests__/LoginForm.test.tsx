@@ -46,11 +46,9 @@ describe('Login Input Validation', () => {
 
 	it('should display "Invalid login details." if details are invalid. (Invalid username/email format and valid password format)', async () => {
 		interactWithLoginInputs('iaawd¦¦@,sawko=q-.a@@s^&&/s.a', '12345678');
-		let response = mock.onPost('/login').reply(400, { message: invalidLoginError });
+		mock.onPost('/login').reply(400, { message: invalidLoginError });
 
 		await waitFor(() => {
-			console.log(response)
-			console.log(domErrorText)
 			expect(domErrorText).toHaveTextContent(invalidLoginError);
 		});
 	});

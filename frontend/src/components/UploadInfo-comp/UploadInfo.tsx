@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import "../../global.scss"
 import "./UploadInfo.scss"
-import axios, { CancelTokenSource, CancelToken } from 'axios';
+import axios, { CancelTokenSource } from 'axios';
 import { Link } from 'react-router-dom'
 import { useUserContext } from '../../contexts/UserContext.tsx'
 import { useFileContext } from '../../contexts/FileContext.tsx';
@@ -69,7 +69,9 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const uploadFile = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file)
-        formData.append('app_path', currentPath + file.name) // e.g. app_path = LimeDrive/LimeDrive.txt
+        const app_path = currentPath.endsWith('/') ? currentPath + file.name : currentPath + '/' + file.name;
+        formData.append('app_path', app_path) // e.g. app_path = LimeDrive/LimeDrive.txt
+        console.log(app_path)
 
         const source = axios.CancelToken.source();
         cancelTokenSource.current = source;

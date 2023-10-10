@@ -1,8 +1,8 @@
 import { memo, useState, useEffect } from 'react'
 import { DateTime } from 'luxon';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import "./Folder.scss"
-import { FolderType } from '../../../types';
+import { FolderType, FileType } from '../../../types';
 import { useFileContext } from '../../../contexts/FileContext';
 import Checkbox from '../Checkbox-comp/Checkbox';
 
@@ -14,7 +14,7 @@ interface FolderProps {
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const { currentPath, setCurrentPath, selectedItems } = useFileContext()
+    const { selectedItems, files } = useFileContext()
 
     function formatDate(date: Date) {
         const dateTime = DateTime.fromJSDate(date).toLocal();
@@ -61,9 +61,11 @@ function Folder({ folder, onSelect }: FolderProps) {
                 className={`list-checkbox ${showCheckbox ? "show-checkbox" : 'hide-checkbox'}`} 
                 checked={isSelected}
             />
-            <p className="name" onClick={openFolder}><span>{folder.name}</span></p>
+            <p className="name">
+                <span onClick={openFolder}>{folder.name}</span>
+            </p>
             <p>--</p>
-            <p>0 B</p>
+            <p>--</p>
             <p>{formattedDate}</p>
         </div>
     )

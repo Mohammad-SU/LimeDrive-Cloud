@@ -1,18 +1,19 @@
-folder functionality (moving files to them/uploading files to them, etc.)
+make it so files can be moved to folders
+fix file selections when user moves to a different folder
+add proper icons for FileList and UploadInfo
 
+make website title reflect page/folder accurately
 change preview toolbar button to "open" if folder is selected, and hide button if multiple items are selected
 change styles for folder/file name spans on hover?
 folder uploading
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
-display folders and files in correct places (filter paths using array/array.some in fileList to show only files/folders which are directly in the folder)
 test if laravel schedule cronjob is working properly (change config, schedule, pruning expired limit to 1 minute)
 file previews
 implement all toolbar functions
 toast notification for actions
 Make "in <folder>" in uploadInfo a jump link and highlight/blink the file after jumping to it
 implement sorting categories in the place of toolbar when no files are selected
-implement DynamicClip animations for more components (consider increaing useDelayedExit to be more than animationDuration? check if it makes a difference)
-implement current path display - above toolbar/sorting categories
+implement DynamicClip animations for more components/pages
 implement server-side validation for files and folders (size, allowed characters)
 check for duplication when uploading - add (1) or more numbers to end of file name if duplicate
 fix date (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)

@@ -7,17 +7,21 @@
 
     .FileList-main-header {
         position: sticky;
-        margin-right: 0.1rem;
+        margin: 0 2.5rem;
         top: 0;
         z-index: 1;
         background: black;
 
+        .Breadcrumb {
+            display: flex;
+            margin-top: 1.1rem;
+            font-size: 1.4rem;
+        }
+
         .MainToolbar {
             display: flex;
             justify-content: space-between;
-            padding-top: 1.4rem;
-            padding-left: 2.5rem;
-            padding-right: 2.5rem;
+            margin-top: 1.1rem;
         }
 
         .list-header-row {
@@ -25,8 +29,6 @@
             align-items: center;
             padding-top: 1.2rem;
             padding-bottom: 1.1rem;
-            padding-left: 2.5rem;
-            padding-right: 2.5rem;
     
             background: black;
             border-bottom: .125rem solid lime;

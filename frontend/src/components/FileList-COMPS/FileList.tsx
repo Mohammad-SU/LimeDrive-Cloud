@@ -1,9 +1,10 @@
 import { memo, useMemo, useState, useEffect } from 'react'
 import "./FileList.scss"
-import { useLocation } from 'react-router-dom'
+import { Location, useLocation } from 'react-router-dom'
 import { useFileContext } from '../../contexts/FileContext'
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
+import Breadcrumb from './Breadcrumb-comp/Breadcrumb'
 import MainToolbar from '../Toolbar-COMPS/MainToolbar-comp/MainToolbar'
 import Checkbox from './Checkbox-comp/Checkbox'
 import Folder from "./Folder-comp/Folder"
@@ -107,10 +108,14 @@ function FileList() {
             window.removeEventListener('keydown', handleEscapeKey)
         }
     }, [selectedItems]);
+
+    useEffect(() => {
+        setSelectedItems([])
+    }, [currentPath])
    
     // Correct slashes to match app_paths
-    var path = window.location.pathname.slice(1);
-    path == "LimeDrive" ? path = "LimeDrive/" : path;
+    const location = useLocation()
+    var path = location.pathname.slice(1) + "/";
     setCurrentPath(path)
 
     const sortedFolders = useMemo(() => {
@@ -129,8 +134,6 @@ function FileList() {
         });
     }, [files, currentPath]);
 
-    console.log(currentPath)
-    
     const foldersMapped = sortedFolders.map(folder => {
         return <Folder
             key={folder.id}
@@ -150,6 +153,7 @@ function FileList() {
     return (
         <div className="FileList">
             <div className="FileList-main-header">
+                <Breadcrumb />
                 <MainToolbar />
 
                 <div className="list-header-row">
