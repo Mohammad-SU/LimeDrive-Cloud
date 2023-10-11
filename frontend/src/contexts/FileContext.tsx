@@ -6,6 +6,9 @@ interface FileContextType {
     currentPath: string
     setCurrentPath: React.Dispatch<React.SetStateAction<string>>
 
+    draggedItemId: string
+    setDraggedItemId: React.Dispatch<React.SetStateAction<string>>
+
     files: FileType[]
     folders: FolderType[]
     setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
@@ -32,6 +35,7 @@ export function useFileContext() {
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
     const [currentPath, setCurrentPath] = useState("LimeDrive/"); // Change whenever user opens a folder, e.g. to LimeDrive/documents. Should be set to LimeDrive/ by default/when user is on a separate page
+    const [draggedItemId, setDraggedItemId] = useState("")
 
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
@@ -90,6 +94,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             currentPath,
             setCurrentPath,
 
+            draggedItemId,
+            setDraggedItemId,
+
             files,
             folders,
             setFiles,
@@ -103,7 +110,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             addToSelectedItems,
             removeFromSelectedItems
         };
-    }, [currentPath, files, folders, selectedItems])
+    }, [currentPath, draggedItemId, files, folders, selectedItems])
 
     return (
         <FileContext.Provider value={contextValue}>

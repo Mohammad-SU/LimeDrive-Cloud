@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <FileProvider>
             <UserProvider>
-                    <RouterProvider router={router} />
+                <RouterProvider router={router} />
             </UserProvider>
         </FileProvider>
     </React.StrictMode>,

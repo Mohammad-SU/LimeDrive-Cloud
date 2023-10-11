@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { useFileContext } from '../../../contexts/FileContext'
 import { AiOutlineDownload, AiOutlineStar } from 'react-icons/ai'
 import { BsEye, BsLink45Deg, BsShare } from 'react-icons/bs'
-import { SlTrash } from 'react-icons/sl'
+import { SlTrash, SlCursorMove } from 'react-icons/sl'
 import { GoPencil } from 'react-icons/go'
 import "./MainToolbar.scss"
 
@@ -21,10 +21,14 @@ function MainToolbar() {
                     Preview
                 </button>
                 <button>
-                    <SlTrash className="tool-icon decrease trash"/>
+                    <SlTrash className="tool-icon trash"/>
                     Delete
                 </button>
                 <div className="divider" />
+                <button>
+                    <SlCursorMove className="tool-icon move"/>
+                    Move
+                </button>
                 <button>
                     <GoPencil className="tool-icon"/>
                     Rename

@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import "./File.scss"
 import { FileType } from '../../../types/index.ts';
 import { useFileContext } from '../../../contexts/FileContext.tsx';
+import { useDraggable } from '@dnd-kit/core';
 import Checkbox from '../Checkbox-comp/Checkbox.tsx';
 
 interface FileProps {
@@ -11,26 +12,9 @@ interface FileProps {
 }
 
 function File({ file, onSelect }: FileProps) {
-    function formatBytes(bytes: number) {
-        if (bytes < 1048576) {
-            return (bytes / 1024).toFixed(2) + " KB";
-        } else {
-            return (bytes / 1048576).toFixed(2) + " MB";
-        }
-    }
-    const formattedSize = formatBytes(file.size);
-
-    function formatDate(date: Date) {
-        const dateTime = DateTime.fromJSDate(date).toLocal();
-        return dateTime.toFormat('dd/MM/yyyy HH:mm');
-    }
-    const formattedDate = formatDate(new Date(file.date));
-
-    // console.log(file.date)
-
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const { selectedItems } = useFileContext()
+    const { selectedItems, setDraggedItemId } = useFileContext()
 
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
         event.preventDefault();
@@ -55,9 +39,35 @@ function File({ file, onSelect }: FileProps) {
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
 
+    const {attributes, listeners, setNodeRef} = useDraggable({
+        id: file.id,
+    });
+
+    function formatBytes(bytes: number) {
+        if (bytes < 1048576) {
+            return (bytes / 1024).toFixed(2) + " KB";
+        } else {
+            return (bytes / 1048576).toFixed(2) + " MB";
+        }
+    }
+    const formattedSize = formatBytes(file.size);
+
+    function formatDate(date: Date) {
+        const dateTime = DateTime.fromJSDate(date).toLocal();
+        return dateTime.toFormat('dd/MM/yyyy HH:mm');
+    }
+    const formattedDate = formatDate(new Date(file.date));
+    // console.log(file.date)
+
     return (
-        <div className={`File ${isSelected ? 'selected' : ''}`} onClick={handleFileClick}>
-            <Checkbox 
+        <div 
+            className={`File ${isSelected ? 'selected' : ''}`} 
+            onClick={handleFileClick}
+            ref={setNodeRef} 
+            {...listeners} 
+            {...attributes}
+        >
+            <Checkbox
                 className={`list-checkbox ${showCheckbox ? "show-checkbox" : "hide-checkbox"}`} 
                 checked={isSelected}
             />

@@ -15,7 +15,7 @@
             .tool-icon {
                 font-size: 1.4rem;
 
-                &.eye, &.trash {
+                &.eye, &.trash, &.move {
                     font-size: 1.25rem;
                 }
 
@@ -33,6 +33,7 @@
         .divider {
             background: lime;
             width: 0.1rem;
+            margin: 0 0.2rem;
         }
     }
 }

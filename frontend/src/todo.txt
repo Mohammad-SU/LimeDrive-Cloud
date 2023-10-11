@@ -1,7 +1,7 @@
 make it so files can be moved to folders
 fix file selections when user moves to a different folder
 add proper icons for FileList and UploadInfo
-
+turn beginning of breadcrumb into elipses/dropdown to prevent overflow on long paths
 make website title reflect page/folder accurately
 change preview toolbar button to "open" if folder is selected, and hide button if multiple items are selected
 change styles for folder/file name spans on hover?
@@ -36,6 +36,8 @@ recycle bin
 malware check
 check if file extension column is not needed on database and then remove if so
 add backgrounds/more details for loading pages
+add info and tips readme file that is stored in all user's file list
+add default files/folders for showcasing along with "restore default files" if user's want them back if they deleted them (without resetting user data and tell them that this won't)
 responsive CSS and check if correct on other browsers
 email verification
 allow Google and Facebook to be used for logins? (OAuth)

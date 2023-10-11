@@ -1,6 +1,7 @@
 import { memo, useMemo, useState, useEffect } from 'react'
 import "./FileList.scss"
-import { Location, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
+import { DragOverlay } from '@dnd-kit/core';
 import { useFileContext } from '../../contexts/FileContext'
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
@@ -22,7 +23,7 @@ function FileList() {
         };
     }, []);
 
-    const { currentPath, setCurrentPath, files, folders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
+    const { currentPath, setCurrentPath, draggedItemId, files, folders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
 
     const handleItemSelection = (item: FileType | FolderType, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
@@ -174,6 +175,10 @@ function FileList() {
                 {foldersMapped}
                 {filesMapped}
             </div>
+
+            <DragOverlay className="drag-overlay" style={{width: 300}}>
+                {draggedItemId && <p>{`Item ${draggedItemId}`}</p>}
+            </DragOverlay>
         </div>
     )
 }
