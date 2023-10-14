@@ -107,7 +107,7 @@
                     }
 
                     span:hover {
-                        text-decoration: underline;
+                        @include other-selection-styles;
                         cursor: pointer;
                     }
                 }

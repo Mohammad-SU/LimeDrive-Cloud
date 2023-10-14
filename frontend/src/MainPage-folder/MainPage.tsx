@@ -12,7 +12,6 @@ function MainPage() {
     const navigate = useNavigate();
     const location = useLocation()
     const { token, user } = useUserContext();
-    const { setDraggedItemId } = useFileContext()
 
     useEffect(() => {
         if (!token && location.pathname != "/auth") {
