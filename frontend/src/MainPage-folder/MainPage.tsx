@@ -2,8 +2,6 @@ import { memo, useEffect } from 'react'
 import "./MainPage.scss"
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUserContext } from '../contexts/UserContext.tsx';
-import { DndContext, DragStartEvent } from '@dnd-kit/core';
-import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header-comp/Header.tsx"
 import Sidebar from "../components/Sidebar-comp/Sidebar.tsx"
@@ -29,16 +27,7 @@ function MainPage() {
         return null
     }
 
-    function handleDragStart(event: DragStartEvent) {
-        setDraggedItemId(event.active.id.toString());
-    }
-      
-    function handleDragEnd() {
-        setDraggedItemId("");
-    }
-
     return (
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[snapCenterToCursor]}>
             <div className="MainPage">
                 <Header />
                 <div className="main-content">
@@ -48,7 +37,6 @@ function MainPage() {
                     </div>
                 </div>
             </div>
-        </DndContext>
     )
 }
 

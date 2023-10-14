@@ -6,9 +6,6 @@ interface FileContextType {
     currentPath: string
     setCurrentPath: React.Dispatch<React.SetStateAction<string>>
 
-    draggedItemId: string
-    setDraggedItemId: React.Dispatch<React.SetStateAction<string>>
-
     files: FileType[]
     folders: FolderType[]
     setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
@@ -16,6 +13,9 @@ interface FileContextType {
 
     addFiles: (files: FileType[]) => void;
     addFolders: (folders: FolderType[]) => void
+
+    updateFiles: (updates: { [fileId: string]: Partial<FileType> }) => void;
+    updateFolders: (updates: { [folderId: string]: Partial<FolderType> }) => void;
 
     selectedItems: (FileType | FolderType)[];
     setSelectedItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
@@ -35,7 +35,6 @@ export function useFileContext() {
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
     const [currentPath, setCurrentPath] = useState("LimeDrive/"); // Change whenever user opens a folder, e.g. to LimeDrive/documents. Should be set to LimeDrive/ by default/when user is on a separate page
-    const [draggedItemId, setDraggedItemId] = useState("")
 
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
@@ -69,6 +68,32 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
+    const updateFiles = (updates: { [fileId: string]: Partial<FileType> }) => {
+        setFiles((prevFiles) => {
+            const updatedFiles = prevFiles.map((file) => {
+                const update = updates[file.id];
+                if (update) {
+                    return { ...file, ...update };
+                }
+                return file;
+            });
+            return updatedFiles;
+        });
+    };
+
+    const updateFolders = (updates: { [folderId: string]: Partial<FolderType> }) => {
+        setFolders((prevFolders) => {
+            const updatedFolders = prevFolders.map((folder) => {
+                const update = updates[folder.id];
+                if (update) {
+                    return { ...folder, ...update };
+                }
+                return folder;
+            });
+            return updatedFolders;
+        });
+    };
+
     const addToSelectedItems = (items: (FileType | FolderType) | (FileType | FolderType)[]) => {
         setSelectedItems((prevSelected) => {
             const itemsArray = Array.isArray(items) ? items : [items]; // Convert singular to array
@@ -94,9 +119,6 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             currentPath,
             setCurrentPath,
 
-            draggedItemId,
-            setDraggedItemId,
-
             files,
             folders,
             setFiles,
@@ -105,12 +127,15 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             addFiles,
             addFolders,
 
+            updateFiles,
+            updateFolders,
+
             selectedItems,
             setSelectedItems,
             addToSelectedItems,
             removeFromSelectedItems
         };
-    }, [currentPath, draggedItemId, files, folders, selectedItems])
+    }, [currentPath, files, folders, selectedItems])
 
     return (
         <FileContext.Provider value={contextValue}>

@@ -4,6 +4,7 @@ import "./File.scss"
 import { FileType } from '../../../types/index.ts';
 import { useFileContext } from '../../../contexts/FileContext.tsx';
 import { useDraggable } from '@dnd-kit/core';
+import { AiOutlineFile } from 'react-icons/ai';
 import Checkbox from '../Checkbox-comp/Checkbox.tsx';
 
 interface FileProps {
@@ -14,7 +15,7 @@ interface FileProps {
 function File({ file, onSelect }: FileProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const { selectedItems, setDraggedItemId } = useFileContext()
+    const { selectedItems } = useFileContext()
 
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
         event.preventDefault();
@@ -39,8 +40,9 @@ function File({ file, onSelect }: FileProps) {
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
 
-    const {attributes, listeners, setNodeRef} = useDraggable({
+    const {attributes, listeners, isDragging, setNodeRef} = useDraggable({
         id: file.id,
+        data: file,
     });
 
     function formatBytes(bytes: number) {
@@ -61,7 +63,11 @@ function File({ file, onSelect }: FileProps) {
 
     return (
         <div 
-            className={`File ${isSelected ? 'selected' : ''}`} 
+            className={`
+                File 
+                ${isSelected ? 'selected' : ''}
+                ${isDragging ? 'dragging' : ''}
+            `} 
             onClick={handleFileClick}
             ref={setNodeRef} 
             {...listeners} 
@@ -71,7 +77,10 @@ function File({ file, onSelect }: FileProps) {
                 className={`list-checkbox ${showCheckbox ? "show-checkbox" : "hide-checkbox"}`} 
                 checked={isSelected}
             />
-            <p className="name"><span>{file.name}</span></p>
+            <p className="name">
+                <AiOutlineFile className="icon" />
+                <span>{file.name}</span>
+            </p>
             <p>{file.type}</p>
             <p>{formattedSize}</p>
             <p>{formattedDate}</p>

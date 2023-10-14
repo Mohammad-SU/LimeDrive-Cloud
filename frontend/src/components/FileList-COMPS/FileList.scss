@@ -66,9 +66,17 @@
             position: relative;
             display: flex;
             align-items: center;
-            padding: 1.3rem 0;
+            padding: 1rem 0;
             border-bottom: .0625rem solid rgba(0, 255, 0, 0.700);
             cursor: default;
+
+            &.over {
+                outline: 2px solid lime;
+            }
+            &.dragging {
+                opacity: 0.8;
+                background: rgba(0, 255, 0, 0.150);
+            }
 
             &:hover .list-checkbox {
                 opacity: 1;
@@ -85,10 +93,18 @@
                 flex: 1;
         
                 &.name {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.7rem;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     flex: 3;
+
+                    .icon {
+                        font-size: 2.2rem;
+                        stroke-width: 1px;
+                    }
 
                     span:hover {
                         text-decoration: underline;
@@ -100,6 +116,14 @@
     }
 
     .drag-overlay {
+        display: flex;
+        align-items: center;
+
+        padding: 0 1rem;
+        z-index: 9999;
+
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.403);
         border: 2px dashed lime;
+        background: black;
     }
 }

@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import "./Folder.scss"
 import { FolderType } from '../../../types';
 import { useFileContext } from '../../../contexts/FileContext';
-import { useDroppable } from '@dnd-kit/core';
+import { useDraggable, useDroppable, useDndMonitor } from '@dnd-kit/core';
+import { AiOutlineFolder } from 'react-icons/ai';
 import Checkbox from '../Checkbox-comp/Checkbox';
 
 interface FolderProps {
@@ -15,7 +16,7 @@ interface FolderProps {
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const { selectedItems, files } = useFileContext()
+    const { selectedItems, currentPath } = useFileContext()
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
         event.preventDefault();
@@ -40,13 +41,30 @@ function Folder({ folder, onSelect }: FolderProps) {
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
 
-    const {isOver, setNodeRef} = useDroppable({
+    const {attributes, listeners, isDragging, setNodeRef: dragSetNodeRef} = useDraggable({
         id: folder.id,
+        data: folder,
+    });
+
+    const {isOver, setNodeRef: dropSetNodeRef} = useDroppable({
+        id: folder.id,
+        data: folder,
+    });
+
+    const [sameDragAndDropId, setSameDragAndDropId] = useState(false)
+    useDndMonitor({
+        onDragOver(event) {
+            event.active.id == event.over?.id ?
+                setSameDragAndDropId(true) 
+                : setSameDragAndDropId(false)
+        },
     });
 
     const navigate = useNavigate()
     const openFolder = () => {
-        navigate(folder.name)
+        const firstSlashIndex = currentPath.indexOf('/');
+        const newPath = currentPath.substring(firstSlashIndex + 1);
+        navigate(newPath + folder.name);
     }
 
     function formatDate(date: Date) {
@@ -57,16 +75,26 @@ function Folder({ folder, onSelect }: FolderProps) {
     
     return (
         <div 
-            className={`Folder ${isSelected ? 'selected' : ''} ${isOver ? 'over' : ''}`}
+            className={`
+                Folder ${isSelected ? 'selected' : ''} 
+                ${isOver && !sameDragAndDropId ? 'over' : ''} 
+                ${isDragging ? 'dragging' : ''}
+            `}
             onClick={handleFolderClick}
             onDoubleClick={openFolder}
-            ref={setNodeRef}
+            ref={(node) => {
+                dragSetNodeRef(node);
+                dropSetNodeRef(node);
+            }}
+            {...listeners} 
+            {...attributes}
         >
             <Checkbox
                 className={`list-checkbox ${showCheckbox ? "show-checkbox" : 'hide-checkbox'}`}
                 checked={isSelected}
             />
             <p className="name">
+                <AiOutlineFolder className="icon" />
                 <span onClick={openFolder}>{folder.name}</span>
             </p>
             <p>--</p>

@@ -1,4 +1,6 @@
-make it so files can be moved to folders
+add backend functionality for file moving
+finsish implementing file/folder dragging
+
 fix file selections when user moves to a different folder
 add proper icons for FileList and UploadInfo
 turn beginning of breadcrumb into elipses/dropdown to prevent overflow on long paths

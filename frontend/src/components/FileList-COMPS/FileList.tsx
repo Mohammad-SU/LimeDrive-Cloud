@@ -1,7 +1,8 @@
 import { memo, useMemo, useState, useEffect } from 'react'
 import "./FileList.scss"
 import { useLocation } from 'react-router-dom'
-import { DragOverlay } from '@dnd-kit/core';
+import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSensors, MouseSensor, TouchSensor } from '@dnd-kit/core';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { useFileContext } from '../../contexts/FileContext'
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
@@ -23,7 +24,28 @@ function FileList() {
         };
     }, []);
 
-    const { currentPath, setCurrentPath, draggedItemId, files, folders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
+    const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
+    
+    // Correct slashes to match app_paths
+    const location = useLocation()
+    var path = decodeURIComponent(location.pathname.slice(1) + "/")
+    setCurrentPath(path)
+
+    const sortedFolders = useMemo(() => {
+        const filteredFolders = folders.filter(folder => folder.app_path.replace(folder.name, '') === currentPath);
+        return filteredFolders.slice().sort((a, b) => { // Sort A-Z by folder name
+            return a.name.localeCompare(b.name);
+        });
+    }, [folders, currentPath]);
+
+    const sortedFiles = useMemo(() => {
+        const filteredFiles = files.filter(file => file.app_path.replace(file.name, '') === currentPath);
+        return filteredFiles.slice().sort((a, b) => { // Sort so most recently uploaded files will be at the beginning
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateB.getTime() - dateA.getTime();
+        });
+    }, [files, currentPath]);
 
     const handleItemSelection = (item: FileType | FolderType, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
@@ -61,41 +83,36 @@ function FileList() {
         // setLastClickedItem(Item)
     }
 
-    const [selectAll, setSelectAll] = useState(false);
+    const [showSelectAll, setShowSelectAll] = useState(false);
     const [showDeselectAll, setShowDeselectAll] = useState(false)
 
     const handleHeaderCheckboxClick = () => {
-        if (!selectAll && !showDeselectAll) {
-            setSelectAll(true)
-            addToSelectedItems(files)
-            addToSelectedItems(folders)
+        if (!showSelectAll && !showDeselectAll) {
+            setShowSelectAll(true)
+            addToSelectedItems(sortedFiles)
+            addToSelectedItems(sortedFolders)
         }
         else {
-            setSelectAll(false)
+            setShowSelectAll(false)
             setShowDeselectAll(false)
-            removeFromSelectedItems(files)
-            removeFromSelectedItems(folders)
+            removeFromSelectedItems(sortedFiles)
+            removeFromSelectedItems(sortedFolders)
         }
     };
 
     useEffect(() => { // Makes sure header-row checkbox looks correct based on items
-        if (files.length + folders.length == 0) {
-            setSelectAll(false)
+        if (selectedItems.length == 0) {
+            setShowSelectAll(false)
+            setShowDeselectAll(false)
         }
-        else if (selectedItems.length < files.length + folders.length) { 
-            setSelectAll(false)
+        else if (selectedItems.length < (sortedFiles.length + sortedFolders.length)) { 
+            setShowSelectAll(false)
             setShowDeselectAll(true)
         }
-        else {
-            setShowDeselectAll(false)
-            setSelectAll(true)
-        }
-
-        if (selectedItems.length == 0) {
+        else if (selectedItems.length == (sortedFiles.length + sortedFolders.length)) { 
+            setShowSelectAll(true)
             setShowDeselectAll(false)
         }
-
-        console.log(selectedItems)
 
         const handleEscapeKey = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
@@ -113,27 +130,45 @@ function FileList() {
     useEffect(() => {
         setSelectedItems([])
     }, [currentPath])
-   
-    // Correct slashes to match app_paths
-    const location = useLocation()
-    var path = location.pathname.slice(1) + "/";
-    setCurrentPath(path)
 
-    const sortedFolders = useMemo(() => {
-        const filteredFolders = folders.filter(folder => folder.app_path.replace(folder.name, '') === currentPath);
-        return filteredFolders.slice().sort((a, b) => { // Sort A-Z by folder name
-            return a.name.localeCompare(b.name);
-        });
-    }, [folders, currentPath]);
+    const mouseSensor = useSensor(MouseSensor, {
+        activationConstraint: {
+            distance: 10, // Require the mouse to move by 10 pixels before activating
+        },
+    });
+    const touchSensor = useSensor(TouchSensor, {
+        // Press delay of 200ms, with tolerance of 20px of movement
+        activationConstraint: {
+            delay: 200,
+            tolerance: 5,
+        },
+    });
+    const sensors = useSensors(mouseSensor, touchSensor)
 
-    const sortedFiles = useMemo(() => {
-        const filteredFiles = files.filter(file => file.app_path.replace(file.name, '') === currentPath);
-        return filteredFiles.slice().sort((a, b) => { // Sort so most recently uploaded files will be at the beginning
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return dateB.getTime() - dateA.getTime();
-        });
-    }, [files, currentPath]);
+    const [draggedItem, setDraggedItem] = useState<Record<string, any>>()
+    const [droppedOnItem, setDroppedOnItem] = useState<Record<string, any>>()
+
+    function handleDragStart(event: DragStartEvent) {
+        setDraggedItem(event.active.data.current);
+    }
+    function handleDragEnd(event: DragEndEvent) {
+        const newDroppedOnItem = event.over?.data.current
+
+        if (draggedItem && newDroppedOnItem && draggedItem.id != newDroppedOnItem.id) {
+            setDroppedOnItem(newDroppedOnItem)
+            if (draggedItem.type == undefined) {
+                updateFolders({
+                    [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name }
+                })
+            }
+            else {
+                updateFiles({
+                    [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name },
+                });
+            }
+        }
+
+    }
 
     const foldersMapped = sortedFolders.map(folder => {
         return <Folder
@@ -152,34 +187,36 @@ function FileList() {
     })
 
     return (
-        <div className="FileList">
-            <div className="FileList-main-header">
-                <Breadcrumb />
-                <MainToolbar />
+        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[snapCenterToCursor]} sensors={sensors}>
+            <div className="FileList">
+                <div className="FileList-main-header">
+                    <Breadcrumb />
+                    <MainToolbar />
 
-                <div className="list-header-row">
-                    <Checkbox
-                        className={`list-checkbox ${selectAll || showDeselectAll ? "show-checkbox" : "hide-checkbox"}`}
-                        checked={selectAll}
-                        onClick={handleHeaderCheckboxClick}
-                        showMinus={showDeselectAll}
-                    />
-                    <p className="name-header">Name</p>
-                    <p>Type</p>
-                    <p>Size</p>
-                    <p>Upload Date (D/M/Y)</p>
+                    <div className="list-header-row">
+                        <Checkbox
+                            className={`list-checkbox ${showSelectAll || showDeselectAll ? "show-checkbox" : "hide-checkbox"}`}
+                            checked={showSelectAll}
+                            onClick={handleHeaderCheckboxClick}
+                            showMinus={showDeselectAll}
+                        />
+                        <p className="name-header">Name</p>
+                        <p>Type</p>
+                        <p>Size</p>
+                        <p>Upload Date (D/M/Y)</p>
+                    </div>
                 </div>
-            </div>
 
-            <div className="main-list">
-                {foldersMapped}
-                {filesMapped}
-            </div>
+                <div className="main-list">
+                    {foldersMapped}
+                    {filesMapped}
+                </div>
 
-            <DragOverlay className="drag-overlay" style={{width: 300}}>
-                {draggedItemId && <p>{`Item ${draggedItemId}`}</p>}
-            </DragOverlay>
-        </div>
+                <DragOverlay className="drag-overlay" style={{width: 300}}>
+                    {draggedItem && <p>{draggedItem.name}</p>}
+                </DragOverlay>
+            </div>
+        </DndContext>
     )
 }
 
