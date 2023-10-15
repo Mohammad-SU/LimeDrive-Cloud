@@ -132,14 +132,13 @@ function Sidebar() {
                             </div>
                             Folder upload
                         </button>
-
-                        <DynamicClip
-                            clipPathId={"newMenuClip"}
-                            animation={showNewMenu}
-                            numRects={6}
-                        />
                     </ul>
                 }
+                <DynamicClip
+                    clipPathId={"newMenuClip"}
+                    animation={showNewMenu}
+                    numRects={6}
+                />
                 
                 <nav>
                     <Link to="/LimeDrive">
