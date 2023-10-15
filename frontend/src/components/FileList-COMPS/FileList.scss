@@ -7,7 +7,8 @@
 
     .FileList-main-header {
         position: sticky;
-        margin: 0 2.5rem;
+        padding: 0 2.5rem;
+        margin-right: 0.1rem;
         top: 0;
         z-index: 1;
         background: black;
@@ -118,6 +119,7 @@
     .drag-overlay {
         display: flex;
         align-items: center;
+        gap: 0.5rem;
 
         padding: 0 1rem;
         z-index: 9999;
@@ -125,5 +127,12 @@
         box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.403);
         border: 2px dashed lime;
         background: black;
+
+        .drag-icon-folder {
+            font-size: 2.3rem;
+        }
+        .drag-icon-file {
+            font-size: 2rem;
+        }
     }
 }

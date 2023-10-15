@@ -42,7 +42,6 @@ function MainToolbar() {
             <div className="sharing-tools">
                 <button>
                     <BsLink45Deg className="tool-icon link"/>
-                    Copy link
                 </button> {/* change to link icon only? */}
                 <button>
                     <BsShare className="tool-icon share"/>

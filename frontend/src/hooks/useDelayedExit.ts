@@ -6,7 +6,7 @@ interface DelayedExitProps {
     onExitCallback?: () => void;
 }
 
-function useDelayedExit({ shouldRender, delayMs, onExitCallback }: DelayedExitProps) {
+function useDelayedExit({ shouldRender, delayMs, onExitCallback }: DelayedExitProps) { // This hook is used so that there is enough time for the reverse/closing DynamicClip animation to play, similar to AnimatePresence in framer motion
     const [isVisible, setIsVisible] = useState(shouldRender);
 
     useEffect(() => {

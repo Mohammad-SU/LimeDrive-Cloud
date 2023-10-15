@@ -1,8 +1,9 @@
-add backend functionality for file moving
-finsish implementing file/folder dragging
+finish file moving functionality (when moving folders update all app_paths of whatever is nested in it)
+add backend functions for file moving
+implement more efficient search algorithms?
 
 fix file selections when user moves to a different folder
-add proper icons for FileList and UploadInfo
+add more specific/better icons for files in FileList and UploadInfo
 turn beginning of breadcrumb into elipses/dropdown to prevent overflow on long paths
 make website title reflect page/folder accurately
 change preview toolbar button to "open" if folder is selected, and hide button if multiple items are selected
@@ -17,7 +18,8 @@ Make "in <folder>" in uploadInfo a jump link and highlight/blink the file after 
 implement sorting categories in the place of toolbar when no files are selected
 implement DynamicClip animations for more components/pages
 implement server-side validation for files and folders (size, allowed characters)
-check for duplication when uploading - add (1) or more numbers to end of file name if duplicate
+check for duplication when uploading - add (1) or more numbers to end of file name if there is a duplicate in same path
+check for duplication when user tries to add folders, prevent folder creation if there is duplicate in same path
 fix date (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
 decrease header sizings?
 box shadows?
@@ -28,13 +30,13 @@ implement "space left" on bottom left corner
 add left click dropdown menu
 add tooltips (in gap inside toolbar/space after sorting categories?)
 double click files/folders to view
-file moving
 file sharing
 settings page
 react virtualisation for large lists
 gallery
 starred
 recycle bin
+finish implementing search function
 malware check
 check if file extension column is not needed on database and then remove if so
 add backgrounds/more details for loading pages

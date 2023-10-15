@@ -11,25 +11,17 @@ import MainToolbar from '../Toolbar-COMPS/MainToolbar-comp/MainToolbar'
 import Checkbox from './Checkbox-comp/Checkbox'
 import Folder from "./Folder-comp/Folder"
 import File from "./File-comp/File"
+import { AiOutlineFile, AiOutlineFolder } from 'react-icons/ai';
 
 function FileList() {
-    const [refresh, setRefresh] = useState(false);
-    useEffect(() => { // Trigger re-render when browser's back button is clicked
-        const handlePopstate = () => {
-            setRefresh((prevRefresh) => !prevRefresh);
-        };
-        window.addEventListener('popstate', handlePopstate);
-        return () => {
-            window.removeEventListener('popstate', handlePopstate);
-        };
-    }, []);
-
     const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
     
     // Correct slashes to match app_paths
     const location = useLocation()
-    var path = decodeURIComponent(location.pathname.slice(1) + "/")
-    setCurrentPath(path)
+    const path = decodeURIComponent(location.pathname.slice(1) + "/")
+    useEffect(() => {
+        setCurrentPath(path)
+    }, [path]);
 
     const sortedFolders = useMemo(() => {
         const filteredFolders = folders.filter(folder => folder.app_path.replace(folder.name, '') === currentPath);
@@ -154,20 +146,21 @@ function FileList() {
     function handleDragEnd(event: DragEndEvent) {
         const newDroppedOnItem = event.over?.data.current
 
-        if (draggedItem && newDroppedOnItem && draggedItem.id != newDroppedOnItem.id) {
-            setDroppedOnItem(newDroppedOnItem)
-            if (draggedItem.type == undefined) {
-                updateFolders({
-                    [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name }
-                })
-            }
-            else {
-                updateFiles({
-                    [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name },
-                });
-            }
-        }
+        // if (draggedItem && newDroppedOnItem && draggedItem.id != newDroppedOnItem.id) {
+        //     setDroppedOnItem(newDroppedOnItem)
+        //     if (draggedItem.type == undefined) {
+        //         updateFolders({
+        //             [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name }
+        //         })
+        //     }
+        //     else {
+        //         updateFiles({
+        //             [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name },
+        //         });
+        //     }
+        // }
 
+        console.log(newDroppedOnItem?.app_apth)
     }
 
     const foldersMapped = sortedFolders.map(folder => {
@@ -203,7 +196,7 @@ function FileList() {
                         <p className="name-header">Name</p>
                         <p>Type</p>
                         <p>Size</p>
-                        <p>Upload Date (D/M/Y)</p>
+                        <p>Uploaded (D/M/Y)</p>
                     </div>
                 </div>
 
@@ -213,7 +206,15 @@ function FileList() {
                 </div>
 
                 <DragOverlay className="drag-overlay" style={{width: 300}}>
-                    {draggedItem && <p>{draggedItem.name}</p>}
+                    {draggedItem &&
+                        <>
+                            {draggedItem.type == undefined ? 
+                                <AiOutlineFolder className="drag-icon-folder"/>
+                                : <AiOutlineFile className="drag-icon-file"/>
+                            }
+                            <p>{draggedItem.name}</p>
+                        </>
+                    }
                 </DragOverlay>
             </div>
         </DndContext>

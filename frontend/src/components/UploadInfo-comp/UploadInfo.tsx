@@ -5,13 +5,20 @@ import axios, { CancelTokenSource } from 'axios';
 import { Link } from 'react-router-dom'
 import { useUserContext } from '../../contexts/UserContext.tsx'
 import { useFileContext } from '../../contexts/FileContext.tsx';
+import useDelayedExit from '../../hooks/useDelayedExit.ts';
 import { AiFillFileText } from 'react-icons/ai'
 import { IoChevronDownSharp, IoChevronUpSharp } from 'react-icons/io5'
 import { IoMdClose } from 'react-icons/io'
 import ProgressBar from '../LoadingBar-COMPS/ProgressBar.tsx'
+import DynamicClip from '../DynamicClip.tsx';
 
 function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputElement> }) {
-    const [showUploadlist, setShowUploadList] = useState(true)
+    const [showUploadInfo, setshowUploadInfo] = useState(true)
+    const { isVisible: isUploadInfoVisible } = useDelayedExit({
+        shouldRender: showUploadInfo,
+        delayMs: 300,
+    });
+
     const { currentPath, addFiles, addFolders } = useFileContext()
     
     const [fileErrors, setFileErrors] = useState(new Map());
@@ -113,7 +120,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             const fileToUpload = uploadQueue[currentUploadIndex];
             if (fileToUpload !== currentlyUploadingFile) {
                 setCurrentlyUploadingFile(fileToUpload);
-                setShowUploadList(true)
+                setshowUploadInfo(true)
                 uploadFile(fileToUpload);
             }
         }
@@ -169,7 +176,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const onCloseClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.stopPropagation()
         if (currentlyUploadingFile) return
-        setShowUploadList(false)
+        setshowUploadInfo(false)
     }
     
 
@@ -182,7 +189,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                 onChange={handleFileSelect}
                 multiple
             />
-            {uploadListFilesNum > 0 && showUploadlist &&
+            {uploadListFilesNum > 0 && isUploadInfoVisible &&
                 <div className="UploadInfo">
                     <div className="header" onClick={() => setCollapseUploadList(prevState => !prevState)}>
                         {successfulUploadNum} of {uploadListFilesNum} {uploadListFilesNum > 1 ? 'uploads' : 'upload'} complete
@@ -251,6 +258,11 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                             ))}
                         </div>
                     }
+                    <DynamicClip
+                        clipPathId={"uploadInfoClip"}
+                        animation={showUploadInfo}
+                        numRects={12}
+                    />
                 </div>
             }
         </>
