@@ -2,10 +2,10 @@ import { memo } from "react"
 import "./LoadingBar.scss"
 
 interface LoadingBarProps {
-    loading: boolean
+    loading?: boolean
 }
 
-function LoadingBar({ loading }: LoadingBarProps) {
+function LoadingBar({ loading = true }: LoadingBarProps) {
     return (
         loading ?
             <span className="LoadingBar">

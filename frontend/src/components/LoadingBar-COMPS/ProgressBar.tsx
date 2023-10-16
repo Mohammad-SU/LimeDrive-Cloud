@@ -3,9 +3,10 @@ import "./LoadingBar.scss"
 
 interface ProgressBarProps {
     progress: null | number
+    enableFinalising?: boolean
 }
 
-function ProgressBar({ progress }: ProgressBarProps) {
+function ProgressBar({ progress, enableFinalising = true }: ProgressBarProps) {
     const [showFinalising, setShowFinalising] = useState<boolean>(false)
     const [filled, setFilled] = useState("")
     const [empty, setEmpty] = useState("") 
@@ -39,7 +40,7 @@ function ProgressBar({ progress }: ProgressBarProps) {
         progress != null ?
             <span className="LoadingBar">
                 <span className="spinner-before"></span>
-                {showFinalising ? 
+                {showFinalising && enableFinalising ? 
                     <span className="finalising-text">Finalising...</span> 
                     
                     : <span className="progress-bar">{`[${filled}${empty}]`}</span>

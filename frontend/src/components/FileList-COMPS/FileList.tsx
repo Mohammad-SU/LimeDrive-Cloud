@@ -1,9 +1,11 @@
 import { memo, useMemo, useState, useEffect } from 'react'
 import "./FileList.scss"
+import axios from 'axios';
 import { useLocation } from 'react-router-dom'
 import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSensors, MouseSensor, TouchSensor } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { useFileContext } from '../../contexts/FileContext'
+import { useUserContext } from '../../contexts/UserContext'
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
 import Breadcrumb from './Breadcrumb-comp/Breadcrumb'
@@ -139,28 +141,40 @@ function FileList() {
 
     const [draggedItem, setDraggedItem] = useState<Record<string, any>>()
     const [droppedOnItem, setDroppedOnItem] = useState<Record<string, any>>()
+    const { apiSecure } = useUserContext()
+    const [loading, setLoading] = useState(false)
+    const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>("")
 
-    function handleDragStart(event: DragStartEvent) {
+    const handleDragStart = (event: DragStartEvent) => {
         setDraggedItem(event.active.data.current);
     }
-    function handleDragEnd(event: DragEndEvent) {
+    const handleDragEnd = async (event: DragEndEvent) => {
         const newDroppedOnItem = event.over?.data.current
 
-        // if (draggedItem && newDroppedOnItem && draggedItem.id != newDroppedOnItem.id) {
-        //     setDroppedOnItem(newDroppedOnItem)
-        //     if (draggedItem.type == undefined) {
-        //         updateFolders({
-        //             [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name }
-        //         })
-        //     }
-        //     else {
-        //         updateFiles({
-        //             [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name },
-        //         });
-        //     }
-        // }
+        if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id)) {
+            try {
+                setDroppedOnItem(newDroppedOnItem)
+                const newPath = newDroppedOnItem.app_path + "/" + draggedItem.name;
+                setLoading(true)
 
-        console.log(newDroppedOnItem?.app_apth)
+                const response = await apiSecure.post('/updatePaths', {
+                    name: draggedItem.name,
+                    app_path: newPath,
+                });
+        
+                console.log(response.data)
+            } 
+            catch (error) {
+                console.error(error);
+                if (axios.isAxiosError(error)) {
+                    setBackendErrorMsg(error?.response?.data.message)
+                    console.log(backendErrorMsg)
+                }
+            }
+            finally {
+                setLoading(false)
+            }
+        }
     }
 
     const foldersMapped = sortedFolders.map(folder => {
@@ -179,9 +193,10 @@ function FileList() {
         />
     })
 
+    const emptyDirectory = sortedFiles.length + sortedFolders.length == 0
+
     return (
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[snapCenterToCursor]} sensors={sensors}>
-            <div className="FileList">
+            <div className={`FileList ${emptyDirectory ? 'empty-directory' : ''}`}>
                 <div className="FileList-main-header">
                     <Breadcrumb />
                     <MainToolbar />
@@ -200,24 +215,28 @@ function FileList() {
                     </div>
                 </div>
 
-                <div className="main-list">
-                    {foldersMapped}
-                    {filesMapped}
-                </div>
+                <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[snapCenterToCursor]} sensors={sensors}>
+                    <div className={`main-list ${emptyDirectory ? 'empty-directory' : ''}`}>
+                        {foldersMapped}
+                        {filesMapped}
+                        {emptyDirectory &&
+                            <h1 className="empty-message">Empty directory. Click "New" to add items.</h1>
+                        }
+                    </div>
 
-                <DragOverlay className="drag-overlay" style={{width: 300}}>
-                    {draggedItem &&
-                        <>
-                            {draggedItem.type == undefined ? 
-                                <AiOutlineFolder className="drag-icon-folder"/>
-                                : <AiOutlineFile className="drag-icon-file"/>
-                            }
-                            <p>{draggedItem.name}</p>
-                        </>
-                    }
-                </DragOverlay>
+                    <DragOverlay className="drag-overlay" style={{width: 300}}>
+                        {draggedItem &&
+                            <>
+                                {draggedItem.type == undefined ? 
+                                    <AiOutlineFolder className="drag-icon-folder"/>
+                                    : <AiOutlineFile className="drag-icon-file"/>
+                                }
+                                <p>{draggedItem.name}</p>
+                            </>
+                        }
+                    </DragOverlay>
+                </DndContext>
             </div>
-        </DndContext>
     )
 }
 

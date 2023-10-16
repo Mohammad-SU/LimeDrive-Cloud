@@ -51,3 +51,26 @@ add more automated tests
 implement Redis?
 test all features of entire app
 clear laravel storage log
+
+        if (draggedItem && newDroppedOnItem && draggedItem.id != newDroppedOnItem.id) {
+            setDroppedOnItem(newDroppedOnItem)
+            if (draggedItem.type == undefined) {
+                updateFolders({
+                    [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name }
+                })
+
+                files.forEach((file) => {
+                    if (file.app_path.startsWith(draggedItem.app_path + "/")) {
+                        const newFilePath = newPath + file.app_path.slice(draggedItem.app_path.length);
+                        fileUpdates[file.id] = { app_path: newFilePath }; // Add to the batch of updates
+                    }
+                });
+
+                updateFiles(fileUpdates);
+            }
+            else {
+                updateFiles({
+                    [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name },
+                });
+            }
+        }

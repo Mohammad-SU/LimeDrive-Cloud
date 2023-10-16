@@ -7,15 +7,6 @@
     display: flex;
     align-items: center;
 
-    .spinner-before {
-        &::before {
-            content: '';
-            margin-right: 0.5rem;
-            animation: rotateLine 0.5s linear infinite;
-            animation-play-state: running;
-        }
-    }
-
     .loading-bar::after {
         content: "";
         animation: fillLoadingBar 1s steps($steps) infinite;
@@ -24,14 +15,7 @@
         content: "";
     }
 
-    .spinner-after {
-        &::after {
-            content: '';
-            margin-left: 0.5rem;
-            animation: rotateLine 0.5s linear infinite;
-            animation-play-state: running;
-        }
-    }
+
 
     @function generate-bar($total, $filled) {
         $bar: "";
@@ -56,5 +40,23 @@
         99% {
             content: generate-bar($steps, $steps);
         }
+    }
+}
+
+.spinner-before {
+    &::before {
+        content: '';
+        margin-right: 0.5rem;
+        animation: rotateLine 0.5s linear infinite;
+        animation-play-state: running;
+    }
+}
+
+.spinner-after {
+    &::after {
+        content: '';
+        margin-left: 0.5rem;
+        animation: rotateLine 0.5s linear infinite;
+        animation-play-state: running;
     }
 }

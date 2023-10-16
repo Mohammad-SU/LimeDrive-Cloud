@@ -5,6 +5,10 @@
     flex-direction: column;
     box-sizing: border-box;
 
+    &.empty-directory {
+        height: 100%;
+    }
+
     .FileList-main-header {
         position: sticky;
         padding: 0 2.5rem;
@@ -62,6 +66,15 @@
     .main-list {
         margin: 0 2.5rem;
 
+        &.empty-directory {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
         .File, .Folder {
             @include btn-selection-styles;
             position: relative;
@@ -113,6 +126,14 @@
                     }
                 }
             }
+        }
+
+        .empty-message {
+            font-size: 2rem;
+            margin-top: -1rem;
+            font-weight: normal;
+            opacity: 0.6;
+            text-align: center;
         }
     }
 

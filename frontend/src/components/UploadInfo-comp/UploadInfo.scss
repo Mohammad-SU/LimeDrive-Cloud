@@ -19,10 +19,7 @@
 
         .spinner-after {
             &::after {
-                content: '';
                 margin-right: 5.7rem;
-                animation: rotateLine 0.5s linear infinite;
-                animation-play-state: running;
             }
         }
 

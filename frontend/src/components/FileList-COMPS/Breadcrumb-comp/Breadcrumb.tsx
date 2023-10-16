@@ -14,7 +14,12 @@ function Breadcrumb() {
                 return (
                     <div className="item" key={index}>
                         {index === 0 ? null : <span className="divider">/</span>}
-                        <Link to={linkToPath} onClick={() => setCurrentPath(linkToPath)}>
+
+                        <Link to={linkToPath} onClick={() => {
+                            if (currentPath !== linkToPath) {
+                                setCurrentPath(linkToPath.substring(1) + "/");
+                            }
+                        }}>
                             {decodeURIComponent(segment)}
                         </Link>
                     </div>

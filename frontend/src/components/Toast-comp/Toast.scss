@@ -1,0 +1,50 @@
+.Toast {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 0.4rem;
+
+    font-size: 1.1rem;
+    width: fit-content;
+    padding: 0.7rem;
+    margin: 0 auto;
+
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background: black;
+    border: 2px dashed lime;
+    border-bottom: none;
+
+    .toast-icon {
+        font-size: 1.4rem;
+        margin-right: 0.1rem;
+
+        &.fail {
+            font-size: 1.3rem;
+            margin-right: 0.2rem;
+            border: 2px solid lime;
+            border-radius: 50%;
+        }
+    }
+
+    .btn-wrapper {
+        margin-left: 1.9rem;
+        font-size: 1.05rem;
+        text-underline-offset: 0.2rem;
+
+        button {
+            text-decoration: underline;
+        }
+
+        .close-btn {
+            margin-left: 0.8rem;
+
+            &.decrease-gap {
+                margin-left: 0;
+            }
+        }
+    }
+}
