@@ -17,6 +17,7 @@
     background: black;
     border: 2px dashed lime;
     border-bottom: none;
+    clip-path: url(#toastClip);
 
     .toast-icon {
         font-size: 1.4rem;

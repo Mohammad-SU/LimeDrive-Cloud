@@ -1,15 +1,10 @@
 import { useState, useEffect, memo } from 'react';
 import './Toast.scss';
+import { ToastOptions } from '../../contexts/ToastContext';
 import { AiOutlineCheck, AiOutlineExclamation } from 'react-icons/ai';
 
-interface ToastProps {
-    message: string;
-    duration?: number;
-    loading?: boolean;
-    showRetry?: boolean;
-    showUndo?: boolean;
-    showSuccessIcon?: boolean;
-    showFailIcon?: boolean;
+interface ToastProps extends ToastOptions {
+    onClose: () => void;
 }
 
 function Toast({
@@ -20,18 +15,27 @@ function Toast({
     showUndo,
     showSuccessIcon,
     showFailIcon,
+    onClose,
 }: ToastProps) {    
-    const [showToast, setShowToast] = useState(true)
+    
+    useEffect(() => {
+        if (message && !loading) {
+            const timeoutId = setTimeout(() => {
+                onClose()
+            }, duration);
+            
+            return () => clearTimeout(timeoutId);
+        }
+    }, [message, loading]);
 
     return (
-        showToast && 
         <div className="Toast">
             {loading ? 
                     <span className="spinner-before"></span>
+                    : showFailIcon ?
+                    <AiOutlineExclamation className="toast-icon fail"/>
                 : showSuccessIcon ?
                     <AiOutlineCheck className="toast-icon" />
-                : showFailIcon ?
-                    <AiOutlineExclamation className="toast-icon fail"/>
                 : null
             }
 
@@ -47,7 +51,12 @@ function Toast({
                             <button className="undo-btn text-btn">Undo</button>
                         : null
                     }
-                    <button className={`close-btn text-btn ${!showRetry && !showUndo ? 'decrease-gap' : ''}`}>Close</button>
+                    <button 
+                        className={`close-btn text-btn ${!showRetry && !showUndo ? 'decrease-gap' : ''}`}
+                        onClick={onClose}
+                    >
+                        Close
+                    </button>
                 </div>
             }
         </div>

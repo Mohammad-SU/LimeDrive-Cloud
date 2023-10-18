@@ -6,6 +6,7 @@ import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSe
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { useFileContext } from '../../contexts/FileContext'
 import { useUserContext } from '../../contexts/UserContext'
+import { useToast } from '../../contexts/ToastContext';
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
 import Breadcrumb from './Breadcrumb-comp/Breadcrumb'
@@ -17,7 +18,8 @@ import { AiOutlineFile, AiOutlineFolder } from 'react-icons/ai';
 
 function FileList() {
     const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
-    
+    const { showToast } = useToast()
+
     // Correct slashes to match app_paths
     const location = useLocation()
     const path = decodeURIComponent(location.pathname.slice(1) + "/")
@@ -142,39 +144,39 @@ function FileList() {
     const [draggedItem, setDraggedItem] = useState<Record<string, any>>()
     const [droppedOnItem, setDroppedOnItem] = useState<Record<string, any>>()
     const { apiSecure } = useUserContext()
-    const [loading, setLoading] = useState(false)
-    const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>("")
+    const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
 
     const handleDragStart = (event: DragStartEvent) => {
         setDraggedItem(event.active.data.current);
     }
     const handleDragEnd = async (event: DragEndEvent) => {
         const newDroppedOnItem = event.over?.data.current
+        showToast("This is a test message.")
 
-        if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id)) {
-            try {
-                setDroppedOnItem(newDroppedOnItem)
-                const newPath = newDroppedOnItem.app_path + "/" + draggedItem.name;
-                setLoading(true)
+        // if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id)) {
+        //     try {
+        //         // setDroppedOnItem(newDroppedOnItem) // check if this is required or not
+        //         const newPath = newDroppedOnItem.app_path + "/" + draggedItem.name;
+        //         setLoading(true)
 
-                const response = await apiSecure.post('/updatePaths', {
-                    name: draggedItem.name,
-                    app_path: newPath,
-                });
+        //         const response = await apiSecure.post('/updatePaths', {
+        //             name: draggedItem.name,
+        //             app_path: newPath,
+        //         });
         
-                console.log(response.data)
-            } 
-            catch (error) {
-                console.error(error);
-                if (axios.isAxiosError(error)) {
-                    setBackendErrorMsg(error?.response?.data.message)
-                    console.log(backendErrorMsg)
-                }
-            }
-            finally {
-                setLoading(false)
-            }
-        }
+        //         console.log(response.data)
+        //     } 
+        //     catch (error) {
+        //         console.error(error);
+        //         if (axios.isAxiosError(error)) {
+        //             setBackendErrorMsg(error?.response?.data.message)
+        //             console.log(backendErrorMsg)
+        //         }
+        //     }
+        //     finally {
+        //         setLoading(false)
+        //     }
+        // }
     }
 
     const foldersMapped = sortedFolders.map(folder => {
@@ -184,7 +186,6 @@ function FileList() {
             onSelect={handleItemSelection}
         />
     })
-
     const filesMapped = sortedFiles.map(file => {
         return <File
             key={file.id}
@@ -192,7 +193,6 @@ function FileList() {
             onSelect={handleItemSelection}
         />
     })
-
     const emptyDirectory = sortedFiles.length + sortedFolders.length == 0
 
     return (
