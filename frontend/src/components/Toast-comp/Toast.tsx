@@ -9,7 +9,7 @@ interface ToastProps extends ToastOptions {
 
 function Toast({
     message,
-    duration = 3000,
+    duration = 4500,
     loading,
     showRetry,
     showUndo,

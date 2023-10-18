@@ -9,6 +9,7 @@ import { SlTrash } from 'react-icons/sl'
 import { IoArrowUpSharp, IoPeopleOutline } from 'react-icons/io5'
 import { useUserContext } from '../../contexts/UserContext.tsx';
 import { useFileContext } from '../../contexts/FileContext.tsx';
+import { useToast } from '../../contexts/ToastContext.tsx';
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import useDelayedExit from '../../hooks/useDelayedExit.ts';
 import useClickOutside from '../../hooks/useClickOutside.ts';
@@ -20,6 +21,7 @@ import DynamicClip from '../DynamicClip.tsx';
 function Sidebar() {
     const { apiSecure } = useUserContext()
     const { currentPath, addFolders } = useFileContext()
+    const { showToast } = useToast()
     const [backendError, setBackendError] = useState<AxiosError | null>(null)
     const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
 
@@ -77,6 +79,7 @@ function Sidebar() {
             addFolders(response.data)
             console.log(response.data)
             setShowNewFolderModal(false);
+            showToast({message: "Folder added.", showSuccessIcon: true})
         } 
         catch (error) {
             console.error(error);
@@ -196,7 +199,10 @@ function Sidebar() {
                             />
                             <p className="error-and-loading">
                             {loading ?
-                                <LoadingBar loading={loading}/>
+                                <div className="creating-wrapper">
+                                    <span>Creating folder...</span>
+                                    <LoadingBar loading={loading}/>
+                                </div>
                                 
                                 : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
                                     <>Invalid folder name format.</>

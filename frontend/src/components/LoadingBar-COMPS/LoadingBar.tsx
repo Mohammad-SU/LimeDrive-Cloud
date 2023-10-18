@@ -1,4 +1,4 @@
-import { memo } from "react"
+import { useState, useEffect, memo } from "react"
 import "./LoadingBar.scss"
 
 interface LoadingBarProps {
@@ -7,13 +7,12 @@ interface LoadingBarProps {
 
 function LoadingBar({ loading = true }: LoadingBarProps) {
     return (
-        loading ?
+        loading &&
             <span className="LoadingBar">
                 <span className="spinner-before"></span>
-                <span className="loading-bar"></span> 
+                <span className="loading-bar"></span>
                 <span className="spinner-after"></span>
             </span>
-        : null
     )
 }
 

@@ -151,7 +151,7 @@ function FileList() {
     }
     const handleDragEnd = async (event: DragEndEvent) => {
         const newDroppedOnItem = event.over?.data.current
-        showToast("This is a test message.")
+        showToast({message: "This is a test message."})
 
         // if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id)) {
         //     try {

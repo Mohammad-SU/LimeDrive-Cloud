@@ -1,10 +1,9 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import Toast from '../components/Toast-comp/Toast';
-import useDelayedExit from '../hooks/useDelayedExit';
 import DynamicClip from '../components/DynamicClip';
 
 interface ToastContextProps {
-    showToast: (message: string, options?: ToastOptions) => void;
+    showToast: (options: ToastOptions) => void;
 }
 
 export interface ToastOptions {
@@ -23,8 +22,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     const [toast, setToast] = useState<ToastOptions | null>(null);
     const [isToastVisible, setIsToastVisible] = useState(false);
 
-    const showToast = (message: string, options?: ToastOptions) => {
-        setToast({ message, ...options });
+    const showToast = (options: ToastOptions) => {
+        setToast({ ...options });
         setIsToastVisible(true);
     };
 

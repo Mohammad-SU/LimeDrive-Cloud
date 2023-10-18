@@ -1,9 +1,7 @@
 @use "sass:math";
+$steps: 30;
 
 .LoadingBar {
-    $steps: 30;
-    $uploadSteps: 18;
-
     display: flex;
     align-items: center;
 
@@ -14,7 +12,6 @@
     .progress-bar::after {
         content: "";
     }
-
 
 
     @function generate-bar($total, $filled) {
@@ -37,7 +34,7 @@
             }
         }
     
-        99% {
+        97% {
             content: generate-bar($steps, $steps);
         }
     }
