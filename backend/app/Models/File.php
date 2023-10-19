@@ -14,7 +14,6 @@ class File extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'cloud_path',
         'app_path',
         'type',
         'extension',

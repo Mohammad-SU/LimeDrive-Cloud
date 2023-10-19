@@ -77,7 +77,6 @@ function Sidebar() {
             });
     
             addFolders(response.data)
-            console.log(response.data)
             setShowNewFolderModal(false);
             showToast({message: "Folder added.", showSuccessIcon: true})
         } 

@@ -13,7 +13,6 @@ class UploadController extends Controller
     {
         $user_id = $request->user()->id;
         $app_path = $request->input('app_path');
-        $cloud_path = str_replace('LimeDrive', (string)$user_id, $app_path); // "LimeDrive/" ==> "<user_id>/" in B2 bucket
 
         $requestFile = $request->file('file');
     
@@ -22,7 +21,6 @@ class UploadController extends Controller
         $uploadedFile = File::create([
             'user_id' => $user_id,
             'name' => $requestFile->getClientOriginalName(),
-            'cloud_path' => $cloud_path,
             'app_path' => $app_path,
             'type' => $requestFile->getClientMimeType(),
             'extension' => $requestFile->getClientOriginalExtension(),
@@ -30,6 +28,7 @@ class UploadController extends Controller
             'date' => now(),
         ]);
     
+        $cloud_path = preg_replace('/LimeDrive/', (string)$user_id, $app_path, 1); // change first instance of "LimeDrive" to "<user_id>" for B2 bucket
         Storage::disk('s3')->put($cloud_path, $content);
     
         return response()->json($uploadedFile);
@@ -40,7 +39,6 @@ class UploadController extends Controller
         $user_id = $request->user()->id;
         $name = $request->input('name');
         $app_path = $request->input('app_path');
-        $cloud_path = str_replace('LimeDrive', (string)$user_id, $app_path); // "LimeDrive/" ==> "<user_id>/" in B2 bucket
 
         if (!preg_match('/^[a-zA-Z0-9\s_\-]+$/', $name)) {
             return response()->json(['message' => 'Invalid folder name format.'], 400);
@@ -49,11 +47,11 @@ class UploadController extends Controller
         $uploadedFolder = Folder::create([
             'user_id' => $user_id,
             'name' => $name,
-            'cloud_path' => $cloud_path,
             'app_path' => $app_path,
             'date' => now(),
         ]);
 
+        $cloud_path = preg_replace('/LimeDrive/', (string)$user_id, $app_path, 1); // change first instance of "LimeDrive" to "<user_id>" for B2 bucket
         Storage::disk('s3')->put($cloud_path . '/.keep', ''); // .keep indicates that the folder is intentionally technically empty or keeps the folder if there are no other files in it (in the b2 bucket, folders are deleted if their only item is removed)
     
         return response()->json($uploadedFolder);

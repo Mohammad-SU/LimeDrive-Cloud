@@ -14,7 +14,6 @@ class Folder extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'cloud_path',
         'app_path', 
         'date'
     ];

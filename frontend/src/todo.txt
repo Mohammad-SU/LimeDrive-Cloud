@@ -1,6 +1,7 @@
 finish file moving functionality (when moving folders update all app_paths of whatever is nested in it)
 add backend functions for file moving
 implement more efficient search algorithms?
+move to and highlight new folder after user creates it
 
 fix file selections when user moves to a different folder
 add more specific/better icons for files in FileList and UploadInfo

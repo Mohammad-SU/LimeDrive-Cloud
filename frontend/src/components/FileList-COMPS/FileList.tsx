@@ -1,7 +1,7 @@
 import { memo, useMemo, useState, useEffect } from 'react'
 import "./FileList.scss"
 import axios from 'axios';
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSensors, MouseSensor, TouchSensor } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { useFileContext } from '../../contexts/FileContext'
@@ -20,11 +20,14 @@ function FileList() {
     const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
     const { showToast } = useToast()
 
+    const navigate = useNavigate()
     // Correct slashes to match app_paths
     const location = useLocation()
     const path = decodeURIComponent(location.pathname.slice(1) + "/")
     useEffect(() => {
-        setCurrentPath(path)
+        folders.some(folder => folder.app_path === path.slice(0, -1)) ?
+            setCurrentPath(path)
+            : navigate("/LimeDrive")
     }, [path]);
 
     const sortedFolders = useMemo(() => {
@@ -96,7 +99,7 @@ function FileList() {
         }
     };
 
-    useEffect(() => { // Makes sure header-row checkbox looks correct based on items
+    useEffect(() => { // Make sure header-row checkbox looks correct based on items
         if (selectedItems.length == 0) {
             setShowSelectAll(false)
             setShowDeselectAll(false)
@@ -151,32 +154,39 @@ function FileList() {
     }
     const handleDragEnd = async (event: DragEndEvent) => {
         const newDroppedOnItem = event.over?.data.current
-        showToast({message: "This is a test message."})
 
-        // if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id)) {
-        //     try {
-        //         // setDroppedOnItem(newDroppedOnItem) // check if this is required or not
-        //         const newPath = newDroppedOnItem.app_path + "/" + draggedItem.name;
-        //         setLoading(true)
+        if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id)) {
+            try {
+                // setDroppedOnItem(newDroppedOnItem) // check if this is required or not
+                showToast({message: "Testing backend response...", loading: true})
+                const new_path = newDroppedOnItem.app_path + "/" + draggedItem.name;
+                const postId = !draggedItem.type ? // If draggedItem is a folder (id has d_ prefix on the frontend) then filter it for the backend
+                    parseInt(draggedItem.id.substring(2))
+                    : draggedItem.id
 
-        //         const response = await apiSecure.post('/updatePaths', {
-        //             name: draggedItem.name,
-        //             app_path: newPath,
-        //         });
+                const response = await apiSecure.post('/updatePaths', {
+                    id: postId,
+                    new_path: new_path,
+                    type: draggedItem.type
+                });
         
-        //         console.log(response.data)
-        //     } 
-        //     catch (error) {
-        //         console.error(error);
-        //         if (axios.isAxiosError(error)) {
-        //             setBackendErrorMsg(error?.response?.data.message)
-        //             console.log(backendErrorMsg)
-        //         }
-        //     }
-        //     finally {
-        //         setLoading(false)
-        //     }
-        // }
+                console.log(response.data)
+                if (draggedItem.type) {
+                    updateFiles({[draggedItem.id]: { app_path: new_path }})
+                }
+                else {
+                    updateFolders({[draggedItem.id]: { app_path: new_path }})
+                }
+                showToast({message: "Item successfully moved.", showSuccessIcon: true})
+            } 
+            catch (error) {
+                console.error(error);
+                if (axios.isAxiosError(error)) {
+                    setBackendErrorMsg(error?.response?.data.message)
+                    showToast({ message: `Error: ${error?.response?.data.message}`, showFailIcon: true });
+                }
+            }
+        }
     }
 
     const foldersMapped = sortedFolders.map(folder => {
@@ -219,9 +229,7 @@ function FileList() {
                     <div className={`main-list ${emptyDirectory ? 'empty-directory' : ''}`}>
                         {foldersMapped}
                         {filesMapped}
-                        {emptyDirectory &&
-                            <h1 className="empty-message">Empty directory. Click "New" to add items.</h1>
-                        }
+                        {emptyDirectory && <h1 className="empty-message">Empty directory. Click "New" to add items.</h1>}
                     </div>
 
                     <DragOverlay className="drag-overlay" style={{width: 300}}>

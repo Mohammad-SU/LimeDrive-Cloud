@@ -22,7 +22,7 @@ function Toast({
         if (message && !loading) {
             const timeoutId = setTimeout(() => {
                 onClose()
-            }, duration);
+            }, showFailIcon ? duration * 1.7 : duration);
             
             return () => clearTimeout(timeoutId);
         }

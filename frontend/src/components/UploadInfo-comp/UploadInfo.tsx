@@ -78,8 +78,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         formData.append('file', file)
         const app_path = currentPath.endsWith('/') ? currentPath + file.name : currentPath + '/' + file.name;
         formData.append('app_path', app_path) // e.g. app_path = LimeDrive/LimeDrive.txt
-        console.log(app_path)
-
+        
         const source = axios.CancelToken.source();
         cancelTokenSource.current = source;
     

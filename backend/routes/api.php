@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\UpdateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('/uploadFile', [UploadController::class, 'uploadFile']);
     Route::post('/uploadFolder', [UploadController::class, 'uploadFolder']);
+
+    Route::post('/updatePaths', [UpdateController::class, 'updatePaths']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
