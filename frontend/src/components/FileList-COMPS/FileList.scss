@@ -91,6 +91,9 @@
                 opacity: 0.8;
                 background: rgba(0, 255, 0, 0.150);
             }
+            &:focus-visible {
+                outline: none;
+            }
 
             &:hover .list-checkbox {
                 opacity: 1;

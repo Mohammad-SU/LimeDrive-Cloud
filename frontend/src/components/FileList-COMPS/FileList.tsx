@@ -99,7 +99,7 @@ function FileList() {
         }
     };
 
-    useEffect(() => { // Make sure header-row checkbox looks correct based on items
+    useEffect(() => { // Make sure header-row checkbox looks correct based on items and handle some keyboard shortcuts
         if (selectedItems.length == 0) {
             setShowSelectAll(false)
             setShowDeselectAll(false)
@@ -113,16 +113,26 @@ function FileList() {
             setShowDeselectAll(false)
         }
 
-        const handleEscapeKey = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                setSelectedItems([]);
+        const handleKeyShortcuts = (event: KeyboardEvent) => {
+            const isModalOpen = document.querySelector(".Backdrop");
+            const isInputFocused = document.activeElement instanceof HTMLInputElement;
+
+            if (!isModalOpen && !isInputFocused) {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    setSelectedItems([]);
+                }
+                if (event.ctrlKey && event.key === 'a') {
+                    event.preventDefault();
+                    setSelectedItems([...sortedFiles, ...sortedFolders]);
+                }
             }
-        };
+        };        
       
-        window.addEventListener('keydown', handleEscapeKey)
+        window.addEventListener('keydown', handleKeyShortcuts)
       
         return () => {
-            window.removeEventListener('keydown', handleEscapeKey)
+            window.removeEventListener('keydown', handleKeyShortcuts)
         }
     }, [selectedItems]);
 

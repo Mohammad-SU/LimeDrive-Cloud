@@ -15,7 +15,7 @@ interface FileProps {
 function File({ file, onSelect }: FileProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const { selectedItems } = useFileContext()
+    const { selectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
 
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
         event.preventDefault();
@@ -43,6 +43,9 @@ function File({ file, onSelect }: FileProps) {
     const {attributes, listeners, isDragging, setNodeRef} = useDraggable({
         id: file.id,
         data: file,
+        attributes: {
+            tabIndex: -1,
+        },
     });
 
     function formatBytes(bytes: number) {
@@ -69,7 +72,7 @@ function File({ file, onSelect }: FileProps) {
                 ${isDragging ? 'dragging' : ''}
             `} 
             onClick={handleFileClick}
-            ref={setNodeRef} 
+            ref={setNodeRef}
             {...listeners} 
             {...attributes}
         >
@@ -79,7 +82,7 @@ function File({ file, onSelect }: FileProps) {
             />
             <p className="name">
                 <AiOutlineFile className="icon" />
-                <span>{file.name}</span>
+                <span tabIndex={0}>{file.name}</span>
             </p>
             <p>{file.type}</p>
             <p>{formattedSize}</p>

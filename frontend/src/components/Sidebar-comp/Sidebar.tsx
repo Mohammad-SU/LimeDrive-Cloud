@@ -182,7 +182,9 @@ function Sidebar() {
 
             { isNewfolderModalVisible &&
                     <div className="new-folder-modal">
-                        <AiOutlineClose className="close-icon icon-btn" onClick={() => setShowNewFolderModal(false)}/>
+                        <button className="icon-btn-wrapper" onClick={() => setShowNewFolderModal(false)}>
+                            <AiOutlineClose className="close-icon icon-btn" />
+                        </button>
                         <div className="heading-cont">
                             <AiFillFolderAdd className="modal-icon" />
                             <h1>Create folder</h1>

@@ -27,19 +27,6 @@ body {
         outline: none;
     }
 
-    button {
-        appearance: none;
-        background: none;
-        border: none;
-        margin: 0;
-        padding: 0;
-        font: inherit;
-        cursor: pointer;
-        outline: none;
-        
-        color: inherit;
-    }
-
     input {
         color: inherit;
         font-family: inherit;
@@ -47,6 +34,9 @@ body {
         
         &::placeholder {
             color: rgba(0, 255, 0, 0.605);
+        }
+        &:focus {
+            outline: none;
         }
     }
 
@@ -127,21 +117,35 @@ body {
 
 button {
     @include btn-selection-styles;
+    appearance: none;
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: none;
+    
+    color: inherit;
 
     &:disabled {
         opacity: 0.8;
         cursor: not-allowed;
     }
-}
 
-.icon-btn {
-    @include other-selection-styles;
-    background-color: black !important;
-}
-
-.text-btn {
-    @include other-selection-styles;
-    background-color: black !important;
+    &.icon-btn-wrapper {
+        background-color: black !important;
+    }
+    &.text-btn {
+        @include other-selection-styles;
+        background-color: black !important;
+    }
+    
+    .icon-btn {
+        @include other-selection-styles;
+        display: block; // Fix sizing issue
+        background-color: black !important;
+    }
 }
 
 a {
@@ -153,4 +157,13 @@ a {
 
 .delayed-shadow {
     opacity: 1;
+}
+
+:focus {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 2px dashed lime;
+    outline-offset: .1875rem;
 }

@@ -1,7 +1,9 @@
+add button element wrapper + relevant class to all icon/text buttons
 finish file moving functionality (when moving folders update all app_paths of whatever is nested in it)
 add backend functions for file moving
 implement more efficient search algorithms?
 move to and highlight new folder after user creates it
+make tabbing to a file name and pressing enter cause it to open (check folder for this code)
 
 in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
 fix file upload selection where user selecting same file again if it was the directly previous selected file not working

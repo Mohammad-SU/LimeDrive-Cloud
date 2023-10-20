@@ -163,11 +163,12 @@ function AuthPage() {
                             <p><strong>Username:</strong> {generatedUsername}</p>
                             <p><strong>Password:</strong> 
                                 {showPassword ? generatedPassword : generatedPassword!.replace(/./g, '•')}
-                                {showPassword ? 
-                                    (<BsEyeSlash className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
-                                    : 
-                                    (<BsEye className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
-                                }
+                                <button className="icon-btn-wrapper" onClick={togglePasswordVisibility}>
+                                    {showPassword ? 
+                                        (<BsEyeSlash className="eye-icon icon-btn" />)
+                                        : (<BsEye className="eye-icon icon-btn" />)
+                                    }
+                                </button>
                             </p>
                         </div>
                     }

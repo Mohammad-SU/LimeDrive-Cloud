@@ -179,7 +179,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
 
     const [collapseUploadList, setCollapseUploadList] = useState<boolean>(false)
 
-    const onCloseClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const onCloseClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation()
         if (currentlyUploadingFile) return
         setshowUploadInfo(false)
@@ -204,11 +204,17 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                         }
 
                         <div className="header__icons-cont">
-                            {!collapseUploadList ?
-                                <IoChevronDownSharp className="icon-btn" />
-                                : <IoChevronUpSharp className="icon-btn" />
+                            <button className="icon-btn-wrapper">
+                                {!collapseUploadList ?
+                                    <IoChevronDownSharp className="icon-btn" />
+                                    : <IoChevronUpSharp className="icon-btn" />
+                                }
+                            </button>
+                            {!currentlyUploadingFile && 
+                                <button className="icon-btn-wrapper" onClick={onCloseClick}>
+                                    <IoMdClose className="icon-btn" />
+                                </button>
                             }
-                            {!currentlyUploadingFile && <IoMdClose onClick={onCloseClick} className="icon-btn" />}
                         </div>
                     </div>
                     

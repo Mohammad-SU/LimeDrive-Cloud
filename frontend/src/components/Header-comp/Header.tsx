@@ -76,10 +76,9 @@ function Header() {
 
             <div className="user-cont">
                 <h1 className="username">{user.username}</h1>
-                <BsPersonFillGear 
-                    className="user-settings-icon icon-btn" 
-                    onClick={() => setShowDropdown(!showDropdown)}
-                />
+                <button onClick={() => setShowDropdown(!showDropdown)} className="icon-btn-wrapper">
+                    <BsPersonFillGear className="user-settings-icon icon-btn"/>
+                </button>
                 {isDropdownVisible &&
                     <div className="user-dropdown" ref={dropdownRef}>
                         <Link className="settings-link" to="/settings">Settings</Link>

@@ -130,11 +130,12 @@ function RegisterForm() {
                     required
                     disabled={loading}
                 />
-                {showPassword ? 
-                    (<BsEyeSlash className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
-                    : 
-                    (<BsEye className="eye-icon icon-btn" onClick={togglePasswordVisibility} />)
-                }
+                <button type="button" className="icon-btn-wrapper" onClick={togglePasswordVisibility}>
+                    {showPassword ? 
+                        (<BsEyeSlash className="eye-icon icon-btn" />)
+                        : (<BsEye className="eye-icon icon-btn" />)
+                    }
+                </button>
             </div>
             <div className="form__input-cont">
                 <label className="form__input-label passwordReg_confirmation-label" htmlFor="password-confirmation">Confirm password:</label>
@@ -150,11 +151,12 @@ function RegisterForm() {
                     required
                     disabled={loading}
                 />
-                {showConfirmPassword ? 
-                    (<BsEyeSlash className="eye-icon icon-btn" onClick={toggleConfirmPasswordVisibility} />)
-                    : 
-                    (<BsEye className="eye-icon icon-btn" onClick={toggleConfirmPasswordVisibility} />)
-                }
+                <button type="button" className="icon-btn-wrapper" onClick={toggleConfirmPasswordVisibility}>
+                    {showConfirmPassword ? 
+                        (<BsEyeSlash className="eye-icon icon-btn" />)
+                        : (<BsEye className="eye-icon icon-btn" />)
+                    }
+                </button>
             </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 

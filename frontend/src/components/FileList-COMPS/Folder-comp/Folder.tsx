@@ -44,6 +44,9 @@ function Folder({ folder, onSelect }: FolderProps) {
     const {attributes, listeners, isDragging, setNodeRef: dragSetNodeRef} = useDraggable({
         id: folder.id,
         data: folder,
+        attributes: {
+            tabIndex: -1,
+        },
     });
 
     const {isOver, setNodeRef: dropSetNodeRef} = useDroppable({
@@ -61,7 +64,8 @@ function Folder({ folder, onSelect }: FolderProps) {
     });
 
     const navigate = useNavigate()
-    const openFolder = () => {
+    const openFolder = (event: React.MouseEvent | React.KeyboardEvent) => {
+        event.stopPropagation();
         const firstSlashIndex = currentPath.indexOf('/');
         const newPath = currentPath.substring(firstSlashIndex + 1);
         navigate(newPath + folder.name);
@@ -95,7 +99,17 @@ function Folder({ folder, onSelect }: FolderProps) {
             />
             <p className="name">
                 <AiOutlineFolder className="icon" />
-                <span onClick={openFolder}>{folder.name}</span>
+                <span 
+                    onClick={openFolder} 
+                    tabIndex={0}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                            openFolder(event);
+                        }
+                    }}
+                >
+                    {folder.name}
+                </span>
             </p>
             <p>--</p>
             <p>--</p>
