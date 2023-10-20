@@ -3,11 +3,12 @@ add backend functions for file moving
 implement more efficient search algorithms?
 move to and highlight new folder after user creates it
 
-fix file selections when user moves to a different folder
+in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
+fix file upload selection where user selecting same file again if it was the directly previous selected file not working
 add more specific/better icons for files in FileList and UploadInfo
 turn beginning of breadcrumb into elipses/dropdown to prevent overflow on long paths
 make website title reflect page/folder accurately
-change preview toolbar button to "open" if folder is selected, and hide button if multiple items are selected
+change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
 change styles for folder/file name spans on hover?
 folder uploading
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
@@ -52,26 +53,3 @@ add more automated tests
 implement Redis?
 test all features of entire app
 clear laravel storage log
-
-        if (draggedItem && newDroppedOnItem && draggedItem.id != newDroppedOnItem.id) {
-            setDroppedOnItem(newDroppedOnItem)
-            if (draggedItem.type == undefined) {
-                updateFolders({
-                    [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name }
-                })
-
-                files.forEach((file) => {
-                    if (file.app_path.startsWith(draggedItem.app_path + "/")) {
-                        const newFilePath = newPath + file.app_path.slice(draggedItem.app_path.length);
-                        fileUpdates[file.id] = { app_path: newFilePath }; // Add to the batch of updates
-                    }
-                });
-
-                updateFiles(fileUpdates);
-            }
-            else {
-                updateFiles({
-                    [draggedItem.id]: { app_path: newDroppedOnItem.app_path + "/" + draggedItem.name },
-                });
-            }
-        }

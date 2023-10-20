@@ -19,7 +19,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         delayMs: 300,
     });
 
-    const { currentPath, addFiles, addFolders } = useFileContext()
+    const { currentPath, folders, addFiles, addFolders } = useFileContext()
     
     const [fileErrors, setFileErrors] = useState(new Map());
     const [currentlyUploadingFile, setCurrentlyUploadingFile] = useState<File | null>(null);
@@ -29,12 +29,14 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const [currentUploadIndex, setCurrentUploadIndex] = useState<number>(-1); // Current file to be uploaded in uploadQueue (negative means no files in uploadQueue)
     const [successfulUploadNum, setSuccessfulUploadNum] = useState<number>(0);
     const [currentFileProgress, setCurrentFileProgress] = useState<number | null>(0);
+    const [selectedCurrentPath, setSelectedCurrentPath] = useState(currentPath)
     const cancelTokenSource = useRef<CancelTokenSource | null>(null);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files
         if (!selectedFiles) return
         const newFiles = Array.from(selectedFiles);
+        setSelectedCurrentPath(currentPath)
 
         if (!currentlyUploadingFile) {
             const successfulFiles = fileErrors.size > 0 ? uploadQueue.filter((file) => !fileErrors.has(file)) : uploadQueue; // If no file errors then add entire uploadQueue
@@ -76,9 +78,14 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const uploadFile = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file)
-        const app_path = currentPath.endsWith('/') ? currentPath + file.name : currentPath + '/' + file.name;
+
+        const app_path = selectedCurrentPath.endsWith('/') ? selectedCurrentPath + file.name : selectedCurrentPath + '/' + file.name;
         formData.append('app_path', app_path) // e.g. app_path = LimeDrive/LimeDrive.txt
-        
+
+        const matchingFolder = folders.find((folder) => folder.app_path === selectedCurrentPath.slice(0, -1));
+        const parent_folder_id = matchingFolder ? matchingFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
+        formData.append('parent_folder_id', parent_folder_id)
+
         const source = axios.CancelToken.source();
         cancelTokenSource.current = source;
     

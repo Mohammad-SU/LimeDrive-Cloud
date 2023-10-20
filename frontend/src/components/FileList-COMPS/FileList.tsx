@@ -167,7 +167,8 @@ function FileList() {
                 const response = await apiSecure.post('/updatePaths', {
                     id: postId,
                     new_path: new_path,
-                    type: draggedItem.type
+                    type: draggedItem.type,
+                    parent_folder_id: parseInt(newDroppedOnItem.id.substring(2))
                 });
         
                 console.log(response.data)

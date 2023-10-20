@@ -20,7 +20,7 @@ import DynamicClip from '../DynamicClip.tsx';
 
 function Sidebar() {
     const { apiSecure } = useUserContext()
-    const { currentPath, addFolders } = useFileContext()
+    const { currentPath, folders, addFolders } = useFileContext()
     const { showToast } = useToast()
     const [backendError, setBackendError] = useState<AxiosError | null>(null)
     const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
@@ -68,12 +68,16 @@ function Sidebar() {
         if (!isFolderNameValid) {
             return;
         }
+
+        const matchingFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
+        const parent_folder_id = matchingFolder ? matchingFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
     
         try {
             setLoading(true)
             const response = await apiSecure.post('/uploadFolder', {
                 name: formData.newFolderName,
                 app_path: currentPath + formData.newFolderName,
+                parent_folder_id: parent_folder_id
             });
     
             addFolders(response.data)
@@ -196,22 +200,22 @@ function Sidebar() {
                                 maxLength={255}
                                 ref={folderNameInputRef}
                             />
-                            <p className="error-and-loading">
-                            {loading ?
-                                <div className="creating-wrapper">
-                                    <span>Creating folder...</span>
-                                    <LoadingBar loading={loading}/>
-                                </div>
-                                
-                                : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
-                                    <>Invalid folder name format.</>
+                            <div className="error-and-loading">
+                                {loading ?
+                                    <div className="creating-wrapper">
+                                        <span>Creating folder...</span>
+                                        <LoadingBar loading={loading}/>
+                                    </div>
+                                    
+                                    : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
+                                        <>Invalid folder name format.</>
 
-                                : backendError ?
-                                    <>Error. Please check connection.</>
+                                    : backendError ?
+                                        <>Error. Please check connection.</>
 
-                                : null
-                            }
-                            </p>
+                                    : null
+                                }
+                            </div>
                         </div>
 
                         <div className="btn-cont">
