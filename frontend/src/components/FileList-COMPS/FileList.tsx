@@ -180,14 +180,24 @@ function FileList() {
                     type: draggedItem.type,
                     parent_folder_id: parseInt(newDroppedOnItem.id.substring(2))
                 });
-        
-                console.log(response.data)
-                if (draggedItem.type) {
-                    updateFiles({[draggedItem.id]: { app_path: new_path }})
+
+                const updatedItems = response.data.updatedItems;
+                const foldersToUpdate: Record<string, { app_path: string }> = {};
+                const filesToUpdate: Record<number, { app_path: string }> = {};
+    
+                updatedItems.forEach((item: { id: string | number, updated_path: string }) => {
+                    item.id.toString().startsWith('d_') ?
+                        foldersToUpdate[item.id] = { app_path: item.updated_path }
+                        : filesToUpdate[item.id as number] = { app_path: item.updated_path }
+                });
+                // Batch update files and folders
+                if (Object.keys(filesToUpdate).length > 0) {
+                    updateFiles(filesToUpdate);
                 }
-                else {
-                    updateFolders({[draggedItem.id]: { app_path: new_path }})
+                if (Object.keys(foldersToUpdate).length > 0) {
+                    updateFolders(foldersToUpdate);
                 }
+
                 showToast({message: "Item successfully moved.", showSuccessIcon: true})
             } 
             catch (error) {
