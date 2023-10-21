@@ -1,11 +1,8 @@
-add button element wrapper + relevant class to all icon/text buttons
-finish file moving functionality (when moving folders update all app_paths of whatever is nested in it)
-add backend functions for file moving
-implement more efficient search algorithms?
+improve file moving functionality with dragging multiple items and adding move btn and modal
+in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
+
 move to and highlight new folder after user creates it
 make tabbing to a file name and pressing enter cause it to open (check folder for this code)
-
-in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
 fix file upload selection where user selecting same file again if it was the directly previous selected file not working
 add more specific/better icons for files in FileList and UploadInfo
 turn beginning of breadcrumb into elipses/dropdown to prevent overflow on long paths
@@ -49,6 +46,7 @@ add default files/folders for showcasing along with "restore default files" if u
 responsive CSS and check if correct on other browsers
 email verification
 allow Google and Facebook to be used for logins? (OAuth)
+add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it.
 remove useState import from all files where it's not used
 change backend env secret file for render.com if changed
 add more automated tests
