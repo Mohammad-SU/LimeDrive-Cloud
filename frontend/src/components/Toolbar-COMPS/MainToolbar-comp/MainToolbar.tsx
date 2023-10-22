@@ -42,7 +42,7 @@ function MainToolbar() {
             <div className="sharing-tools">
                 <button>
                     <BsLink45Deg className="tool-icon link"/>
-                </button> {/* change to link icon only? */}
+                </button>
                 <button>
                     <BsShare className="tool-icon share"/>
                     Share

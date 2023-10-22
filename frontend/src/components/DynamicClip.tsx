@@ -16,7 +16,7 @@ function DynamicClip({
     animationDuration = 300,
     clipPathId,
     animation,
-}: DynamicClipProps) { // To get the animation to work, make sure clippath: url(#clipPathID) is set in desired element's css
+}: DynamicClipProps) { // To get the animation to work, make sure clippath: url(#clipPathID) is set in desired element's css, and for the reverse/closing animation make sure useDelayedExit hook is used
     if (incrementProportion < 0 || incrementProportion > 1) {
         throw new Error("incrementProportion must be between 0 and 1.");
     }
@@ -26,7 +26,7 @@ function DynamicClip({
 
     const [clipPathValues, setClipPathValues] = useState(
         Array.from({ length: numRects }, (_, index) => ({
-            width: isOdd(index) ? 1 : 0, // Note that "odd" here is based on the zero-index array, so in the html this would actually apply to "even" elements
+            width: isOdd(index) ? 1 : 0, // Note that "odd" here is based on the zero-index array, so in the html this would actually apply to what you may consider "even" elements
             x: isOdd(index) ? 1 : 0,
             y: index * rectHeight,
         }))
@@ -76,7 +76,7 @@ function DynamicClip({
     }, [clipPathValues]);
 
     return (
-        showClip && // Hide after animation is over due to it causing parts of components to randomly dissappear for some reason if not hidden afterwards
+        showClip && // Hide after opening animation is over due to it causing parts of elements to randomly dissappear for some reason if not hidden afterwards
             <svg width="0" height="0" style={{position: "absolute", zIndex: 9999}}>
                 <defs>
                 <clipPath id={clipPathId} clipPathUnits="objectBoundingBox">

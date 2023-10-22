@@ -154,7 +154,7 @@ function FileList() {
     });
     const sensors = useSensors(mouseSensor, touchSensor)
 
-    const [draggedItem, setDraggedItem] = useState<Record<string, any>>()
+    const [draggedItem, setDraggedItem] = useState<Record<string, any>>() // can be more than one file/folder
     const [droppedOnItem, setDroppedOnItem] = useState<Record<string, any>>()
     const { apiSecure } = useUserContext()
     const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
@@ -256,11 +256,24 @@ function FileList() {
                     <DragOverlay className="drag-overlay" style={{width: 300}}>
                         {draggedItem &&
                             <>
-                                {draggedItem.type == undefined ? 
-                                    <AiOutlineFolder className="drag-icon-folder"/>
-                                    : <AiOutlineFile className="drag-icon-file"/>
-                                }
-                                <p>{draggedItem.name}</p>
+                                <div className="main-drag-cont">
+                                    {draggedItem.type === undefined ?
+                                        <AiOutlineFolder className="drag-icon-folder"/>
+                                        : <AiOutlineFile className="drag-icon-file"/>
+                                    }
+                                    <p>{draggedItem.name}</p>
+
+                                    {selectedItems.length > 1 && 
+                                        <div className={`item-counter ${selectedItems.length > 9 ? 'larger' : ''}`}>
+                                            {selectedItems.length < 10 ?
+                                                selectedItems.length
+                                                : "9+"
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                {selectedItems.length > 1 && <div className="second-stack stack-item" />}
+                                {selectedItems.length > 2 && <div className="third-stack stack-item" />}
                             </>
                         }
                     </DragOverlay>

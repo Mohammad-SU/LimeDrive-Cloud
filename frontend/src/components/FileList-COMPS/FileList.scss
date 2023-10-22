@@ -141,22 +141,73 @@
     }
 
     .drag-overlay {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        .main-drag-cont {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+    
+            padding: 0.4rem 0.7rem;
+            z-index: 9999;
+    
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.400);
+            border: 2px dashed lime;
+            background: black;
+    
+            .drag-icon-folder {
+                font-size: 2.3rem;
+            }
+            .drag-icon-file {
+                font-size: 2rem;
+            }
+    
+            .item-counter{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+    
+                width: 1.8rem;
+                height: 1.8rem;
+                margin: -1rem;
+                padding-bottom: 0.1rem;
+    
+                top: 0;
+                right: 0;
+                z-index: 1000;
+    
+                font-weight: bold;
+                border: 2px solid lime;
+                border-radius: 50%;
+                background: black;
+                box-sizing: border-box;
 
-        padding: 0 1rem;
-        z-index: 9999;
-
-        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.403);
-        border: 2px dashed lime;
-        background: black;
-
-        .drag-icon-folder {
-            font-size: 2.3rem;
+                &.larger {
+                    width: 2.1rem;
+                    height: 2.1rem;
+                }
+            }
         }
-        .drag-icon-file {
-            font-size: 2rem;
+    
+        .stack-item {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.400);
+
+            &.second-stack {
+                margin-top: -3.7rem;
+                margin-left: 0.4rem;
+                z-index: -1;
+                background: black;
+                border: 2px dashed lime;
+            }
+            &.third-stack {
+                margin-top: -3rem;
+                margin-left: 1rem;
+                z-index: -2;
+                background: black;
+                border: 2px dashed lime;
+            }
         }
     }
 }

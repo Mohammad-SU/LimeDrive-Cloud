@@ -1,3 +1,4 @@
+make it so dragging items that are not selected despite there being selected items causes that dragged item to be selected too.
 improve file moving functionality with dragging multiple items and adding move btn and modal
 in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
 

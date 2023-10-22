@@ -22,7 +22,6 @@ function Sidebar() {
     const { apiSecure } = useUserContext()
     const { currentPath, folders, addFolders } = useFileContext()
     const { showToast } = useToast()
-    const [backendError, setBackendError] = useState<AxiosError | null>(null)
     const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
 
     const newMenuRef = useRef<HTMLUListElement | null>(null)
@@ -43,7 +42,6 @@ function Sidebar() {
         delayMs: 300,
         onExitCallback: () => {
             formData.newFolderName = '';
-            setBackendError(null)
             setBackendErrorMsg(null)
         },
     });
@@ -52,7 +50,6 @@ function Sidebar() {
     const { formData, handleInputChange } = useFormLogic({
         newFolderName: '',
     }, (event) => {
-        setBackendError(null);
         setBackendErrorMsg(null);
     })
     const isFolderNameValid = /^[a-zA-Z0-9\s-_]+$/.test(formData.newFolderName)
@@ -87,9 +84,7 @@ function Sidebar() {
         catch (error) {
             console.error(error);
             if (axios.isAxiosError(error)) {
-                setBackendError(error)
                 setBackendErrorMsg(error?.response?.data.message)
-                console.log(backendErrorMsg)
             }
         }
         finally {
@@ -210,10 +205,10 @@ function Sidebar() {
                                     </div>
                                     
                                     : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
-                                        <>Invalid folder name format.</>
+                                        "Invalid folder name format."
 
-                                    : backendError ?
-                                        <>Error. Please check connection.</>
+                                    : backendErrorMsg ?
+                                        "Error. Please check connection."
 
                                     : null
                                 }
