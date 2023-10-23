@@ -62,7 +62,7 @@ function Sidebar() {
     }, [isNewfolderModalVisible]);
 
     const handleCreateFolder = async () => {
-        if (!isFolderNameValid) {
+        if (!isFolderNameValid || loading) {
             return;
         }
 
@@ -175,15 +175,22 @@ function Sidebar() {
                 </div>
             </div>
 
-            { isNewfolderModalVisible &&
-                    <div className="new-folder-modal">
-                        <button className="icon-btn-wrapper" onClick={() => setShowNewFolderModal(false)}>
+            {isNewfolderModalVisible &&
+                    <form 
+                        className="new-folder-modal"
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            handleCreateFolder();
+                        }}
+                    >
+                        <button className="icon-btn-wrapper" type="button" onClick={() => setShowNewFolderModal(false)}>
                             <AiOutlineClose className="close-icon icon-btn" />
                         </button>
                         <div className="heading-cont">
                             <AiFillFolderAdd className="modal-icon" />
                             <h1>Create folder</h1>
                         </div>
+
 
                         <div className="input-cont">
                             <label htmlFor="folder-name-input">Folder name</label>
@@ -196,6 +203,8 @@ function Sidebar() {
                                 onChange={(e) => handleInputChange(e, 255)}
                                 maxLength={255}
                                 ref={folderNameInputRef}
+                                required
+                                disabled={loading}
                             />
                             <div className="error-and-loading">
                                 {loading ?
@@ -216,13 +225,13 @@ function Sidebar() {
                         </div>
 
                         <div className="btn-cont">
-                            <button className='cancel-btn' onClick={() => setShowNewFolderModal(false)}>
+                            <button className='cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)}>
                                 Cancel
                             </button>
                             <button 
-                                className='create-btn' 
-                                onClick={handleCreateFolder}
-                                disabled={formData.newFolderName == '' || backendError != null || !isFolderNameValid}
+                                className='create-btn'
+                                type="submit"
+                                disabled={formData.newFolderName == '' || backendErrorMsg != null || !isFolderNameValid || loading}
                             >
                                 Create
                             </button>
@@ -233,7 +242,7 @@ function Sidebar() {
                             animation={showNewFolderModal}
                             numRects={10}
                         />
-                    </div>
+                    </form>
             }
             <div className={`new-folder-modal-shadow ${showNewFolderModal ? 'delayed-shadow' : ''}`}></div>
 

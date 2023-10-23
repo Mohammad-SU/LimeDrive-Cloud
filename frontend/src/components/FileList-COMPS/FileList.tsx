@@ -154,31 +154,42 @@ function FileList() {
     });
     const sensors = useSensors(mouseSensor, touchSensor)
 
-    const [draggedItem, setDraggedItem] = useState<Record<string, any>>() // can be more than one file/folder
-    const [droppedOnItem, setDroppedOnItem] = useState<Record<string, any>>()
+    const [draggedItem, setDraggedItem] = useState<FileType | FolderType>() // The file or folder that is directly being dragged, regardless of selected items
     const { apiSecure } = useUserContext()
-    const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
 
     const handleDragStart = (event: DragStartEvent) => {
-        setDraggedItem(event.active.data.current);
-    }
-    const handleDragEnd = async (event: DragEndEvent) => {
-        const newDroppedOnItem = event.over?.data.current
+        const draggedItem = event.active.data.current as FileType | FolderType;
 
-        if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id)) {
+        if (selectedItems.length > 0 && !selectedItems.some(item => item.id === draggedItem.id)) {
+            addToSelectedItems([draggedItem]);
+        }
+    
+        setDraggedItem(draggedItem);
+    }    
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const newDroppedOnItem = event.over?.data.current as FileType | FolderType;
+
+        if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id) && !selectedItems.some(item => item.id === newDroppedOnItem.id)) {
             try {
-                // setDroppedOnItem(newDroppedOnItem) // check if this is required or not
-                showToast({message: "Testing backend response...", loading: true})
-                const new_path = newDroppedOnItem.app_path + "/" + draggedItem.name;
-                const postId = !draggedItem.type ? // If draggedItem is a folder (id has d_ prefix on the frontend) then filter it for the backend
-                    parseInt(draggedItem.id.substring(2))
-                    : draggedItem.id
+                showToast({message: "Testing moving items...", loading: true})
+                const itemsToSend = selectedItems.length > 1 ? selectedItems : [draggedItem];
+
+                const itemsToSendData = itemsToSend.map(item => {
+                    const new_path = newDroppedOnItem.app_path + "/" + item.name;
+                    const postId = !item.type ? // If draggedItem is a folder (id has d_ prefix on the frontend) then filter it for the backend
+                        parseInt((item.id as string).substring(2))
+                        : item.id
+
+                    return {
+                        id: postId,
+                        new_path: new_path,
+                        type: item.type,
+                        parent_folder_id: parseInt((newDroppedOnItem.id as string).substring(2))
+                    }
+                })
 
                 const response = await apiSecure.post('/updatePaths', {
-                    id: postId,
-                    new_path: new_path,
-                    type: draggedItem.type,
-                    parent_folder_id: parseInt(newDroppedOnItem.id.substring(2))
+                    items: itemsToSendData
                 });
 
                 const updatedItems = response.data.updatedItems;
@@ -190,7 +201,6 @@ function FileList() {
                         foldersToUpdate[item.id] = { app_path: item.updated_path }
                         : filesToUpdate[item.id as number] = { app_path: item.updated_path }
                 });
-                // Batch update files and folders
                 if (Object.keys(filesToUpdate).length > 0) {
                     updateFiles(filesToUpdate);
                 }
@@ -203,7 +213,6 @@ function FileList() {
             catch (error) {
                 console.error(error);
                 if (axios.isAxiosError(error)) {
-                    setBackendErrorMsg(error?.response?.data.message)
                     showToast({ message: `Error: ${error?.response?.data.message}`, showFailIcon: true });
                 }
             }

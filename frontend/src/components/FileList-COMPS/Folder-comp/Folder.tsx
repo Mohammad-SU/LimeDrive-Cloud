@@ -55,11 +55,20 @@ function Folder({ folder, onSelect }: FolderProps) {
     });
 
     const [sameDragAndDropId, setSameDragAndDropId] = useState(false)
+    const [isSelectDragging, setIsSelectDragging] = useState(false)
     useDndMonitor({
+        onDragStart() {
+            if (isSelected) {
+                setIsSelectDragging(true)
+            }
+        },
         onDragOver(event) {
             event.active.id == event.over?.id ?
                 setSameDragAndDropId(true) 
                 : setSameDragAndDropId(false)
+        },
+        onDragEnd() {
+            setIsSelectDragging(false)
         },
     });
 
@@ -81,8 +90,8 @@ function Folder({ folder, onSelect }: FolderProps) {
         <div 
             className={`
                 Folder ${isSelected ? 'selected' : ''} 
-                ${isOver && !sameDragAndDropId ? 'over' : ''} 
-                ${isDragging ? 'dragging' : ''}
+                ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''} 
+                ${isDragging || isSelectDragging ? 'dragging' : ''}
             `}
             onClick={handleFolderClick}
             onDoubleClick={openFolder}

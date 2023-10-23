@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import "./File.scss"
 import { FileType } from '../../../types/index.ts';
 import { useFileContext } from '../../../contexts/FileContext.tsx';
-import { useDraggable } from '@dnd-kit/core';
+import { useDraggable, useDndMonitor } from '@dnd-kit/core';
 import { AiOutlineFile } from 'react-icons/ai';
 import Checkbox from '../Checkbox-comp/Checkbox.tsx';
 
@@ -40,6 +40,18 @@ function File({ file, onSelect }: FileProps) {
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
 
+    const [isSelectDragging, setIsSelectDragging] = useState(false)
+    useDndMonitor({
+        onDragStart() {
+            if (isSelected) {
+                setIsSelectDragging(true)
+            }
+        },
+        onDragEnd() {
+            setIsSelectDragging(false)
+        },
+    });
+
     const {attributes, listeners, isDragging, setNodeRef} = useDraggable({
         id: file.id,
         data: file,
@@ -69,7 +81,7 @@ function File({ file, onSelect }: FileProps) {
             className={`
                 File 
                 ${isSelected ? 'selected' : ''}
-                ${isDragging ? 'dragging' : ''}
+                ${isDragging || isSelectDragging ? 'dragging' : ''}
             `} 
             onClick={handleFileClick}
             ref={setNodeRef}
