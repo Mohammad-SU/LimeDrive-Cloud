@@ -23,10 +23,9 @@ class UpdateController extends Controller
         foreach ($items['items'] as $itemData) {
             $id = $itemData['id'];
             $new_path = $itemData['new_path'];
-            $type = isset($itemData['type']) ? $itemData['type'] : null;
             $parent_folder_id = $itemData['parent_folder_id'];
 
-            if ($type === null) {
+            if (!isset($itemData['type'])) {
                 $updItem = Folder::find($id);
                 $this->updateChildPaths($updItem, $new_path, $updatedItems);
                 $updatedItems[] = ['id' => 'd_' . $updItem->id, 'updated_path' => $new_path];

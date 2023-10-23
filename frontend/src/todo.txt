@@ -1,15 +1,13 @@
-make it so dragging items that are not selected despite there being selected items causes that dragged item to be selected too.
-improve file moving functionality with dragging multiple items and adding move btn and modal
+improve file moving functionality by adding move btn and modal
 in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
 
 move to and highlight new folder after user creates it
-make tabbing to a file name and pressing enter cause it to open (check folder for this code)
+make tabbing to a file name and pressing enter cause it to open (check folder for code)
 fix file upload selection where user selecting same file again if it was the directly previous selected file not working
 add more specific/better icons for files in FileList and UploadInfo
 turn beginning of breadcrumb into elipses/dropdown to prevent overflow on long paths
 make website title reflect page/folder accurately
 change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
-change styles for folder/file name spans on hover?
 folder uploading
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 test if laravel schedule cronjob is working properly (change config, schedule, pruning expired limit to 1 minute)
