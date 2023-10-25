@@ -16,10 +16,11 @@ interface FolderProps {
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const { selectedItems, currentPath } = useFileContext()
+    const [isProcessing, setIsSent] = useState(false)
+    const { selectedItems, currentPath, processingItems } = useFileContext()
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
-        event.preventDefault();
+        if (isProcessing) return
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
@@ -41,17 +42,23 @@ function Folder({ folder, onSelect }: FolderProps) {
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
 
+    useEffect(() => {
+        setIsSent(processingItems.some(sentItem => sentItem.id === folder.id));
+    }, [processingItems]);
+
     const {attributes, listeners, isDragging, setNodeRef: dragSetNodeRef} = useDraggable({
         id: folder.id,
         data: folder,
         attributes: {
             tabIndex: -1,
         },
+        disabled: isProcessing,
     });
 
     const {isOver, setNodeRef: dropSetNodeRef} = useDroppable({
         id: folder.id,
         data: folder,
+        disabled: isProcessing,
     });
 
     const [sameDragAndDropId, setSameDragAndDropId] = useState(false)
@@ -92,7 +99,9 @@ function Folder({ folder, onSelect }: FolderProps) {
                 Folder ${isSelected ? 'selected' : ''} 
                 ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''} 
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
+                ${isProcessing ? 'processing' : ''}
             `}
+            id={folder.id}
             onClick={handleFolderClick}
             onDoubleClick={openFolder}
             ref={(node) => {
@@ -103,7 +112,7 @@ function Folder({ folder, onSelect }: FolderProps) {
             {...attributes}
         >
             <Checkbox
-                className={`list-checkbox ${showCheckbox ? "show-checkbox" : 'hide-checkbox'}`}
+                className={`list-checkbox ${showCheckbox && !isProcessing ? "show-checkbox" : 'hide-checkbox'}`}
                 checked={isSelected}
             />
             <p className="name">

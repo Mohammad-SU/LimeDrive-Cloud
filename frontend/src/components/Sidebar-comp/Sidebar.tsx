@@ -225,7 +225,7 @@ function Sidebar() {
                         </div>
 
                         <div className="btn-cont">
-                            <button className='cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)}>
+                            <button className='cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)} disabled={loading}>
                                 Cancel
                             </button>
                             <button 

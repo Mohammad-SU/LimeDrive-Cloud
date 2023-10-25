@@ -9,6 +9,7 @@ import { useUserContext } from '../../contexts/UserContext'
 import { useToast } from '../../contexts/ToastContext';
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
+import { ItemTypes } from '../../types';
 import Breadcrumb from './Breadcrumb-comp/Breadcrumb'
 import MainToolbar from '../Toolbar-COMPS/MainToolbar-comp/MainToolbar'
 import Checkbox from './Checkbox-comp/Checkbox'
@@ -17,7 +18,7 @@ import File from "./File-comp/File"
 import { AiOutlineFile, AiOutlineFolder } from 'react-icons/ai';
 
 function FileList() {
-    const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
+    const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems, setProcessingItems, processingItems } = useFileContext()
     const { showToast } = useToast()
 
     const navigate = useNavigate()
@@ -25,20 +26,28 @@ function FileList() {
     const location = useLocation()
     const path = decodeURIComponent(location.pathname.slice(1) + "/")
     useEffect(() => {
-        folders.some(folder => folder.app_path === path.slice(0, -1)) ?
+        folders.some(folder => folder.app_path === path.slice(0, -1)) ? // if the URL path doesn't match a real folder's path then navigate to root
             setCurrentPath(path)
             : navigate("/LimeDrive")
     }, [path]);
 
+    function filterItemsByPath(items: ItemTypes[], path: string): ItemTypes[] {
+        const filteredItems = items.filter(item => {
+            const lastSlashIndex = item.app_path.lastIndexOf('/');
+            return item.app_path.substring(0, lastSlashIndex + 1) === path;
+        });
+        return filteredItems;
+    }
+
     const sortedFolders = useMemo(() => {
-        const filteredFolders = folders.filter(folder => folder.app_path.replace(folder.name, '') === currentPath);
+        const filteredFolders = filterItemsByPath(folders, currentPath)
         return filteredFolders.slice().sort((a, b) => { // Sort A-Z by folder name
             return a.name.localeCompare(b.name);
         });
     }, [folders, currentPath]);
 
     const sortedFiles = useMemo(() => {
-        const filteredFiles = files.filter(file => file.app_path.replace(file.name, '') === currentPath);
+        const filteredFiles = filterItemsByPath(files, currentPath)
         return filteredFiles.slice().sort((a, b) => { // Sort so most recently uploaded files will be at the beginning
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);
@@ -46,7 +55,7 @@ function FileList() {
         });
     }, [files, currentPath]);
 
-    const handleItemSelection = (item: FileType | FolderType, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => {
+    const handleItemSelection = (item: ItemTypes, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
@@ -88,8 +97,10 @@ function FileList() {
     const handleHeaderCheckboxClick = () => {
         if (!showSelectAll && !showDeselectAll) {
             setShowSelectAll(true)
-            addToSelectedItems(sortedFiles)
-            addToSelectedItems(sortedFolders)
+            const itemsToSelect = [...sortedFiles, ...sortedFolders].filter(
+                (item) => !processingItems.some((sentItem) => sentItem.id === item.id)
+            );
+            addToSelectedItems(itemsToSelect);
         }
         else {
             setShowSelectAll(false)
@@ -154,27 +165,52 @@ function FileList() {
     });
     const sensors = useSensors(mouseSensor, touchSensor)
 
-    const [draggedItem, setDraggedItem] = useState<FileType | FolderType>() // The file or folder that is directly being dragged, regardless of selected items
+    const [draggedItem, setDraggedItem] = useState<ItemTypes>() // The file or folder that is directly being dragged, regardless of selected items
     const { apiSecure } = useUserContext()
 
     const handleDragStart = (event: DragStartEvent) => {
-        const draggedItem = event.active.data.current as FileType | FolderType;
+        const draggedItem = event.active.data.current as ItemTypes;
 
         if (selectedItems.length > 0 && !selectedItems.some(item => item.id === draggedItem.id)) {
             addToSelectedItems([draggedItem]);
         }
     
         setDraggedItem(draggedItem);
-    }    
+    }
     const handleDragEnd = async (event: DragEndEvent) => {
-        const newDroppedOnItem = event.over?.data.current as FileType | FolderType;
-
+        const newDroppedOnItem = event.over?.data.current as FolderType;
+        
         if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id) && !selectedItems.some(item => item.id === newDroppedOnItem.id)) {
-            try {
-                showToast({message: "Testing moving items...", loading: true})
-                const itemsToSend = selectedItems.length > 1 ? selectedItems : [draggedItem];
+            let itemsToMove: ItemTypes[]
+            selectedItems.length <= 1 ?
+                itemsToMove = [draggedItem]
+                : itemsToMove = selectedItems
 
-                const itemsToSendData = itemsToSend.map(item => {
+            const foldersToMove = itemsToMove.filter((item) => {
+                return !item.type;
+            });
+            const filesToMove = itemsToMove.filter((item) => {
+                return item.type;
+            });
+
+            const targetDirectFolders = filterItemsByPath(folders, newDroppedOnItem.app_path + "/")
+            const targetDirectFiles = filterItemsByPath(files, newDroppedOnItem.app_path + "/")
+
+            const hasFileConflicts = targetDirectFiles.some((fileInTarget) => {
+                return filesToMove.some((fileToMove) => fileInTarget.name === fileToMove.name);
+            });
+            
+            const hasFolderConflicts = targetDirectFolders.some((folderInTarget) => {
+                return foldersToMove.some((folderToMove) => folderInTarget.name === folderToMove.name);
+            });
+
+            if (hasFileConflicts || hasFolderConflicts) {
+                showToast({ message: `Cannot move - please rename or deselect items with the same name between both directories.`, showFailIcon: true });
+                return
+            }
+
+            try {
+                const itemsToMoveData = itemsToMove.map(item => {
                     const new_path = newDroppedOnItem.app_path + "/" + item.name;
                     const postId = !item.type ? // If draggedItem is a folder (id has d_ prefix on the frontend) then filter it for the backend
                         parseInt((item.id as string).substring(2))
@@ -187,9 +223,15 @@ function FileList() {
                         parent_folder_id: parseInt((newDroppedOnItem.id as string).substring(2))
                     }
                 })
+                setProcessingItems([...itemsToMove, newDroppedOnItem])
+                removeFromSelectedItems(itemsToMove)
+
+                itemsToMove.length == 1 ?
+                    showToast({message: "Moving 1 item...", loading: true})
+                    : showToast({message: `Moving ${selectedItems.length} items...`, loading: true})
 
                 const response = await apiSecure.post('/updatePaths', {
-                    items: itemsToSendData
+                    items: itemsToMoveData
                 });
 
                 const updatedItems = response.data.updatedItems;
@@ -208,7 +250,9 @@ function FileList() {
                     updateFolders(foldersToUpdate);
                 }
 
-                showToast({message: "Item successfully moved.", showSuccessIcon: true})
+                Object.keys(filesToUpdate).length + Object.keys(foldersToUpdate).length == 1 ?
+                    showToast({message: "Item successfully moved.", showSuccessIcon: true})
+                    : showToast({message: "Items successfully moved.", showSuccessIcon: true})
             } 
             catch (error) {
                 console.error(error);
@@ -216,20 +260,23 @@ function FileList() {
                     showToast({ message: `Error: ${error?.response?.data.message}`, showFailIcon: true });
                 }
             }
+            finally {
+                setProcessingItems([])
+            }
         }
     }
 
     const foldersMapped = sortedFolders.map(folder => {
         return <Folder
             key={folder.id}
-            folder={folder}
+            folder={folder as FolderType}
             onSelect={handleItemSelection}
         />
     })
     const filesMapped = sortedFiles.map(file => {
         return <File
             key={file.id}
-            file={file}
+            file={file as FileType}
             onSelect={handleItemSelection}
         />
     })

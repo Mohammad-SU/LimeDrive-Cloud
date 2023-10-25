@@ -1,3 +1,6 @@
+reflect item moving conflicts with exclamation mark in middle of their icons with file context.
+fix long item names causing icons to dissappear
+change filetype foldertype combinations to ItemTypes
 improve file moving functionality by adding move btn and modal
 in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
 

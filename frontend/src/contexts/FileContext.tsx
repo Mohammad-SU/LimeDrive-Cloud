@@ -21,6 +21,9 @@ interface FileContextType {
     setSelectedItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
     addToSelectedItems: (item: (FileType | FolderType)[]) => void;
     removeFromSelectedItems: (item: (FileType | FolderType)[]) => void;
+
+    processingItems: (FileType | FolderType)[];
+    setProcessingItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined)
@@ -39,6 +42,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
     const [selectedItems, setSelectedItems] = useState<(FileType | FolderType)[]>([]);
+    const [processingItems, setProcessingItems] = useState<(FileType | FolderType)[]>([]);
 
     const addFiles = (newFiles: FileType | FileType[]) => { // Filter out new files that already exist in the current state
         setFiles((prevFiles) => {
@@ -133,9 +137,12 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             selectedItems,
             setSelectedItems,
             addToSelectedItems,
-            removeFromSelectedItems
+            removeFromSelectedItems,
+
+            processingItems,
+            setProcessingItems,
         };
-    }, [currentPath, files, folders, selectedItems])
+    }, [currentPath, files, folders, selectedItems, processingItems])
 
     return (
         <FileContext.Provider value={contextValue}>

@@ -40,7 +40,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     const setTokenInCookie = (newToken: string | null) => {
         if (newToken) {
-            Cookies.set('auth_token', newToken, { secure: true, expires: 400 }); // 400 days so user is likely to be informed that they need to login again if the token expires on the backend and they still want to use the app
+            Cookies.set('auth_token', newToken, { secure: true, expires: 400 }); // 400 days so user is more likely to be informed that they need to login again if the token expires on the backend and they still want to use the app
             setToken(newToken)
         }
         else {

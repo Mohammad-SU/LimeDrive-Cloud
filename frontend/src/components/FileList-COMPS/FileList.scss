@@ -76,27 +76,38 @@
         }
 
         .File, .Folder {
-            @include btn-selection-styles;
             position: relative;
             display: flex;
             align-items: center;
             padding: 1rem 0;
             border-bottom: .0625rem solid rgba(0, 255, 0, 0.700);
-            cursor: default;
+            cursor: default !important;
 
             &.over {
                 outline: 2px solid lime;
             }
             &.dragging {
                 opacity: 0.8;
-                background: rgba(0, 255, 0, 0.150);
+                background: rgba(0, 255, 0, 0.15) !important;
+            }
+            &.processing {
+                opacity: 0.7;
+                background: rgba(0, 255, 0, 0.12) !important;
+                cursor: not-allowed !important;
+
+                .list-checkbox {
+                    cursor: not-allowed !important;
+                }
             }
             &:focus-visible {
                 outline: none;
             }
 
-            &:hover .list-checkbox {
-                opacity: 1;
+            &:not(.processing) {
+                &:hover .list-checkbox {
+                    opacity: 1;
+                }
+                @include btn-selection-styles;
             }
         
             .list-checkbox {
@@ -168,7 +179,7 @@
     
                 width: 1.8rem;
                 height: 1.8rem;
-                margin: -1rem;
+                margin: -0.8rem;
                 padding-bottom: 0.1rem;
     
                 top: 0;

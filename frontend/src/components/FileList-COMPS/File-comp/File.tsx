@@ -15,10 +15,11 @@ interface FileProps {
 function File({ file, onSelect }: FileProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const { selectedItems, addToSelectedItems, removeFromSelectedItems } = useFileContext()
+    const [isProcessing, setIsSent] = useState(false)
+    const { selectedItems, addToSelectedItems, removeFromSelectedItems, processingItems } = useFileContext()
 
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
-        event.preventDefault();
+        if (isProcessing) return
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
@@ -40,6 +41,10 @@ function File({ file, onSelect }: FileProps) {
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
 
+    useEffect(() => {
+        setIsSent(processingItems.some(sentItem => sentItem.id === file.id));
+    }, [processingItems]);
+
     const [isSelectDragging, setIsSelectDragging] = useState(false)
     useDndMonitor({
         onDragStart() {
@@ -58,6 +63,7 @@ function File({ file, onSelect }: FileProps) {
         attributes: {
             tabIndex: -1,
         },
+        disabled: isProcessing,
     });
 
     function formatBytes(bytes: number) {
@@ -82,14 +88,16 @@ function File({ file, onSelect }: FileProps) {
                 File 
                 ${isSelected ? 'selected' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
-            `} 
+                ${isProcessing ? 'processing' : ''}
+            `}
+            id={file.id.toString()}
             onClick={handleFileClick}
             ref={setNodeRef}
             {...listeners} 
             {...attributes}
         >
             <Checkbox
-                className={`list-checkbox ${showCheckbox ? "show-checkbox" : "hide-checkbox"}`} 
+                className={`list-checkbox ${showCheckbox && !isProcessing ? "show-checkbox" : "hide-checkbox"}`} 
                 checked={isSelected}
             />
             <p className="name">
