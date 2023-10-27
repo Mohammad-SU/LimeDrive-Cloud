@@ -1,7 +1,10 @@
-reflect item moving conflicts with exclamation mark in middle of their icons with file context.
-fix long item names causing icons to dissappear
-change filetype foldertype combinations to ItemTypes
-improve file moving functionality by adding move btn and modal
+make template modal component with changeable parent tag to form or div and with useDelayedExit and dynamicClip and backdrop and bool props for displaying stuff by default
+improve file moving functionality by implementing move btn and modal
+make "creating folder..." show as toast
+add short scss animations for conflict icons and tooltips
+fix long item names causing icons to disappear
+change all filetype foldertype combinations to ItemTypes if better
+fix text overflow next line when uploadInfo is collapsed and spinner is visible
 in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
 
 move to and highlight new folder after user creates it
@@ -55,3 +58,7 @@ add more automated tests
 implement Redis?
 test all features of entire app
 clear laravel storage log
+
+future update ideas:
+    undo btn/features
+    show conflict resolution modal when conflicts detected during move operations

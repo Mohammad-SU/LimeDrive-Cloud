@@ -18,7 +18,7 @@ import File from "./File-comp/File"
 import { AiOutlineFile, AiOutlineFolder } from 'react-icons/ai';
 
 function FileList() {
-    const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems, setProcessingItems, processingItems } = useFileContext()
+    const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems, setConflictingItems, setProcessingItems, processingItems } = useFileContext()
     const { showToast } = useToast()
 
     const navigate = useNavigate()
@@ -29,6 +29,8 @@ function FileList() {
         folders.some(folder => folder.app_path === path.slice(0, -1)) ? // if the URL path doesn't match a real folder's path then navigate to root
             setCurrentPath(path)
             : navigate("/LimeDrive")
+
+        setConflictingItems([]);
     }, [path]);
 
     function filterItemsByPath(items: ItemTypes[], path: string): ItemTypes[] {
@@ -166,6 +168,7 @@ function FileList() {
     const sensors = useSensors(mouseSensor, touchSensor)
 
     const [draggedItem, setDraggedItem] = useState<ItemTypes>() // The file or folder that is directly being dragged, regardless of selected items
+    const [conflictingItemsTimeout, setConflictingItemsTimeout] = useState<NodeJS.Timeout | null>(null);
     const { apiSecure } = useUserContext()
 
     const handleDragStart = (event: DragStartEvent) => {
@@ -196,17 +199,29 @@ function FileList() {
             const targetDirectFolders = filterItemsByPath(folders, newDroppedOnItem.app_path + "/")
             const targetDirectFiles = filterItemsByPath(files, newDroppedOnItem.app_path + "/")
 
-            const hasFileConflicts = targetDirectFiles.some((fileInTarget) => {
-                return filesToMove.some((fileToMove) => fileInTarget.name === fileToMove.name);
-            });
-            
-            const hasFolderConflicts = targetDirectFolders.some((folderInTarget) => {
-                return foldersToMove.some((folderToMove) => folderInTarget.name === folderToMove.name);
+            const newConflictingItems: ItemTypes[] = [];
+
+            const fileConflicts = filesToMove.filter((fileToMove) => {
+                return targetDirectFiles.some((fileInTarget) => fileInTarget.name === fileToMove.name);
             });
 
-            if (hasFileConflicts || hasFolderConflicts) {
-                showToast({ message: `Cannot move - please rename or deselect items with the same name between both directories.`, showFailIcon: true });
-                return
+            const folderConflicts = foldersToMove.filter((folderToMove) => {
+                return targetDirectFolders.some((folderInTarget) => folderInTarget.name === folderToMove.name);
+            });
+    
+            newConflictingItems.push(...fileConflicts, ...folderConflicts);
+
+            if (newConflictingItems.length > 0) {
+                showToast({message: `Cannot move: please rename or deselect items with the same name between both directories.`, showFailIcon: true});
+                setConflictingItems(newConflictingItems)
+                if (conflictingItemsTimeout) {
+                    clearTimeout(conflictingItemsTimeout);
+                }
+                const timeoutId = setTimeout(() => {
+                    setConflictingItems([]);
+                }, 8000);
+                setConflictingItemsTimeout(timeoutId);
+                return;
             }
 
             try {

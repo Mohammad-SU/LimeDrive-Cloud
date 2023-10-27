@@ -177,7 +177,7 @@ function Sidebar() {
 
             {isNewfolderModalVisible &&
                     <form 
-                        className="new-folder-modal"
+                        className="new-folder-modal modal"
                         onSubmit={(event) => {
                             event.preventDefault();
                             handleCreateFolder();
@@ -245,10 +245,7 @@ function Sidebar() {
                     </form>
             }
             <div className={`new-folder-modal-shadow ${showNewFolderModal ? 'delayed-shadow' : ''}`}></div>
-
-            <AnimatePresence>
-                {showNewFolderModal && <Backdrop onClick={() => setShowNewFolderModal(false)}/>} {/* Use showNewFolderModal as condition as backdrop should be invisible faster*/} 
-            </AnimatePresence>
+            <Backdrop render={showNewFolderModal} onClick={() => setShowNewFolderModal(false)}/> {/* Use showNewFolderModal instead of isNewFolderModalVisible as render condition since backdrop should be invisible faster*/}
 
             <UploadInfo fileInputRef={fileInputRef}/>
         </>

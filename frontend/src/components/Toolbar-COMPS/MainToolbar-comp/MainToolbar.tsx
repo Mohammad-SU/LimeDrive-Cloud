@@ -1,10 +1,11 @@
 import { memo } from 'react'
+import "./MainToolbar.scss"
 import { useFileContext } from '../../../contexts/FileContext'
+import MoveBtn from '../ToolbarBtn-COMPS/MoveBtn'
 import { AiOutlineDownload, AiOutlineStar } from 'react-icons/ai'
 import { BsEye, BsLink45Deg, BsShare } from 'react-icons/bs'
 import { SlTrash, SlCursorMove } from 'react-icons/sl'
 import { GoPencil } from 'react-icons/go'
-import "./MainToolbar.scss"
 
 function MainToolbar() {
     const { selectedItems } = useFileContext()
@@ -25,10 +26,7 @@ function MainToolbar() {
                     Delete
                 </button>
                 <div className="divider" />
-                <button>
-                    <SlCursorMove className="tool-icon move"/>
-                    Move
-                </button>
+                <MoveBtn />
                 <button>
                     <GoPencil className="tool-icon"/>
                     Rename

@@ -4,7 +4,7 @@ import "./File.scss"
 import { FileType } from '../../../types/index.ts';
 import { useFileContext } from '../../../contexts/FileContext.tsx';
 import { useDraggable, useDndMonitor } from '@dnd-kit/core';
-import { AiOutlineFile } from 'react-icons/ai';
+import { AiOutlineFile, AiOutlineExclamation} from 'react-icons/ai';
 import Checkbox from '../Checkbox-comp/Checkbox.tsx';
 
 interface FileProps {
@@ -15,8 +15,9 @@ interface FileProps {
 function File({ file, onSelect }: FileProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const [isProcessing, setIsSent] = useState(false)
-    const { selectedItems, addToSelectedItems, removeFromSelectedItems, processingItems } = useFileContext()
+    const [isProcessing, setIsProcessing] = useState(false)
+    const [isConflicting, setIsConflicting] = useState(false)
+    const { selectedItems, conflictingItems, processingItems } = useFileContext()
 
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
         if (isProcessing) return
@@ -40,10 +41,13 @@ function File({ file, onSelect }: FileProps) {
         setIsSelected(selectedItems.some(selectedItem => selectedItem.id === file.id));
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
-
     useEffect(() => {
-        setIsSent(processingItems.some(sentItem => sentItem.id === file.id));
+        setIsProcessing(processingItems.some(sentItem => sentItem.id === file.id));
     }, [processingItems]);
+    useEffect(() => {
+        const newIsConflicting = conflictingItems.some(conflictingItem => conflictingItem.id === file.id)
+        setIsConflicting(newIsConflicting)
+    }, [conflictingItems]);
 
     const [isSelectDragging, setIsSelectDragging] = useState(false)
     useDndMonitor({
@@ -101,8 +105,21 @@ function File({ file, onSelect }: FileProps) {
                 checked={isSelected}
             />
             <p className="name">
-                <AiOutlineFile className="icon" />
-                <span tabIndex={0}>{file.name}</span>
+                <span className="icon-cont">
+                    <AiOutlineFile className="main-icon" />
+                    {isConflicting &&
+                        <>
+                            <AiOutlineExclamation className="conflict-icon"/>
+                            <span className="tooltip">Cannot move: conflicting<br/>name in target directory</span>
+                        </>
+                    }
+                </span>
+                <span 
+                    className="text-cont" 
+                    tabIndex={0}
+                >
+                    {file.name}
+                </span>
             </p>
             <p>{file.type}</p>
             <p>{formattedSize}</p>

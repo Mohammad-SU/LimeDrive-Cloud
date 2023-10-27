@@ -99,6 +99,9 @@
                     cursor: not-allowed !important;
                 }
             }
+            &.dropped-on {
+                outline: .125rem solid lime;
+            }
             &:focus-visible {
                 outline: none;
             }
@@ -129,12 +132,39 @@
                     text-overflow: ellipsis;
                     flex: 3;
 
-                    .icon {
-                        font-size: 2.2rem;
-                        stroke-width: 1px;
+
+                    .icon-cont {
+                        &:hover .tooltip {
+                            visibility: visible;
+                        }
+
+                        .main-icon {
+                            font-size: 2.2rem;
+                        }
+                        .conflict-icon {
+                            position: absolute;
+                            font-size: 0.9rem;
+                            padding: 0.1rem;
+                            margin-top: -0.4rem;
+                            margin-left: -2.5rem;
+                            border: .125rem solid lime;
+                            border-radius: 50%;
+                            background: black;
+                        }
+                        .tooltip {
+                            position: absolute;
+                            padding: 0.6rem;
+                            margin-left: -1rem;
+                            margin-top: -0.22rem;
+                            font-size: 0.8rem;
+
+                            background: black;
+                            outline: 1px solid lime;
+                            visibility: hidden;
+                        }
                     }
 
-                    span:hover {
+                    .text-cont:hover {
                         @include other-selection-styles;
                         cursor: pointer;
                     }

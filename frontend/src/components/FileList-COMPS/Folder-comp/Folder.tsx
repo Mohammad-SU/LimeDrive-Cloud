@@ -5,7 +5,7 @@ import "./Folder.scss"
 import { FolderType } from '../../../types';
 import { useFileContext } from '../../../contexts/FileContext';
 import { useDraggable, useDroppable, useDndMonitor } from '@dnd-kit/core';
-import { AiOutlineFolder } from 'react-icons/ai';
+import { AiOutlineFolder, AiOutlineExclamation} from 'react-icons/ai';
 import Checkbox from '../Checkbox-comp/Checkbox';
 
 interface FolderProps {
@@ -16,8 +16,10 @@ interface FolderProps {
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const [isProcessing, setIsSent] = useState(false)
-    const { selectedItems, currentPath, processingItems } = useFileContext()
+    const [isProcessing, setIsProcessing] = useState(false)
+    const [isDroppedOn, setIsDroppedOn] = useState(false)
+    const [isConflicting, setIsConflicting] = useState(false)
+    const { selectedItems, currentPath, conflictingItems, processingItems } = useFileContext()
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
         if (isProcessing) return
@@ -41,10 +43,17 @@ function Folder({ folder, onSelect }: FolderProps) {
         setIsSelected(selectedItems.some(selectedItem => selectedItem.id === folder.id));
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
-
     useEffect(() => {
-        setIsSent(processingItems.some(sentItem => sentItem.id === folder.id));
+        const newIsProcessing = processingItems.some(sentItem => sentItem.id === folder.id)
+        setIsProcessing(newIsProcessing)
+        if (!newIsProcessing) {
+            setIsDroppedOn(false)
+        }
     }, [processingItems]);
+    useEffect(() => {
+        const newIsConflicting = conflictingItems.some(conflictingItem => conflictingItem.id === folder.id)
+        setIsConflicting(newIsConflicting)
+    }, [conflictingItems]);
 
     const {attributes, listeners, isDragging, setNodeRef: dragSetNodeRef} = useDraggable({
         id: folder.id,
@@ -74,7 +83,10 @@ function Folder({ folder, onSelect }: FolderProps) {
                 setSameDragAndDropId(true) 
                 : setSameDragAndDropId(false)
         },
-        onDragEnd() {
+        onDragEnd(event) {
+            if (event.over?.id === folder.id) {
+                setIsDroppedOn(true)
+            }
             setIsSelectDragging(false)
         },
     });
@@ -92,7 +104,7 @@ function Folder({ folder, onSelect }: FolderProps) {
         return dateTime.toFormat('dd/MM/yyyy HH:mm');
     }
     const formattedDate = formatDate(new Date(folder.date));
-    
+
     return (
         <div 
             className={`
@@ -100,6 +112,7 @@ function Folder({ folder, onSelect }: FolderProps) {
                 ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''} 
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
                 ${isProcessing ? 'processing' : ''}
+                ${isDroppedOn && isProcessing ? 'dropped-on' : ''}
             `}
             id={folder.id}
             onClick={handleFolderClick}
@@ -108,7 +121,7 @@ function Folder({ folder, onSelect }: FolderProps) {
                 dragSetNodeRef(node);
                 dropSetNodeRef(node);
             }}
-            {...listeners} 
+            {...listeners}
             {...attributes}
         >
             <Checkbox
@@ -116,8 +129,17 @@ function Folder({ folder, onSelect }: FolderProps) {
                 checked={isSelected}
             />
             <p className="name">
-                <AiOutlineFolder className="icon" />
+                <span className="icon-cont">
+                    <AiOutlineFolder className="main-icon" />
+                    {isConflicting &&
+                        <>
+                            <AiOutlineExclamation className="conflict-icon"/>
+                            <span className="tooltip">Cannot move: conflicting<br/>name in target directory</span>
+                        </>
+                    }
+                </span>
                 <span 
+                    className="text-cont"
                     onClick={openFolder} 
                     tabIndex={0}
                     onKeyDown={(event) => {

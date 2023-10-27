@@ -1,6 +1,7 @@
 import { useMemo, createContext, useContext, useState } from 'react'
 import { FileType } from '../types'
 import { FolderType } from '../types'
+import { ItemTypes } from '../types'
 
 interface FileContextType {
     currentPath: string
@@ -17,13 +18,16 @@ interface FileContextType {
     updateFiles: (updates: { [fileId: string]: Partial<FileType> }) => void;
     updateFolders: (updates: { [folderId: string]: Partial<FolderType> }) => void;
 
-    selectedItems: (FileType | FolderType)[];
-    setSelectedItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
-    addToSelectedItems: (item: (FileType | FolderType)[]) => void;
-    removeFromSelectedItems: (item: (FileType | FolderType)[]) => void;
+    selectedItems: ItemTypes[];
+    setSelectedItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
+    addToSelectedItems: (item: ItemTypes[]) => void;
+    removeFromSelectedItems: (item: ItemTypes[]) => void;
 
-    processingItems: (FileType | FolderType)[];
-    setProcessingItems: React.Dispatch<React.SetStateAction<(FileType | FolderType)[]>>;
+    conflictingItems: ItemTypes[];
+    setConflictingItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
+
+    processingItems: ItemTypes[];
+    setProcessingItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined)
@@ -41,10 +45,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
-    const [selectedItems, setSelectedItems] = useState<(FileType | FolderType)[]>([]);
-    const [processingItems, setProcessingItems] = useState<(FileType | FolderType)[]>([]);
+    const [selectedItems, setSelectedItems] = useState<ItemTypes[]>([]);
+    const [processingItems, setProcessingItems] = useState<ItemTypes[]>([]);
+    const [conflictingItems, setConflictingItems] = useState<ItemTypes[]>([]);
 
-    const addFiles = (newFiles: FileType | FileType[]) => { // Filter out new files that already exist in the current state
+    const addFiles = (newFiles: FileType[]) => { // Filter out new files that already exist in the current state
         setFiles((prevFiles) => {
             const newFilesArray = Array.isArray(newFiles) ? newFiles : [newFiles];
             const uniqueNewFiles = newFilesArray.filter((newFile) => {
@@ -55,7 +60,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const addFolders = (newFolders: FolderType | FolderType[]) => {
+    const addFolders = (newFolders: FolderType[]) => {
         setFolders((prevFolders) => {
             const newFoldersArray = Array.isArray(newFolders) ? newFolders : [newFolders];
 
@@ -98,9 +103,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const addToSelectedItems = (items: (FileType | FolderType) | (FileType | FolderType)[]) => {
+    const addToSelectedItems = (items: ItemTypes[]) => {
         setSelectedItems((prevSelected) => {
-            const itemsArray = Array.isArray(items) ? items : [items]; // Convert singular to array
+            const itemsArray = Array.isArray(items) ? items : [items];
             const newItems = itemsArray.filter((item) => // Filter out items that are already selected
                 !prevSelected.some((selectedItem) => selectedItem.id === item.id)
             );
@@ -108,7 +113,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const removeFromSelectedItems = (items: (FileType | FolderType) | (FileType | FolderType)[]) => {
+    const removeFromSelectedItems = (items: ItemTypes[]) => {
         setSelectedItems((prevSelected) => {
             const itemsArray = Array.isArray(items) ? items : [items];
             const newSelected = prevSelected.filter((prevItem) => // Filter out items to be removed
@@ -139,10 +144,12 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             addToSelectedItems,
             removeFromSelectedItems,
 
+            conflictingItems,
+            setConflictingItems,
             processingItems,
             setProcessingItems,
         };
-    }, [currentPath, files, folders, selectedItems, processingItems])
+    }, [currentPath, files, folders, selectedItems, conflictingItems, processingItems])
 
     return (
         <FileContext.Provider value={contextValue}>
