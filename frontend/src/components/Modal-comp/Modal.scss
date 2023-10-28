@@ -1,0 +1,13 @@
+.Modal {
+    position: fixed;
+    margin: 0 auto;
+    z-index: 999;
+
+    top: 15rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    background: black;
+    border: 1px solid lime;
+}

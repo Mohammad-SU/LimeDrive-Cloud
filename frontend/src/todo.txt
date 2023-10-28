@@ -1,5 +1,6 @@
 make template modal component with changeable parent tag to form or div and with useDelayedExit and dynamicClip and backdrop and bool props for displaying stuff by default
 improve file moving functionality by implementing move btn and modal
+hide overflow for long item names in drag overlay
 make "creating folder..." show as toast
 add short scss animations for conflict icons and tooltips
 fix long item names causing icons to disappear

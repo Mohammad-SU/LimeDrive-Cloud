@@ -1,8 +1,7 @@
 import { memo, useState, useRef, useEffect} from 'react'
 import "./Sidebar.scss"
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { Link } from "react-router-dom"
-import { AnimatePresence } from "framer-motion";
 import { AiOutlineClockCircle, AiOutlineStar, AiOutlinePicture, AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile, AiOutlineClose } from 'react-icons/ai'
 import { TfiFiles } from 'react-icons/tfi'
 import { SlTrash } from 'react-icons/sl'
@@ -12,11 +11,11 @@ import { useFileContext } from '../../contexts/FileContext.tsx';
 import { useToast } from '../../contexts/ToastContext.tsx';
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import useDelayedExit from '../../hooks/useDelayedExit.ts';
+import DynamicClip from '../DynamicClip.tsx';
 import useClickOutside from '../../hooks/useClickOutside.ts';
+import Modal from '../Modal-comp/Modal.tsx';
 import UploadInfo from '../UploadInfo-comp/UploadInfo'
 import LoadingBar from '../LoadingBar-COMPS/LoadingBar.tsx';
-import Backdrop from '../Backdrop-comp/Backdrop.tsx'
-import DynamicClip from '../DynamicClip.tsx';
 
 function Sidebar() {
     const { apiSecure } = useUserContext()
@@ -28,7 +27,6 @@ function Sidebar() {
     const [showNewMenu, setShowNewMenu] = useState(false)
     const { isVisible: isNewMenuVisible } = useDelayedExit({
         shouldRender: showNewMenu,
-        delayMs: 300,
     });
     useClickOutside(newMenuRef, () => {
         setShowNewMenu(false);
@@ -37,15 +35,6 @@ function Sidebar() {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     
     const [showNewFolderModal, setShowNewFolderModal] = useState(false)
-    const { isVisible: isNewfolderModalVisible } = useDelayedExit({
-        shouldRender: showNewFolderModal,
-        delayMs: 300,
-        onExitCallback: () => {
-            formData.newFolderName = '';
-            setBackendErrorMsg(null)
-        },
-    });
-
     const folderNameInputRef = useRef<HTMLInputElement | null>(null);
     const { formData, handleInputChange } = useFormLogic({
         newFolderName: '',
@@ -55,22 +44,15 @@ function Sidebar() {
     const isFolderNameValid = /^[a-zA-Z0-9\s-_]+$/.test(formData.newFolderName)
     const [loading, setLoading] = useState<boolean>(false)
 
-    useEffect(() => {
-        if (isNewfolderModalVisible) {
-            folderNameInputRef.current?.focus()
-        }
-    }, [isNewfolderModalVisible]);
-
     const handleCreateFolder = async () => {
         if (!isFolderNameValid || loading) {
             return;
         }
 
-        const matchingFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
-        const parent_folder_id = matchingFolder ? matchingFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
-    
         try {
             setLoading(true)
+            const matchingFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
+            const parent_folder_id = matchingFolder ? matchingFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
             const response = await apiSecure.post('/uploadFolder', {
                 name: formData.newFolderName,
                 app_path: currentPath + formData.newFolderName,
@@ -97,7 +79,7 @@ function Sidebar() {
             <div className="Sidebar">
                 <button 
                     className="new-btn" 
-                    onClick={() => setShowNewMenu(!showNewMenu)}
+                    onMouseDown={() => setShowNewMenu(!showNewMenu)}
                 >
                     <AiOutlinePlus className="plus-icon" />
                     New
@@ -175,77 +157,72 @@ function Sidebar() {
                 </div>
             </div>
 
-            {isNewfolderModalVisible &&
-                    <form 
-                        className="new-folder-modal modal"
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            handleCreateFolder();
-                        }}
-                    >
-                        <button className="icon-btn-wrapper" type="button" onClick={() => setShowNewFolderModal(false)}>
-                            <AiOutlineClose className="close-icon icon-btn" />
-                        </button>
-                        <div className="heading-cont">
-                            <AiFillFolderAdd className="modal-icon" />
-                            <h1>Create folder</h1>
-                        </div>
+            <Modal 
+                className="new-folder-modal"
+                onSubmit={() => handleCreateFolder()}
+                render={showNewFolderModal}
+                clipPathId="newFolderModalClip"
+                onBackdropClick={() => setShowNewFolderModal(false)}
+                onVisible={() => folderNameInputRef.current?.focus()}
+                onExit={() => {
+                    formData.newFolderName = '';
+                    setBackendErrorMsg(null)
+                }}
+            >
+                <button className="icon-btn-wrapper" type="button" onClick={() => setShowNewFolderModal(false)}>
+                    <AiOutlineClose className="close-icon icon-btn" />
+                </button>
+                <div className="heading-cont">
+                    <AiFillFolderAdd className="modal-icon" />
+                    <h1>Create folder</h1>
+                </div>
 
-
-                        <div className="input-cont">
-                            <label htmlFor="folder-name-input">Folder name</label>
-                            <input
-                                type="text"
-                                id="folder-name-input"
-                                placeholder="Can contain a-z, A-Z, 0-9, spaces, -, _"
-                                name="newFolderName"
-                                value={formData.newFolderName}
-                                onChange={(e) => handleInputChange(e, 255)}
-                                maxLength={255}
-                                ref={folderNameInputRef}
-                                required
-                                disabled={loading}
-                            />
-                            <div className="error-and-loading">
-                                {loading ?
-                                    <div className="creating-wrapper">
-                                        <span>Creating folder...</span>
-                                        <LoadingBar loading={loading}/>
-                                    </div>
-                                    
-                                    : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
-                                        "Invalid folder name format."
-
-                                    : backendErrorMsg ?
-                                        "Error. Please check connection."
-
-                                    : null
-                                }
+                <div className="input-cont">
+                    <label htmlFor="folder-name-input">Folder name</label>
+                    <input
+                        type="text"
+                        id="folder-name-input"
+                        placeholder="Can contain a-z, A-Z, 0-9, spaces, -, _"
+                        name="newFolderName"
+                        value={formData.newFolderName}
+                        onChange={(e) => handleInputChange(e, 255)}
+                        maxLength={255}
+                        ref={folderNameInputRef}
+                        required
+                        disabled={loading}
+                    />
+                    <div className="error-and-loading">
+                        {loading ?
+                            <div className="creating-wrapper">
+                                <span>Creating folder...</span>
+                                <LoadingBar loading={loading}/>
                             </div>
-                        </div>
+                            
+                            : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
+                                "Invalid folder name format."
 
-                        <div className="btn-cont">
-                            <button className='cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)} disabled={loading}>
-                                Cancel
-                            </button>
-                            <button 
-                                className='create-btn'
-                                type="submit"
-                                disabled={formData.newFolderName == '' || backendErrorMsg != null || !isFolderNameValid || loading}
-                            >
-                                Create
-                            </button>
-                        </div>
-                        
-                        <DynamicClip
-                            clipPathId={"newFolderModalClip"}
-                            animation={showNewFolderModal}
-                            numRects={10}
-                        />
-                    </form>
-            }
+                            : backendErrorMsg ?
+                                "Error. Please check connection."
+
+                            : null
+                        }
+                    </div>
+                </div>
+
+                <div className="btn-cont">
+                    <button className='cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)} disabled={loading}>
+                        Cancel
+                    </button>
+                    <button 
+                        className='create-btn'
+                        type="submit"
+                        disabled={formData.newFolderName == '' || backendErrorMsg != null || !isFolderNameValid || loading}
+                    >
+                        Create
+                    </button>
+                </div>
+            </Modal>
             <div className={`new-folder-modal-shadow ${showNewFolderModal ? 'delayed-shadow' : ''}`}></div>
-            <Backdrop render={showNewFolderModal} onClick={() => setShowNewFolderModal(false)}/> {/* Use showNewFolderModal instead of isNewFolderModalVisible as render condition since backdrop should be invisible faster*/}
 
             <UploadInfo fileInputRef={fileInputRef}/>
         </>

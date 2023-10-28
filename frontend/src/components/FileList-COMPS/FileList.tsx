@@ -272,7 +272,7 @@ function FileList() {
             catch (error) {
                 console.error(error);
                 if (axios.isAxiosError(error)) {
-                    showToast({ message: `Error: ${error?.response?.data.message}`, showFailIcon: true });
+                    showToast({ message: `Cannot move: please check your connection.`, showFailIcon: true });
                 }
             }
             finally {

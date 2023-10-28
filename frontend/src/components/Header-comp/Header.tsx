@@ -76,7 +76,7 @@ function Header() {
 
             <div className="user-cont">
                 <h1 className="username">{user.username}</h1>
-                <button onClick={() => setShowDropdown(!showDropdown)} className="icon-btn-wrapper">
+                <button onMouseDown={() => setShowDropdown(!showDropdown)} className="icon-btn-wrapper">
                     <BsPersonFillGear className="user-settings-icon icon-btn"/>
                 </button>
                 {isDropdownVisible &&
