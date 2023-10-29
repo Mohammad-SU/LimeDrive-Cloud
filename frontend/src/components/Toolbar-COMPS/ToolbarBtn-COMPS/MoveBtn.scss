@@ -1,4 +1,42 @@
 .move-modal {
-    width: 20rem;
-    height: 24rem;
+    display: flex;
+    flex-direction: column;
+    
+    width: 30rem;
+    height: 30rem;
+    clip-path: url("#moveModalClip");
+    top: 7rem;
+
+    h1 {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+    }
+    
+    .Breadcrumb {
+        font-size: 1.3rem !important;
+    }
+
+    .move-list {
+        display: flex;
+        flex-direction: column;
+
+        .folder {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid lime;
+
+            &-icon {
+                font-size: 2.1rem;
+            }
+        }
+    }
+
+    .modal-primary-btn {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }

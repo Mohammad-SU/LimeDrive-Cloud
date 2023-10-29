@@ -3,7 +3,7 @@
         display: flex;
         gap: 1rem;
 
-        button {
+        > button {
             display: flex;
             align-items: center;
             gap: 0.45rem;
@@ -30,7 +30,7 @@
             }
         }
 
-        .divider {
+        .toolbar-divider {
             background: lime;
             width: 0.1rem;
             margin: 0 0.2rem;

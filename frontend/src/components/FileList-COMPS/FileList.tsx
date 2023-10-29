@@ -300,7 +300,7 @@ function FileList() {
     return (
             <div className={`FileList ${emptyDirectory ? 'empty-directory' : ''}`}>
                 <div className="FileList-main-header">
-                    <Breadcrumb />
+                    <Breadcrumb path={currentPath} setPath={setCurrentPath}/>
                     <MainToolbar />
 
                     <div className="list-header-row">

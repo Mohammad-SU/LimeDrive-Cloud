@@ -4,7 +4,7 @@ import { useFileContext } from '../../../contexts/FileContext'
 import MoveBtn from '../ToolbarBtn-COMPS/MoveBtn'
 import { AiOutlineDownload, AiOutlineStar } from 'react-icons/ai'
 import { BsEye, BsLink45Deg, BsShare } from 'react-icons/bs'
-import { SlTrash, SlCursorMove } from 'react-icons/sl'
+import { SlTrash } from 'react-icons/sl'
 import { GoPencil } from 'react-icons/go'
 
 function MainToolbar() {
@@ -25,7 +25,7 @@ function MainToolbar() {
                     <SlTrash className="tool-icon trash"/>
                     Delete
                 </button>
-                <div className="divider" />
+                <div className="toolbar-divider" />
                 <MoveBtn />
                 <button>
                     <GoPencil className="tool-icon"/>

@@ -169,14 +169,14 @@ function Sidebar() {
                     setBackendErrorMsg(null)
                 }}
             >
+                <h1>
+                    <AiFillFolderAdd className="modal-icon" /> 
+                    Create folder
+                </h1>
                 <button className="icon-btn-wrapper" type="button" onClick={() => setShowNewFolderModal(false)}>
                     <AiOutlineClose className="close-icon icon-btn" />
                 </button>
-                <div className="heading-cont">
-                    <AiFillFolderAdd className="modal-icon" />
-                    <h1>Create folder</h1>
-                </div>
-
+                
                 <div className="input-cont">
                     <label htmlFor="folder-name-input">Folder name</label>
                     <input
@@ -209,12 +209,12 @@ function Sidebar() {
                     </div>
                 </div>
 
-                <div className="btn-cont">
-                    <button className='cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)} disabled={loading}>
+                <div className="modal-btn-cont">
+                    <button className='modal-cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)} disabled={loading}>
                         Cancel
                     </button>
                     <button 
-                        className='create-btn'
+                        className='modal-primary-btn'
                         type="submit"
                         disabled={formData.newFolderName == '' || backendErrorMsg != null || !isFolderNameValid || loading}
                     >

@@ -1,13 +1,40 @@
 .Modal {
     position: fixed;
+
+    padding: 1.4rem;
+    padding-top: 1rem;
     margin: 0 auto;
-    z-index: 999;
 
     top: 15rem;
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 999;
 
-    background: black;
     border: 1px solid lime;
+    background: black;
+
+    :where(h1) {
+        font-size: 1.4rem;
+        margin: 0;
+    }
+
+    :where(.modal-btn-cont) {
+        margin-top: auto;
+        display: flex;
+        width: 100%;
+        justify-content: flex-end;
+        gap: 1rem;
+
+        button {
+            padding: 0.5rem;
+        }
+        .modal-cancel-btn {
+            border: 2px dashed lime;
+        }
+        .modal-primary-btn {
+            border: 1px solid lime;
+            font-weight: bold;
+        }
+    }
 }

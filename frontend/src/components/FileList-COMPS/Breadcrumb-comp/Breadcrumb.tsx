@@ -1,27 +1,41 @@
 import { memo } from 'react';
 import "./Breadcrumb.scss"
-import { Link, useNavigate } from 'react-router-dom';
-import { useFileContext } from '../../../contexts/FileContext';
+import { Link } from 'react-router-dom';
 
-function Breadcrumb() {
-    const { currentPath, setCurrentPath } = useFileContext()
-    const pathSegments = currentPath.split('/').filter(segment => segment.trim() !== '')
+interface BreadcrumbProps {
+    path: string;
+    setPath: React.Dispatch<React.SetStateAction<string>>; // Define the type for setPath as a state updater for a string
+    btnType?: boolean
+}
+
+function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
+    const pathSegments = path.split('/').filter(segment => segment.trim() !== '')
 
     return (
         <nav className="Breadcrumb">
             {pathSegments.map((segment, index) => {
                 const linkToPath = `/${pathSegments.slice(0, index + 1).join('/')}`
+                const commonAttributes = {
+                    onClick: () => {
+                        if (path !== linkToPath) {
+                            setPath(linkToPath.substring(1) + "/");
+                        }
+                    }
+                };
+
                 return (
                     <div className="item" key={index}>
                         {index === 0 ? null : <span className="divider">/</span>}
 
-                        <Link to={linkToPath} onClick={() => {
-                            if (currentPath !== linkToPath) {
-                                setCurrentPath(linkToPath.substring(1) + "/");
-                            }
-                        }}>
-                            {decodeURIComponent(segment)}
-                        </Link>
+                        {btnType ? 
+                            <button className="text-btn" {...commonAttributes}>
+                                {decodeURIComponent(segment)}
+                            </button>
+                            : 
+                            <Link to={linkToPath} {...commonAttributes}>
+                                {decodeURIComponent(segment)}
+                            </Link>
+                        }
                     </div>
                 )
             })}

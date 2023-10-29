@@ -1,5 +1,11 @@
-make template modal component with changeable parent tag to form or div and with useDelayedExit and dynamicClip and backdrop and bool props for displaying stuff by default
-improve file moving functionality by implementing move btn and modal
+implement rest of move modal:
+    - moving logic
+    - fix overflow on long breadcrumb
+    - display empty directory msg for empty folders in it
+    - arrow for directories that have folders in them
+    - allow tabbing on folder names
+
+prevent tabbing behind backdrops when backdrops are open
 hide overflow for long item names in drag overlay
 make "creating folder..." show as toast
 add short scss animations for conflict icons and tooltips
