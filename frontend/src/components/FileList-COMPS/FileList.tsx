@@ -22,11 +22,10 @@ function FileList() {
     const { showToast } = useToast()
 
     const navigate = useNavigate()
-    // Correct slashes to match app_paths
     const location = useLocation()
     const path = decodeURIComponent(location.pathname.slice(1) + "/")
     useEffect(() => {
-        folders.some(folder => folder.app_path === path.slice(0, -1)) ? // if the URL path doesn't match a real folder's path then navigate to root
+        folders.some(folder => folder.app_path === path.slice(0, -1)) || path == "LimeDrive/" ? // if the URL path doesn't match a real directory path then navigate to root
             setCurrentPath(path)
             : navigate("/LimeDrive")
 
@@ -140,14 +139,14 @@ function FileList() {
                     setSelectedItems([...sortedFiles, ...sortedFolders]);
                 }
             }
-        };        
+        };
       
         window.addEventListener('keydown', handleKeyShortcuts)
       
         return () => {
             window.removeEventListener('keydown', handleKeyShortcuts)
         }
-    }, [selectedItems]);
+    }, [selectedItems, sortedFiles, sortedFolders]);
 
     useEffect(() => {
         setSelectedItems([])

@@ -1,4 +1,6 @@
 .MainToolbar {
+    clip-path: url("#MainToolbarClip");
+
     .main-tools, .sharing-tools {
         display: flex;
         gap: 1rem;
@@ -34,6 +36,38 @@
             background: lime;
             width: 0.1rem;
             margin: 0 0.2rem;
+        }
+
+        .DownloadBtn {
+            clip-path: url(#DownloadBtnClip);
+        }
+          
+        .PreviewBtn {
+            clip-path: url(#PreviewBtnClip);
+        }
+      
+        .DeleteBtn {
+            clip-path: url(#DeleteBtnClip);
+        }
+
+        .MoveBtn {
+            clip-path: url(#MoveBtnClip);
+        }
+
+        .RenameBtn {
+            clip-path: url(#RenameBtnClip);
+        }
+      
+        .StarBtn {
+            clip-path: url(#StarBtnClip);
+        }
+    
+        .LinkBtn {
+            clip-path: url(#LinkBtnClip);
+        }
+    
+        .ShareBtn {
+            clip-path: url(#ShareBtnClip);
         }
     }
 }

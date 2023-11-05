@@ -17,5 +17,12 @@
             width: 100%;
             padding: 0 0 0.2rem 0;
         }
+
+        &::-webkit-scrollbar-thumb {
+            border-right: 2px solid lime;
+        }
+        &::-webkit-scrollbar-track {
+            margin-top: 0;
+        }
     }
 }

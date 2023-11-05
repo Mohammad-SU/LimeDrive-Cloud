@@ -15,10 +15,12 @@ interface FolderProps {
 
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
+    const [isSelectDelayed, setIsSelectDelayed] = useState(false);
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [isDroppedOn, setIsDroppedOn] = useState(false)
     const [isConflicting, setIsConflicting] = useState(false)
+    const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
     const { selectedItems, currentPath, conflictingItems, processingItems } = useFileContext()
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
@@ -26,17 +28,33 @@ function Folder({ folder, onSelect }: FolderProps) {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
-        let newIsSelected;
+        let newIsSelected: boolean;
 
         if (isCtrlPressed || isCheckboxClicked) {
             newIsSelected = !isSelected
+            setIsSelected(newIsSelected);
+            onSelect(folder, event, newIsSelected);
         }
         else {
             newIsSelected = true
-        }
+            setIsSelectDelayed(true)
 
-        setIsSelected(newIsSelected);
-        onSelect(folder, event, newIsSelected)
+            if (clickTimeout !== null) { // If a timeout was set, clear it to prevent the selection
+                clearTimeout(clickTimeout);
+                setClickTimeout(null);
+            }
+            if (event.detail === 2) { // If double clicked, prevent selection
+                setIsSelectDelayed(false)
+                return;
+            }
+            const timeout = setTimeout(() => {
+                setIsSelected(newIsSelected);
+                setIsSelectDelayed(false)
+                onSelect(folder, event, newIsSelected);
+            }, 200);
+
+            setClickTimeout(timeout);
+        }
     }
 
     useEffect(() => { // Ensure correct rendering of selected folder
@@ -94,9 +112,13 @@ function Folder({ folder, onSelect }: FolderProps) {
     const navigate = useNavigate()
     const openFolder = (event: React.MouseEvent | React.KeyboardEvent) => {
         event.stopPropagation();
-        const firstSlashIndex = currentPath.indexOf('/');
-        const newPath = currentPath.substring(firstSlashIndex + 1);
-        navigate(newPath + folder.name);
+        const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
+
+        if (!isCheckboxClicked) {
+            const firstSlashIndex = currentPath.indexOf('/');
+            const newPath = currentPath.substring(firstSlashIndex + 1);
+            navigate(newPath + folder.name);
+        }
     }
 
     function formatDate(date: Date) {
@@ -108,8 +130,9 @@ function Folder({ folder, onSelect }: FolderProps) {
     return (
         <div 
             className={`
-                Folder ${isSelected ? 'selected' : ''} 
-                ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''} 
+                Folder ${isSelected ? 'selected' : ''}
+                ${isSelectDelayed ? 'select-delayed' : ''}
+                ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
                 ${isProcessing ? 'processing' : ''}
                 ${isDroppedOn && isProcessing ? 'dropped-on' : ''}

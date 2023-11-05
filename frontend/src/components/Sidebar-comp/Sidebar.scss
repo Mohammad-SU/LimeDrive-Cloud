@@ -28,7 +28,7 @@
 
         font-size: 1.1rem;
         width: 13.05rem;
-        padding: 0;
+        padding: 0.5rem 0;
         margin: 0;
 
         left: 1rem;
@@ -43,17 +43,10 @@
             display: flex;
             align-items: center;
             width: 100%;
-            height: 2.8rem;
+            height: 2.7rem;
             padding-left: 0.6rem;
             text-align: left;
             gap: 0.5rem;
-
-            &:first-child {
-                border-bottom: 1px solid rgba(0, 255, 0, 0.374);
-            }
-            &:first-child, &:last-child {
-                height: 3.1rem;
-            }
 
             .menu-icon {
                 font-size: 1.5rem;

@@ -91,13 +91,16 @@ function Sidebar() {
                             setShowNewMenu(false)
                         }}>
                             <AiFillFolderAdd className="menu-icon" />
-                            New folder
+                            Create folder
                         </button>
 
-                        <button onClick={() => {
-                            fileInputRef?.current?.click()
-                            setShowNewMenu(false)
-                        }}>
+                        <button 
+                            className="file-upload-btn"
+                            onClick={() => {
+                                fileInputRef?.current?.click()
+                                setShowNewMenu(false)
+                            }}
+                        >
                             <div className="menu-icon">
                                 <AiFillFile className="outer-icon"/>
                                 <IoArrowUpSharp className="inner-icon"/>

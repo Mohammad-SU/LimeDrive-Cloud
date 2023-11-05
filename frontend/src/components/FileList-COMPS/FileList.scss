@@ -107,10 +107,14 @@
             }
 
             &:not(.processing) {
+                @include btn-selection-styles;
                 &:hover .list-checkbox {
                     opacity: 1;
                 }
-                @include btn-selection-styles;
+
+                &.select-delayed {
+                    background: rgba(0, 255, 0, 0.150); 
+                }
             }
         
             .list-checkbox {

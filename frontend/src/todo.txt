@@ -4,7 +4,15 @@ implement rest of move modal:
     - display empty directory msg for empty folders in it
     - arrow for directories that have folders in them
     - allow tabbing on folder names
+    - overflow scroll
+    - make it so if directory is empty then only breadcrumb and selected folder is updated, but dont actually open it on the modal
+    - make it so folder cant be moved to itself
 
+implement rest of breadcrumb (animations, hiddensegments btnonly, really long single item to show up on its own in visiblesegments, overflow in dropdown)
+handle folder name and path name limits with file names
+add style during delay of folder/file click (brighter green transparency?), and prevent other file/folder hover styles during it
+show user how many items are selected on corner of screen on breadcrumb level
+bold end of path in breadcrumbs or reduce opacity of what is before it?
 prevent tabbing behind backdrops when backdrops are open
 hide overflow for long item names in drag overlay
 make "creating folder..." show as toast
@@ -13,7 +21,8 @@ fix long item names causing icons to disappear
 change all filetype foldertype combinations to ItemTypes if better
 fix text overflow next line when uploadInfo is collapsed and spinner is visible
 in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
-
+make it so after file is uploaded, the file in UploadInfo component accurately reflects the directory path that the file was uploaded to
+long press for opening files/folders on touch devices
 move to and highlight new folder after user creates it
 make tabbing to a file name and pressing enter cause it to open (check folder for code)
 fix file upload selection where user selecting same file again if it was the directly previous selected file not working
@@ -61,7 +70,7 @@ allow Google and Facebook to be used for logins? (OAuth)
 add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it.
 remove useState import from all files where it's not used
 change backend env secret file for render.com if changed
-add more automated tests
+add more automated tests with cypress (e2e and possibly integration test)
 implement Redis?
 test all features of entire app
 clear laravel storage log
@@ -69,3 +78,21 @@ clear laravel storage log
 future update ideas:
     undo btn/features
     show conflict resolution modal when conflicts detected during move operations
+
+                        {index === 0 && collapse &&
+                            <>
+                                <button className="icon-btn-wrapper" onClick={() => setShowDropdown(current => !current)}>
+                                    <BsThreeDots className="dots-icon icon-btn"/>
+                                </button>
+                                {isDropdownVisible &&
+                                    <nav className="dropdown">
+                                        test
+                                    </nav>
+                                }
+                                <DynamicClip
+                                    clipPathId={"breadcrumbDropdownClip"}
+                                    animation={showDropdown}
+                                    numRects={6}
+                                />
+                            </>
+                        }

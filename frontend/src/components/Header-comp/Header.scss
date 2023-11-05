@@ -61,7 +61,7 @@
             margin-right: .625rem;
         }
     
-        button {
+        > .icon-btn-wrapper {
             margin-bottom: 0.18rem;
 
             .user-settings-icon {
@@ -74,10 +74,9 @@
             position: absolute;
             display: flex;
             flex-direction: column;
-            gap: 0.7rem;
 
+            padding: .5rem 0;
             font-size: 1.1rem;
-            padding: 0.8rem;
             top: 3.9rem;
             right: 0;
             z-index: 999;
@@ -86,6 +85,11 @@
             color: lime;
             border: 1px solid lime;
             clip-path: url(#userDropdownClip);
+
+            button {
+                width: 6rem;
+                height: 2rem;
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 import "./MoveBtn.scss"
-import { memo, useState } from 'react'
+import { memo, useState, useEffect } from 'react'
 import { useFileContext } from '../../../contexts/FileContext'
 import Modal from '../../Modal-comp/Modal'
 import { SlCursorMove } from 'react-icons/sl'
@@ -10,6 +10,9 @@ function MoveBtn() {
     const { folders, currentPath, selectedItems } = useFileContext()
     const [showMoveModal, setShowMoveModal] = useState(false)
     const [moveListPath, setMoveListPath] = useState(currentPath)
+    useEffect(() => {
+        setMoveListPath(currentPath);
+    }, [currentPath]);
 
     const MoveListFolders = folders.filter((folder) => {
             const lastSlashIndex = folder.app_path.lastIndexOf('/');
@@ -36,14 +39,19 @@ function MoveBtn() {
                 render={showMoveModal}
                 clipPathId="moveModalClip"
                 onBackdropClick={() => setShowMoveModal(false)}
+                // Add close click instead of backdrop click, add option to show close btn on modal component
             >
                 <h1>
                     Move {selectedItems.length} {selectedItems.length > 1 ? 'items' : 'item'} to...
                 </h1>
                 <Breadcrumb path={moveListPath} setPath={setMoveListPath} btnType={true}/>
                 <div className="move-list">
-                    {MoveListFolders.map((folder) => (
-                        <div className="folder" onClick={(event) => openFolder(event, folder.name)}>
+                    {MoveListFolders.map((folder, index) => (
+                        <div 
+                            className="folder" 
+                            key={index} 
+                            onClick={(event) => openFolder(event, folder.name)}
+                        >
                             <AiOutlineFolder className="folder-icon" />
                             {folder.name}
                         </div>
@@ -51,7 +59,7 @@ function MoveBtn() {
                 </div>
 
                 <div className="modal-btn-cont">
-                    <button className='modal-cancel-btn' onClick={() => setShowMoveModal(true)} disabled={false}>
+                    <button className='modal-cancel-btn' onClick={() => setShowMoveModal(false)} disabled={false}>
                         Cancel
                     </button>
                     <button 
