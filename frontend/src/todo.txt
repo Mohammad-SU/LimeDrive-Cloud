@@ -1,64 +1,78 @@
 implement rest of move modal:
     - moving logic
-    - fix overflow on long breadcrumb
-    - display empty directory msg for empty folders in it
     - arrow for directories that have folders in them
     - allow tabbing on folder names
-    - overflow scroll
     - make it so if directory is empty then only breadcrumb and selected folder is updated, but dont actually open it on the modal
     - make it so folder cant be moved to itself
+    - in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
 
+for breadcrumb - instead of window resize event always running overflow check, make it only run it if breadcrumb width has changed, possibly add breadcrumb width to deps?
 implement rest of breadcrumb (animations, hiddensegments btnonly, really long single item to show up on its own in visiblesegments, overflow in dropdown)
-handle folder name and path name limits with file names
-add style during delay of folder/file click (brighter green transparency?), and prevent other file/folder hover styles during it
-show user how many items are selected on corner of screen on breadcrumb level
-bold end of path in breadcrumbs or reduce opacity of what is before it?
-prevent tabbing behind backdrops when backdrops are open
 hide overflow for long item names in drag overlay
 make "creating folder..." show as toast
-add short scss animations for conflict icons and tooltips
 fix long item names causing icons to disappear
-change all filetype foldertype combinations to ItemTypes if better
 fix text overflow next line when uploadInfo is collapsed and spinner is visible
-in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
+show user how many items are selected on corner of screen on breadcrumb level
+bold end of path in breadcrumbs or reduce opacity of what is before it?
+fix file upload selection where user selecting same file again if it was the directly previous selected file not working
+Make "in <folder>" in uploadInfo a jump link and highlight/blink the file after jumping to it, also correct it so the links are correct
+check for duplication when uploading - add (1) or more numbers to end of file name if there is a duplicate in same path
+implement "space left" on bottom left corner
+
+Priority: 
+    - Moving
+    - Deleting, set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page, toast notifications, underline/bold sidebar links if user is on that page
+    - Previews
+    - folder uploading, allow more variety in folder characters
+    - finish implementing search function
+    - file sorting in place of toolbar when its not visible
+    - full page animations with DynamicClip
+    - e2e tests with cypress (mainly file upload and deletion, possibly folder)
+    - settings page, toast notifications
+    - Recents with thumbnails on all files page, and recents page
+    - make website title reflect page/folder accurately
+    - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
+    - favicon
+    - Repsonsive CSS, long press for opening files/folders on touch devices
+    - test thoroughly
+    - Add to portfolio
+    - Starring, toast notifications
+    - Sharing
+    - add tooltips with bulb icon (in gap inside toolbar/space after sorting categories?)
+    - handle folder name and path name limits with file names
+    - fix date when daylight savings time (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
+    - add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it, possibly with a hover tooltip for the extra info? or add the info to the side of the login form
+
+Deleting:
+    - confirmation, and then move to recycle bin, make it so items must be restored to preview/open folders if there are any with file counts inside? check what dropbox/google drive does?
+
+Previews:
+    - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
+
+toast notifications for errors
+
+prevent tabbing behind backdrops when backdrops are open
+add short scss animations for conflict icons and tooltips?
+change all filetype foldertype combinations to ItemTypes if better
 make it so after file is uploaded, the file in UploadInfo component accurately reflects the directory path that the file was uploaded to
-long press for opening files/folders on touch devices
 move to and highlight new folder after user creates it
 make tabbing to a file name and pressing enter cause it to open (check folder for code)
-fix file upload selection where user selecting same file again if it was the directly previous selected file not working
 add more specific/better icons for files in FileList and UploadInfo
-turn beginning of breadcrumb into elipses/dropdown to prevent overflow on long paths
-make website title reflect page/folder accurately
-change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
-folder uploading
-set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 test if laravel schedule cronjob is working properly (change config, schedule, pruning expired limit to 1 minute)
-file previews
 implement all toolbar functions
-toast notification for actions
-Make "in <folder>" in uploadInfo a jump link and highlight/blink the file after jumping to it
 implement sorting categories in the place of toolbar when no files are selected
-implement DynamicClip animations for more components/pages
-implement server-side validation for files and folders (size, allowed characters)
-check for duplication when uploading - add (1) or more numbers to end of file name if there is a duplicate in same path
+implement more server-side validation for files and folders (size, allowed characters)?
 check for duplication when user tries to add folders, prevent folder creation if there is duplicate in same path
-fix date (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
 decrease header sizings?
 box shadows?
-underline/bold sidebar links if user is on that page
 file list sorting based on header row label/arrow icon clicks
 shift click for item selection
-implement "space left" on bottom left corner
 add left click dropdown menu
-add tooltips (in gap inside toolbar/space after sorting categories?)
-double click files/folders to view
 file sharing
 settings page
 react virtualisation for large lists
 gallery
 starred
-recycle bin
-finish implementing search function
 malware check
 check if file extension column is not needed on database and then remove if so
 add backgrounds/more details for loading pages
@@ -67,32 +81,14 @@ add default files/folders for showcasing along with "restore default files" if u
 responsive CSS and check if correct on other browsers
 email verification
 allow Google and Facebook to be used for logins? (OAuth)
-add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it.
 remove useState import from all files where it's not used
 change backend env secret file for render.com if changed
 add more automated tests with cypress (e2e and possibly integration test)
 implement Redis?
-test all features of entire app
+thoroughly test app
 clear laravel storage log
+prevent file/folder hover styles during click delay?
 
 future update ideas:
     undo btn/features
     show conflict resolution modal when conflicts detected during move operations
-
-                        {index === 0 && collapse &&
-                            <>
-                                <button className="icon-btn-wrapper" onClick={() => setShowDropdown(current => !current)}>
-                                    <BsThreeDots className="dots-icon icon-btn"/>
-                                </button>
-                                {isDropdownVisible &&
-                                    <nav className="dropdown">
-                                        test
-                                    </nav>
-                                }
-                                <DynamicClip
-                                    clipPathId={"breadcrumbDropdownClip"}
-                                    animation={showDropdown}
-                                    numRects={6}
-                                />
-                            </>
-                        }

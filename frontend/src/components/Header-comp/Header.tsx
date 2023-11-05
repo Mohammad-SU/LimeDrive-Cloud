@@ -81,9 +81,11 @@ function Header() {
                 </button>
                 {isDropdownVisible &&
                     <div className="user-dropdown" ref={dropdownRef}>
-                        <button className="settings-btn">
-                            <Link className="dropdown-btn-link" to="/settings">Settings</Link>
-                        </button>
+                        <Link className="dropdown-btn-link" to="/settings">
+                            <button className="settings-btn">
+                                Settings
+                            </button>
+                        </Link>
                         <button className="logout-btn" onClick={logout}>Logout</button>
                         <DynamicClip
                             clipPathId={"userDropdownClip"}

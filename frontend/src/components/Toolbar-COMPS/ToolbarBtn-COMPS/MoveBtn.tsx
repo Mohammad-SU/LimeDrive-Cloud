@@ -53,7 +53,7 @@ function MoveBtn() {
                             onClick={(event) => openFolder(event, folder.name)}
                         >
                             <AiOutlineFolder className="folder-icon" />
-                            {folder.name}
+                            <span className="text-cont">{folder.name}</span>
                         </div>
                     ))}
                 </div>

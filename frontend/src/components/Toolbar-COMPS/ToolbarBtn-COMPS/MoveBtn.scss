@@ -24,19 +24,32 @@
     .move-list {
         display: flex;
         flex-direction: column;
-        overflow-x: auto;
+        overflow: auto;
         height: 21rem;
+
+        &::-webkit-scrollbar {
+            width: 0.6rem;
+        }
 
         .folder {
             @include btn-selection-styles;
+            flex-shrink: 0;
+            overflow: hidden;
             display: flex;
             align-items: center;
             gap: 0.7rem;
             padding: 1.028rem 0;
+            padding-right: 0.5rem;
             border-bottom: 1px solid lime;
 
             &-icon {
+                flex-shrink: 0;
                 font-size: 2.1rem;
+            }
+            .text-cont {
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
         }
     }

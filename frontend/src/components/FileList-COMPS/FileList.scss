@@ -131,13 +131,12 @@
                     display: flex;
                     align-items: center;
                     gap: 0.7rem;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
                     flex: 3;
-
+                    overflow: hidden;
 
                     .icon-cont {
+                        flex-shrink: 0;
+
                         &:hover .tooltip {
                             visibility: visible;
                         }
@@ -168,9 +167,15 @@
                         }
                     }
 
-                    .text-cont:hover {
-                        @include other-selection-styles;
-                        cursor: pointer;
+                    .text-cont {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+
+                        &:hover {
+                            @include other-selection-styles;
+                            cursor: pointer;
+                        }
                     }
                 }
             }

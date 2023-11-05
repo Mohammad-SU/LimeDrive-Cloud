@@ -1,5 +1,6 @@
 import { memo, useState, useEffect, useRef } from 'react';
 import "./Breadcrumb.scss"
+import useClickOutside from '../../../hooks/useClickOutside';
 import useDelayedExit from '../../../hooks/useDelayedExit';
 import DynamicClip from '../../DynamicClip';
 import { BsThreeDots } from 'react-icons/bs';
@@ -17,13 +18,24 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
     const [visibleSegments, setVisibleSegments] = useState<string[]>([]);
     const [hiddenSegments, setHiddenSegments] = useState<string[]>([]);
     const breadcrumbRef = useRef<HTMLElement | null>(null);
+    const dropdownRef = useRef<HTMLButtonElement | null>(null);
     const segmentRefs = useRef<(HTMLDivElement | null)[]>([]);
     const btnSegmentRef = useRef<(HTMLDivElement | null)>(null);
     const lastSegmentMainRef = useRef<HTMLAnchorElement | HTMLButtonElement | null>(null);
     const lastDividerRef = useRef<HTMLSpanElement | null>(null);
+    const [isOverflowControlReady, setIsOverflowControlReady] = useState(false);
+
+    useClickOutside(dropdownRef, () => {
+        setShowDropdown(false);
+    });
+    const { isVisible: isDropdownVisible } = useDelayedExit({
+        shouldRender: showDropdown
+    })
 
     const overflowControl = () => {
+        setIsOverflowControlReady(false);
         setVisibleSegments(pathSegments)
+        setShowDropdown(false)
         setTimeout(() => { // Delayed to make sure segmentWidths are accurately updated
             let totalWidth = 0;
             const maxWidth = breadcrumbRef.current!.getBoundingClientRect().width
@@ -41,15 +53,13 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                 segmentWidths.push(lastSegmentMainRef.current.getBoundingClientRect().width + lastDividerRef.current.getBoundingClientRect().width);
             }
 
-            console.log(segmentWidths)
-
             for (let i = 0; i < segmentWidths.length; i++) {
                 totalWidth += segmentWidths[i];
             }
             if (totalWidth > maxWidth) {
                 let sum = 0;
-                const visible = [];
-                const hidden = [];
+                let visible = [];
+                let hidden = [];
                 for (let i = segmentWidths.length - 1; i >= 0; i--) {
                     sum += segmentWidths[i];
                     if (sum > maxWidth) {
@@ -59,6 +69,9 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                         visible.unshift(pathSegments[i]);
                     }
                 }
+                if (visible.length === 0) {
+                    visible.push(hidden.pop() || '');
+                }
                 setVisibleSegments(visible);
                 setHiddenSegments(hidden);
             }
@@ -66,6 +79,8 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                 setVisibleSegments(pathSegments);
                 setHiddenSegments([]);
             }
+
+            setIsOverflowControlReady(true);
         }, 1);
     };
 
@@ -78,30 +93,50 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
     }, [path, btnSegmentRef]);
 
     return (
-        <nav className="Breadcrumb" ref={breadcrumbRef}>
+        <nav className={`Breadcrumb ${isOverflowControlReady ? '' : 'transparent'}`} ref={breadcrumbRef}>
             {hiddenSegments.length > 0 && 
                 <>
                     <div className='btn-segment' ref={btnSegmentRef}>
-                        <button className="icon-btn-wrapper" onClick={() => setShowDropdown(current => !current)}>
+                        <button className="icon-btn-wrapper" onMouseDown={() => setShowDropdown(current => !current)}>
                             <BsThreeDots className="dots-icon icon-btn"/>
                         </button>
                         <span className="divider">/</span>
                     </div>
-                    {showDropdown &&
-                        <nav className="dropdown">
+                    {isDropdownVisible &&
+                        <nav className="dropdown" ref={dropdownRef}>
                             {hiddenSegments.map((segment, index) => {
-                                return (
-                                    <button className="item" key={index}>
-                                        <Link  className="dropdown-btn-link" to={`/${pathSegments.slice(0, index + 1).join('/')}`} >
+                                const linkToPath = `/${pathSegments.slice(0, index + 1).join('/')}`;
+                                
+                                if (btnType) {
+                                    return (
+                                        <button className="item" key={index} onClick={() => {
+                                            if (path !== linkToPath) {
+                                                setPath(linkToPath.substring(1) + "/");
+                                            }
+                                        }}>
                                             {decodeURIComponent(segment)}
+                                        </button>
+                                    );
+                                } else {
+                                    return (
+                                        <Link className="dropdown-btn-link" to={linkToPath}>
+                                            <button className="item" key={index}>
+                                                    {decodeURIComponent(segment)}
+                                            </button>
                                         </Link>
-                                    </button>
-                                );
+                                    );
+                                }
                             })}
+                            <DynamicClip
+                                clipPathId={"breadcrumbDropdownClip"}
+                                animation={showDropdown}
+                                numRects={6}
+                            />
                         </nav>
                     }
                 </>
             }
+
             {visibleSegments.map((segment, index) => {
                 const isLastCustomSegment = index === pathSegments.length - 1 && pathSegments.length > 1;
                 const linkToPath = `/${pathSegments.slice(0, hiddenSegments.length + index + 1).join('/')}`;
