@@ -165,7 +165,7 @@ function Sidebar() {
                 onSubmit={() => handleCreateFolder()}
                 render={showNewFolderModal}
                 clipPathId="newFolderModalClip"
-                onBackdropClick={() => setShowNewFolderModal(false)}
+                onCloseClick={() => setShowNewFolderModal(false)}
                 onVisible={() => folderNameInputRef.current?.focus()}
                 onExit={() => {
                     formData.newFolderName = '';
@@ -225,7 +225,7 @@ function Sidebar() {
                     </button>
                 </div>
             </Modal>
-            <div className={`new-folder-modal-shadow ${showNewFolderModal ? 'delayed-shadow' : ''}`}></div>
+            {showNewFolderModal && <div className={`new-folder-modal-shadow ${showNewFolderModal ? 'delayed-shadow' : ''}`}></div>}
 
             <UploadInfo fileInputRef={fileInputRef}/>
         </>

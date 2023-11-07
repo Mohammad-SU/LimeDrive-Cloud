@@ -24,7 +24,7 @@ function DynamicClip({
     const isOdd = (num: number) => num % 2 !== 0;
     const [clipPathValues, setClipPathValues] = useState(
         Array.from({ length: numRects }, (_, index) => ({
-            width: isOdd(index) ? 1 : 0, // Note that "odd" here is based on the zero-index array, so in the html this would actually apply to what you may consider "even" elements
+            width: isOdd(index) ? 1 : 0, // Note that "odd" here is based on the zero-based array, so in the html this would actually apply to what you may consider "even" elements
             x: isOdd(index) ? 1 : 0,
             y: index * rectHeight,
         }))

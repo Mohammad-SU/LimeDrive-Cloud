@@ -108,6 +108,17 @@ function Folder({ folder, onSelect }: FolderProps) {
             setIsSelectDragging(false)
         },
     });
+    useEffect(() => {
+        function handleEscapeKey(event: KeyboardEvent) {
+            if (event.key === 'Escape') {
+                setIsSelectDragging(false);
+            }
+        }
+        window.addEventListener('keydown', handleEscapeKey);
+        return () => {
+            window.removeEventListener('keydown', handleEscapeKey);
+        };
+    }, []);
 
     const navigate = useNavigate()
     const openFolder = (event: React.MouseEvent | React.KeyboardEvent) => {
@@ -129,8 +140,8 @@ function Folder({ folder, onSelect }: FolderProps) {
 
     return (
         <div 
-            className={`
-                Folder ${isSelected ? 'selected' : ''}
+            className={`Folder 
+                ${isSelected ? 'selected' : ''}
                 ${isSelectDelayed ? 'select-delayed' : ''}
                 ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}

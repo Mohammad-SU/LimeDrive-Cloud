@@ -17,8 +17,13 @@
     }
     
     .Breadcrumb {
-        font-size: 1.3rem !important;
+        font-size: 1.1rem !important;
         margin-bottom: 0.2rem;
+
+        .dropdown {
+            font-size: 1rem;
+            max-width: 16rem;
+        }
     }
 
     .move-list {
@@ -33,14 +38,28 @@
 
         .folder {
             @include btn-selection-styles;
+            position: relative;
             flex-shrink: 0;
             overflow: hidden;
             display: flex;
             align-items: center;
             gap: 0.7rem;
             padding: 1.028rem 0;
-            padding-right: 0.5rem;
+            padding-right: 2rem;
             border-bottom: 1px solid lime;
+
+            &.selected-for-moving {
+                &::after {
+                    position: absolute;
+                    content: "[Selected for moving]";
+                    right: 0.5rem;
+                    bottom: 0.4rem;
+                    font-size: 0.63rem;
+                }
+            }
+            &.move-selected {
+                background: rgba(0, 255, 0, 0.25);
+            }
 
             &-icon {
                 flex-shrink: 0;
@@ -50,6 +69,13 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
+                flex-grow: 1;
+            }
+            .subfolders-indicator {
+                position: absolute;
+                right: 0.9rem;
+                margin-top: -0.2rem;
+                font-size: 1.3rem;
             }
         }
     }

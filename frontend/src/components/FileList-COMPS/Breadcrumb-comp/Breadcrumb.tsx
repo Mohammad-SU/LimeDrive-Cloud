@@ -24,6 +24,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
     const lastSegmentMainRef = useRef<HTMLAnchorElement | HTMLButtonElement | null>(null);
     const lastDividerRef = useRef<HTMLSpanElement | null>(null);
     const [isOverflowControlReady, setIsOverflowControlReady] = useState(false);
+    const [refresh, setRefresh] = useState(false);
 
     useClickOutside(dropdownRef, () => {
         setShowDropdown(false);
@@ -79,7 +80,6 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                 setVisibleSegments(pathSegments);
                 setHiddenSegments([]);
             }
-
             setIsOverflowControlReady(true);
         }, 1);
     };
@@ -90,7 +90,14 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
         return () => {
             window.removeEventListener("resize", overflowControl);
         };
-    }, [path, btnSegmentRef]);
+    }, [path, btnSegmentRef, refresh]);
+
+    useEffect(() => { // For some reason need to force the other useeffect to run again after initial page load otherwise breadcrumb doesnt look correct 
+        const refreshTimeout = setTimeout(() => {
+            setRefresh(true);
+        }, 1);
+        return () => clearTimeout(refreshTimeout);
+    }, []);
 
     return (
         <nav className={`Breadcrumb ${isOverflowControlReady ? '' : 'transparent'}`} ref={breadcrumbRef}>
@@ -106,21 +113,24 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                         <nav className="dropdown" ref={dropdownRef}>
                             {hiddenSegments.map((segment, index) => {
                                 const linkToPath = `/${pathSegments.slice(0, index + 1).join('/')}`;
+                                const commonAttributes = {
+                                    onClick: () => {
+                                        if (path !== linkToPath) {
+                                            setPath(linkToPath.substring(1) + "/");
+                                        }
+                                    }
+                                };
                                 
                                 if (btnType) {
                                     return (
-                                        <button className="item" key={index} onClick={() => {
-                                            if (path !== linkToPath) {
-                                                setPath(linkToPath.substring(1) + "/");
-                                            }
-                                        }}>
+                                        <button className="item" key={index} {...commonAttributes}>
                                             {decodeURIComponent(segment)}
                                         </button>
                                     );
                                 } else {
                                     return (
-                                        <Link className="dropdown-btn-link" to={linkToPath}>
-                                            <button className="item" key={index}>
+                                        <Link className="dropdown-btn-link" to={linkToPath} key={index}>
+                                            <button className="item" {...commonAttributes}>
                                                     {decodeURIComponent(segment)}
                                             </button>
                                         </Link>
@@ -157,8 +167,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                         {index === 0 ? null : <span className="divider" ref={isLastCustomSegment ? lastDividerRef : null}>/</span>}
 
                         {btnType ?
-                            <button 
-                            className="text-btn" {...commonAttributes} ref={isLastCustomSegment ? (lastSegmentMainRef as React.RefObject<HTMLButtonElement>) : null}>
+                            <button className="text-btn" {...commonAttributes} ref={isLastCustomSegment ? (lastSegmentMainRef as React.RefObject<HTMLButtonElement>) : null}>
                                 {decodeURIComponent(segment)}
                             </button>
                             :

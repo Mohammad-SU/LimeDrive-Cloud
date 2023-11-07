@@ -1,11 +1,12 @@
 implement rest of move modal:
     - moving logic
-    - arrow for directories that have folders in them
     - allow tabbing on folder names
-    - make it so if directory is empty then only breadcrumb and selected folder is updated, but dont actually open it on the modal
-    - make it so folder cant be moved to itself
-    - in toolbar move button, start the folder list from the parent of the current directory the user is in, use dropbox for inspiration of other move modal features
+    - disable move btn during processing
+    - add toast msg if user attempts to move their only selected folder inside itself
+    - when multiple selected items and invalid target folders for some items, continue move but tell user that only some of all items were moved
+    - similar validation for movebtn click function for disabled attribute
 
+add option on Modal component to show close/x btn.
 for breadcrumb - instead of window resize event always running overflow check, make it only run it if breadcrumb width has changed, possibly add breadcrumb width to deps?
 implement rest of breadcrumb (animations, hiddensegments btnonly, really long single item to show up on its own in visiblesegments, overflow in dropdown)
 hide overflow for long item names in drag overlay
@@ -50,6 +51,8 @@ Previews:
     - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
 
 toast notifications for errors
+adjust scrolls/item sizes so they dont cause unnecessary scrollbars
+vertically align text in buttons?
 
 prevent tabbing behind backdrops when backdrops are open
 add short scss animations for conflict icons and tooltips?
@@ -88,6 +91,7 @@ implement Redis?
 thoroughly test app
 clear laravel storage log
 prevent file/folder hover styles during click delay?
+create new folder button in move modal
 
 future update ideas:
     undo btn/features

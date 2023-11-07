@@ -135,6 +135,7 @@ button {
 
     &.icon-btn-wrapper {
         background-color: black !important;
+        @include other-selection-styles;
     }
     &.text-btn {
         @include other-selection-styles;
@@ -142,7 +143,6 @@ button {
     }
     
     .icon-btn {
-        @include other-selection-styles;
         display: block; // Fix sizing issue
         background-color: black !important;
     }

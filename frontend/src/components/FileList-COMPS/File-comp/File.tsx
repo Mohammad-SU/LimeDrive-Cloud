@@ -60,6 +60,17 @@ function File({ file, onSelect }: FileProps) {
             setIsSelectDragging(false)
         },
     });
+    useEffect(() => {
+        function handleEscapeKey(event: KeyboardEvent) {
+            if (event.key === 'Escape') {
+                setIsSelectDragging(false);
+            }
+        }
+        window.addEventListener('keydown', handleEscapeKey);
+        return () => {
+            window.removeEventListener('keydown', handleEscapeKey);
+        };
+    }, []);
 
     const {attributes, listeners, isDragging, setNodeRef} = useDraggable({
         id: file.id,
@@ -88,8 +99,7 @@ function File({ file, onSelect }: FileProps) {
 
     return (
         <div 
-            className={`
-                File 
+            className={`File 
                 ${isSelected ? 'selected' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
                 ${isProcessing ? 'processing' : ''}

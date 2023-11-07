@@ -11,7 +11,7 @@ interface ModalProps {
     renderDelay?: number;
     onExit?: () => void;
     onVisible?: () => void;
-    onBackdropClick?: () => void;
+    onCloseClick?: () => void;
     clipPathId: string;
     numRects?: number;
     children?: React.ReactNode;
@@ -24,7 +24,7 @@ function Modal({
     renderDelay = 300,
     onExit,
     onVisible,
-    onBackdropClick,
+    onCloseClick,
     clipPathId,
     numRects = 10,
     children,
@@ -65,7 +65,7 @@ function Modal({
                     />
                 </ModalType>
             }
-            <Backdrop render={render} onClick={onBackdropClick}/> {/* Use render instead of isModalVisible as render condition since backdrop should be invisible faster*/}
+            <Backdrop render={render} onClick={onCloseClick}/> {/* Use render instead of isModalVisible as render condition since backdrop should be invisible faster*/}
         </>
     );
 }
