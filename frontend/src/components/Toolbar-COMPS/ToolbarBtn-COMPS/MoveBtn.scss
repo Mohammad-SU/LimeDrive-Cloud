@@ -69,7 +69,7 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
-                flex-grow: 1;
+                width: fit-content;
             }
             .subfolders-indicator {
                 position: absolute;

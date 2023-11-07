@@ -104,7 +104,15 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
             {hiddenSegments.length > 0 && 
                 <>
                     <div className='btn-segment' ref={btnSegmentRef}>
-                        <button className="icon-btn-wrapper" onMouseDown={() => setShowDropdown(current => !current)}>
+                        <button 
+                            className="icon-btn-wrapper" 
+                            onMouseDown={() => setShowDropdown(current => !current)}                                 
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') {
+                                    setShowDropdown(current => !current);
+                                }
+                            }}
+                        >
                             <BsThreeDots className="dots-icon icon-btn"/>
                         </button>
                         <span className="divider">/</span>
@@ -118,7 +126,8 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                                         if (path !== linkToPath) {
                                             setPath(linkToPath.substring(1) + "/");
                                         }
-                                    }
+                                    },
+                                    tabIndex: 0
                                 };
                                 
                                 if (btnType) {
@@ -155,7 +164,8 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                         if (path !== linkToPath) {
                             setPath(linkToPath.substring(1) + "/");
                         }
-                    }
+                    },
+                    tabIndex: 0
                 };
 
                 return (

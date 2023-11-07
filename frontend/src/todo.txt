@@ -1,10 +1,9 @@
 implement rest of move modal:
-    - moving logic
-    - allow tabbing on folder names
-    - disable move btn during processing
     - add toast msg if user attempts to move their only selected folder inside itself
-    - when multiple selected items and invalid target folders for some items, continue move but tell user that only some of all items were moved
+    - moving logic
     - similar validation for movebtn click function for disabled attribute
+    - disable move btn during processing
+    - when multiple selected items and invalid target folders for some items, continue move but tell user that only some of all items were moved
 
 add option on Modal component to show close/x btn.
 for breadcrumb - instead of window resize event always running overflow check, make it only run it if breadcrumb width has changed, possibly add breadcrumb width to deps?
@@ -53,8 +52,8 @@ Previews:
 toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars
 vertically align text in buttons?
+aria labels
 
-prevent tabbing behind backdrops when backdrops are open
 add short scss animations for conflict icons and tooltips?
 change all filetype foldertype combinations to ItemTypes if better
 make it so after file is uploaded, the file in UploadInfo component accurately reflects the directory path that the file was uploaded to
@@ -92,6 +91,8 @@ thoroughly test app
 clear laravel storage log
 prevent file/folder hover styles during click delay?
 create new folder button in move modal
+better backend validation
+research accessibility and improve it on the app
 
 future update ideas:
     undo btn/features

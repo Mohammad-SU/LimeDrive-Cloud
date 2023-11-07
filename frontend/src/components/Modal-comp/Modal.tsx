@@ -1,4 +1,5 @@
 import { memo, useEffect } from 'react';
+import FocusTrap from 'focus-trap-react';
 import useDelayedExit from '../../hooks/useDelayedExit';
 import DynamicClip from '../DynamicClip';
 import Backdrop from '../Backdrop-comp/Backdrop';
@@ -11,7 +12,7 @@ interface ModalProps {
     renderDelay?: number;
     onExit?: () => void;
     onVisible?: () => void;
-    onCloseClick?: () => void;
+    onCloseClick: () => void;
     clipPathId: string;
     numRects?: number;
     children?: React.ReactNode;
@@ -53,17 +54,31 @@ function Modal({
         }
     }, [isModalVisible])
 
+    useEffect(() => {
+        const handleEscapeKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && onCloseClick) {
+                onCloseClick();
+            }
+        };
+        window.addEventListener('keydown', handleEscapeKey);
+        return () => {
+            window.removeEventListener('keydown', handleEscapeKey);
+        };
+    }, []);
+
     return (
         <>
-            {isModalVisible && 
-                <ModalType {...attributes}>
-                    {children}
-                    <DynamicClip
-                        clipPathId={clipPathId}
-                        animation={render}
-                        numRects={numRects}
-                    />
-                </ModalType>
+            {isModalVisible &&
+                <FocusTrap>
+                    <ModalType {...attributes}>
+                        {children}
+                        <DynamicClip
+                            clipPathId={clipPathId}
+                            animation={render}
+                            numRects={numRects}
+                        />
+                    </ModalType>
+                </FocusTrap>
             }
             <Backdrop render={render} onClick={onCloseClick}/> {/* Use render instead of isModalVisible as render condition since backdrop should be invisible faster*/}
         </>

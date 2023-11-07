@@ -110,7 +110,17 @@ function MoveBtn() {
                             onClick={() => handleFolderClick(folder)}
                         >
                             <AiOutlineFolder className="folder-icon" />
-                            <span className="text-cont">{folder.name}</span>
+                            <span 
+                                className="text-cont" 
+                                tabIndex={0}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                        handleFolderClick(folder);
+                                    }
+                                }}
+                            >
+                                {folder.name}
+                            </span>
                             {hasSubfolders(folder.app_path) && 
                                 <span className="subfolders-indicator">&gt;</span>
                             }

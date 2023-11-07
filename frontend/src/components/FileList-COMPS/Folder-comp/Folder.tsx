@@ -181,6 +181,7 @@ function Folder({ folder, onSelect }: FolderProps) {
                             openFolder(event);
                         }
                     }}
+                    aria-label="Folder"
                 >
                     {folder.name}
                 </span>

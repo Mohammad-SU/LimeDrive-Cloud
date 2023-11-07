@@ -127,6 +127,7 @@ function File({ file, onSelect }: FileProps) {
                 <span 
                     className="text-cont" 
                     tabIndex={0}
+                    aria-label="File"
                 >
                     {file.name}
                 </span>
