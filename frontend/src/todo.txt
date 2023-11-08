@@ -1,7 +1,5 @@
 implement rest of move modal:
-    - add toast msg if user attempts to move their only selected folder inside itself
     - moving logic
-    - similar validation for movebtn click function for disabled attribute
     - disable move btn during processing
     - when multiple selected items and invalid target folders for some items, continue move but tell user that only some of all items were moved
 

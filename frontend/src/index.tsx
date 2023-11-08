@@ -32,12 +32,12 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <FileProvider>
-            <UserProvider>
-                <ToastProvider>
-                    <RouterProvider router={router} />
-                </ToastProvider>
-            </UserProvider>
-        </FileProvider>
+        <ToastProvider>
+            <FileProvider>
+                <UserProvider>
+                        <RouterProvider router={router} />
+                </UserProvider>
+            </FileProvider>
+        </ToastProvider>
     </React.StrictMode>,
 )

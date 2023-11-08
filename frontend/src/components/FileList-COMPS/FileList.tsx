@@ -18,7 +18,20 @@ import File from "./File-comp/File"
 import { AiOutlineFile, AiOutlineFolder } from 'react-icons/ai';
 
 function FileList() {
-    const { currentPath, setCurrentPath, files, folders, updateFiles, updateFolders, selectedItems, setSelectedItems, addToSelectedItems, removeFromSelectedItems, setConflictingItems, setProcessingItems, processingItems } = useFileContext()
+    const { 
+        currentPath, 
+        setCurrentPath, 
+        files, 
+        folders, 
+        selectedItems, 
+        setSelectedItems, 
+        addToSelectedItems, 
+        removeFromSelectedItems, 
+        filterItemsByPath, 
+        setConflictingItems, 
+        handleMoveItems,
+        processingItems 
+    } = useFileContext()
     const { showToast } = useToast()
 
     const navigate = useNavigate()
@@ -31,14 +44,6 @@ function FileList() {
 
         setConflictingItems([]);
     }, [path]);
-
-    function filterItemsByPath(items: ItemTypes[], path: string): ItemTypes[] {
-        const filteredItems = items.filter(item => {
-            const lastSlashIndex = item.app_path.lastIndexOf('/');
-            return item.app_path.substring(0, lastSlashIndex + 1) === path;
-        });
-        return filteredItems;
-    }
 
     const sortedFolders = useMemo(() => {
         const filteredFolders = filterItemsByPath(folders, currentPath)
@@ -167,7 +172,6 @@ function FileList() {
     const sensors = useSensors(mouseSensor, touchSensor)
 
     const [draggedItem, setDraggedItem] = useState<ItemTypes>() // The file or folder that is directly being dragged, regardless of selected items
-    const [conflictingItemsTimeout, setConflictingItemsTimeout] = useState<NodeJS.Timeout | null>(null);
     const { apiSecure } = useUserContext()
 
     const handleDragStart = (event: DragStartEvent) => {
@@ -188,95 +192,7 @@ function FileList() {
                 itemsToMove = [draggedItem]
                 : itemsToMove = selectedItems
 
-            const foldersToMove = itemsToMove.filter((item) => {
-                return !item.type;
-            });
-            const filesToMove = itemsToMove.filter((item) => {
-                return item.type;
-            });
-
-            const targetDirectFolders = filterItemsByPath(folders, newDroppedOnItem.app_path + "/")
-            const targetDirectFiles = filterItemsByPath(files, newDroppedOnItem.app_path + "/")
-
-            const newConflictingItems: ItemTypes[] = [];
-
-            const fileConflicts = filesToMove.filter((fileToMove) => {
-                return targetDirectFiles.some((fileInTarget) => fileInTarget.name === fileToMove.name);
-            });
-
-            const folderConflicts = foldersToMove.filter((folderToMove) => {
-                return targetDirectFolders.some((folderInTarget) => folderInTarget.name === folderToMove.name);
-            });
-    
-            newConflictingItems.push(...fileConflicts, ...folderConflicts);
-
-            if (newConflictingItems.length > 0) {
-                showToast({message: `Cannot move: please rename or deselect items with the same name between both directories.`, showFailIcon: true});
-                setConflictingItems(newConflictingItems)
-                if (conflictingItemsTimeout) {
-                    clearTimeout(conflictingItemsTimeout);
-                }
-                const timeoutId = setTimeout(() => {
-                    setConflictingItems([]);
-                }, 8000);
-                setConflictingItemsTimeout(timeoutId);
-                return;
-            }
-
-            try {
-                const itemsToMoveData = itemsToMove.map(item => {
-                    const new_path = newDroppedOnItem.app_path + "/" + item.name;
-                    const postId = !item.type ? // If draggedItem is a folder (id has d_ prefix on the frontend) then filter it for the backend
-                        parseInt((item.id as string).substring(2))
-                        : item.id
-
-                    return {
-                        id: postId,
-                        new_path: new_path,
-                        type: item.type,
-                        parent_folder_id: parseInt((newDroppedOnItem.id as string).substring(2))
-                    }
-                })
-                setProcessingItems([...itemsToMove, newDroppedOnItem])
-                removeFromSelectedItems(itemsToMove)
-
-                itemsToMove.length == 1 ?
-                    showToast({message: "Moving 1 item...", loading: true})
-                    : showToast({message: `Moving ${selectedItems.length} items...`, loading: true})
-
-                const response = await apiSecure.post('/updatePaths', {
-                    items: itemsToMoveData
-                });
-
-                const updatedItems = response.data.updatedItems;
-                const foldersToUpdate: Record<string, { app_path: string }> = {};
-                const filesToUpdate: Record<number, { app_path: string }> = {};
-    
-                updatedItems.forEach((item: { id: string | number, updated_path: string }) => {
-                    item.id.toString().startsWith('d_') ?
-                        foldersToUpdate[item.id] = { app_path: item.updated_path }
-                        : filesToUpdate[item.id as number] = { app_path: item.updated_path }
-                });
-                if (Object.keys(filesToUpdate).length > 0) {
-                    updateFiles(filesToUpdate);
-                }
-                if (Object.keys(foldersToUpdate).length > 0) {
-                    updateFolders(foldersToUpdate);
-                }
-
-                Object.keys(filesToUpdate).length + Object.keys(foldersToUpdate).length == 1 ?
-                    showToast({message: "Item successfully moved.", showSuccessIcon: true})
-                    : showToast({message: "Items successfully moved.", showSuccessIcon: true})
-            } 
-            catch (error) {
-                console.error(error);
-                if (axios.isAxiosError(error)) {
-                    showToast({ message: `Cannot move: please check your connection.`, showFailIcon: true });
-                }
-            }
-            finally {
-                setProcessingItems([])
-            }
+            handleMoveItems(itemsToMove, newDroppedOnItem, apiSecure)
         }
     }
 

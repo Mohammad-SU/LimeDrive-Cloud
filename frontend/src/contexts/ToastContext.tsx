@@ -38,7 +38,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         <ToastContext.Provider value={{ showToast }}>
             {children}
             {toast && <Toast {...toast} onClose={closeToast} />}
-            {<DynamicClip clipPathId={'toastClip'} animation={isToastVisible} numRects={3}/>}
+            {<DynamicClip clipPathId={'toastClip'} animation={isToastVisible} numRects={1}/>}
         </ToastContext.Provider>
     );
 }

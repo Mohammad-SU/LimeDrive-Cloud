@@ -2,6 +2,9 @@ import { useMemo, createContext, useContext, useState } from 'react'
 import { FileType } from '../types'
 import { FolderType } from '../types'
 import { ItemTypes } from '../types'
+import { useToast } from './ToastContext'
+import axios, { AxiosInstance } from 'axios'
+import { ppid } from 'process'
 
 interface FileContextType {
     currentPath: string
@@ -23,9 +26,11 @@ interface FileContextType {
     addToSelectedItems: (item: ItemTypes[]) => void;
     removeFromSelectedItems: (item: ItemTypes[]) => void;
 
+    filterItemsByPath: (items: ItemTypes[], path: string) => ItemTypes[];
+
     conflictingItems: ItemTypes[];
     setConflictingItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
-
+    handleMoveItems: (itemsToMove: ItemTypes[], targetFolder: FolderType, apiSecure: AxiosInstance) => void;
     processingItems: ItemTypes[];
     setProcessingItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
 }
@@ -42,12 +47,12 @@ export function useFileContext() {
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
     const [currentPath, setCurrentPath] = useState("LimeDrive/"); // Change whenever user opens a folder, e.g. to LimeDrive/documents. Should be set to LimeDrive/ by default/when user is on a separate page
-
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
     const [selectedItems, setSelectedItems] = useState<ItemTypes[]>([]);
     const [processingItems, setProcessingItems] = useState<ItemTypes[]>([]);
     const [conflictingItems, setConflictingItems] = useState<ItemTypes[]>([]);
+    const { showToast } = useToast()
 
     const addFiles = (newFiles: FileType[]) => { // Filter out new files that already exist in the current state
         setFiles((prevFiles) => {
@@ -122,6 +127,116 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             return newSelected;
         });
     };
+
+    const filterItemsByPath = (items: ItemTypes[], path: string): ItemTypes[] => {
+        const filteredItems = items.filter(item => {
+            const lastSlashIndex = item.app_path.lastIndexOf('/');
+            return item.app_path.substring(0, lastSlashIndex + 1) === path;
+        });
+        return filteredItems;
+    }
+
+    const [conflictingItemsTimeout, setConflictingItemsTimeout] = useState<NodeJS.Timeout | null>(null);
+    const handleMoveItems = async (itemsToMove: ItemTypes[], targetFolder: FolderType, apiSecure: AxiosInstance) => {
+        const foldersToMove = itemsToMove.filter((item) => {
+            return !item.type;
+        });
+        const filesToMove = itemsToMove.filter((item) => {
+            return item.type;
+        });
+
+        const targetDirectFolders = filterItemsByPath(folders, targetFolder.app_path + "/")
+        const targetDirectFiles = filterItemsByPath(files, targetFolder.app_path + "/")
+
+        const newConflictingItems: ItemTypes[] = [];
+
+        const fileConflicts = filesToMove.filter((fileToMove) => {
+            return targetDirectFiles.some((fileInTarget) => fileInTarget.name === fileToMove.name);
+        });
+
+        const folderConflicts = foldersToMove.filter((folderToMove) => {
+            return targetDirectFolders.some((folderInTarget) => folderInTarget.name === folderToMove.name);
+        });
+
+        newConflictingItems.push(...fileConflicts, ...folderConflicts);
+
+        if (newConflictingItems.length > 0) {
+            setConflictingItems(newConflictingItems)
+            if (conflictingItemsTimeout) {
+                clearTimeout(conflictingItemsTimeout);
+            }
+            const timeoutId = setTimeout(() => {
+                setConflictingItems([]);
+            }, 8000);
+            setConflictingItemsTimeout(timeoutId);
+            if (newConflictingItems.length == itemsToMove.length) {
+                return showToast({message: `Cannot move: please rename or deselect items with the same name between both directories.`, showFailIcon: true});
+            }
+        }
+
+        const newItemsToMove = itemsToMove.filter((itemToMove) => {
+            return !newConflictingItems.some((conflictingItem) => conflictingItem.id === itemToMove.id);
+        });
+
+        try {
+            const itemsToMoveData = newItemsToMove.map(item => {
+                const new_path = targetFolder.app_path + "/" + item.name;
+                const postId = !item.type ? // If draggedItem is a folder (id has d_ prefix on the frontend) then filter it for the backend
+                    parseInt((item.id as string).substring(2))
+                    : item.id
+
+                return {
+                    id: postId,
+                    new_path: new_path,
+                    type: item.type,
+                    parent_folder_id: parseInt((targetFolder.id as string).substring(2))
+                }
+            })
+            setProcessingItems([...newItemsToMove, targetFolder])
+            removeFromSelectedItems(newItemsToMove)
+
+            newItemsToMove.length == 1 ?
+                showToast({message: "Moving item...", loading: true})
+                : showToast({message: `Moving ${selectedItems.length} items...`, loading: true})
+
+            const response = await apiSecure.post('/updatePaths', {
+                items: itemsToMoveData
+            });
+
+            const updatedItems = response.data.updatedItems;
+            const foldersToUpdate: Record<string, { app_path: string }> = {};
+            const filesToUpdate: Record<number, { app_path: string }> = {};
+
+            updatedItems.forEach((item: { id: string | number, updated_path: string }) => {
+                item.id.toString().startsWith('d_') ?
+                    foldersToUpdate[item.id] = { app_path: item.updated_path }
+                    : filesToUpdate[item.id as number] = { app_path: item.updated_path }
+            });
+            const movedFilesNum = Object.keys(filesToUpdate).length
+            const movedFoldersNum = Object.keys(foldersToUpdate).length
+            if (movedFilesNum > 0) {
+                updateFiles(filesToUpdate);
+            }
+            if (movedFoldersNum > 0) {
+                updateFolders(foldersToUpdate);
+            }
+
+            movedFilesNum + movedFoldersNum == 1 && newConflictingItems.length == 0 ?
+                showToast({message: "1 item moved.", showSuccessIcon: true})
+            : movedFilesNum + movedFoldersNum > 1 && newConflictingItems.length == 0 ?
+                showToast({message: `${movedFilesNum + movedFoldersNum} items moved.`, showSuccessIcon: true})
+            : showToast({message: `Moved ${movedFilesNum + movedFoldersNum} of ${itemsToMove.length} items (conflicts/errors were detected)`, showSuccessIcon: true})
+        } 
+        catch (error) {
+            console.error(error);
+            if (axios.isAxiosError(error)) {
+                showToast({ message: `Cannot move: please check your connection.`, showFailIcon: true });
+            }
+        }
+        finally {
+            setProcessingItems([])
+        }
+    }
     
     const contextValue: FileContextType = useMemo(() => {
         return {
@@ -144,8 +259,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             addToSelectedItems,
             removeFromSelectedItems,
 
+            filterItemsByPath,
+
             conflictingItems,
             setConflictingItems,
+            handleMoveItems,
             processingItems,
             setProcessingItems,
         };

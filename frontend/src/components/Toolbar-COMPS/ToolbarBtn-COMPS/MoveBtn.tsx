@@ -1,5 +1,5 @@
 import "./MoveBtn.scss"
-import { memo, useMemo, useState, useEffect } from 'react'
+import { memo, useState, useEffect } from 'react'
 import { useFileContext } from '../../../contexts/FileContext'
 import Modal from '../../Modal-comp/Modal'
 import { useToast } from "../../../contexts/ToastContext"
@@ -9,20 +9,20 @@ import { AiOutlineFolder } from 'react-icons/ai';
 import Breadcrumb from "../../FileList-COMPS/Breadcrumb-comp/Breadcrumb"
 
 function MoveBtn() {
-    const { folders, currentPath, selectedItems } = useFileContext()
+    const { folders, currentPath, selectedItems, filterItemsByPath } = useFileContext()
     const { showToast } = useToast()
-    const [moveButtonClicked, setMoveButtonClicked] = useState(false);
+    const [toolbarMoveClicked, setToolbarMoveClicked] = useState(false);
     const [showMoveModal, setShowMoveModal] = useState(false)
     const [moveListPath, setMoveListPath] = useState(currentPath)
     const [moveListFolders, setMoveListFolders] = useState<FolderType[]>([]);
     const [targetFolder, setTargetFolder] = useState<FolderType | undefined>(undefined)
 
-    const handleMoveBtnClick = () => {
+    const handleToolbarMoveClick = () => {
         if (folders.length == 0) {
             showToast({message: `No folders available to move items to.`, showFailIcon: true});
         } else {
             setShowMoveModal(true)
-            setMoveButtonClicked(true)
+            setToolbarMoveClicked(true)
         }
     }
 
@@ -45,8 +45,8 @@ function MoveBtn() {
             }
         }
         setTargetFolder(undefined)
-        setMoveButtonClicked(false);
-    }, [currentPath, moveButtonClicked]);
+        setToolbarMoveClicked(false);
+    }, [currentPath, toolbarMoveClicked]);
 
     useEffect(() => {
         let newTargetFolder = targetFolder
@@ -57,12 +57,7 @@ function MoveBtn() {
         
         if (!newTargetFolder || hasSubfolders(newTargetFolder.app_path)) {
             setMoveListFolders(
-                folders
-                    .filter((folder) => {
-                        const lastSlashIndex = folder.app_path.lastIndexOf('/');
-                        return folder.app_path.substring(0, lastSlashIndex + 1) === moveListPath;
-                    })
-                    .sort((a, b) => a.name.localeCompare(b.name)) // Sort A-Z
+                filterItemsByPath(folders, moveListPath).sort((a, b) => a.name.localeCompare(b.name)) as FolderType[] // Sort A-Z
             ) 
         }
     }, [folders, moveListPath]);
@@ -82,9 +77,18 @@ function MoveBtn() {
         }
     }
 
+    const handleModalMoveClick = () => {
+        if ((!targetFolder && moveListPath != "LimeDrive/") || selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name)) {
+            return
+        }
+        else if (selectedItems.length == 1 && moveListPath.startsWith(targetFolder!.app_path)) {
+            return showToast({message: `Cannot move folder inside itself.`, showFailIcon: true});
+        }
+    }
+
     return (
         <>
-            <button className="MoveBtn" onClick={handleMoveBtnClick}>
+            <button className="MoveBtn" onClick={handleToolbarMoveClick}>
                 <SlCursorMove className="tool-icon move"/>
                 Move
             </button>
@@ -129,6 +133,7 @@ function MoveBtn() {
                     </button>
                     <button 
                         className='modal-primary-btn'
+                        onClick={handleModalMoveClick}
                         disabled={
                             (!targetFolder && moveListPath != "LimeDrive/") ||                             
                             selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name)
