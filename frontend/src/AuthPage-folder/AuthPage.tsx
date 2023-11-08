@@ -6,6 +6,7 @@ import { adjectives } from '../data/adjectives.ts'
 import { nouns } from '../data/nouns.ts'
 import { useUserContext } from '../contexts/UserContext.tsx'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
+import useGlobalEnterKey from '../hooks/useGlobalEnterKey.ts'
 import LimeDriveAscii from '../assets/images/ascii/LimeDrive-ascii.png'
 import LoadingBar from "../components/LoadingBar-COMPS/LoadingBar.tsx"
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
@@ -13,6 +14,7 @@ import LoginForm from '../components/auth-COMPS/LoginForm.tsx'
 import RegisterForm from '../components/auth-COMPS/RegisterForm.tsx'
 
 function AuthPage() {
+    useGlobalEnterKey();
     const navigate = useNavigate()
     const location = useLocation()
     const { api, token } = useUserContext()
@@ -127,14 +129,8 @@ function AuthPage() {
     }
 
     const [showPassword, setShowPassword] = useState<boolean>(false)
-    const togglePasswordVisibility = () => {setShowPassword(!showPassword)}
-
     const [showLoginForm, setShowLoginForm] = useState<boolean>(true)
     const [showRegisterForm, setShowRegisterForm] = useState<boolean>(false)
-    function handleFormChange() {
-        setShowLoginForm(!showLoginForm)
-        setShowRegisterForm(!showRegisterForm)
-    }
 
     return (
         <div className="AuthPage">
@@ -163,7 +159,7 @@ function AuthPage() {
                             <p><strong>Username:</strong> {generatedUsername}</p>
                             <p><strong>Password:</strong> 
                                 {showPassword ? generatedPassword : generatedPassword!.replace(/./g, '•')}
-                                <button className="icon-btn-wrapper" onClick={togglePasswordVisibility}>
+                                <button className="icon-btn-wrapper" onClick={() => setShowPassword(!showPassword)}>
                                     {showPassword ? 
                                         (<BsEyeSlash className="eye-icon icon-btn" />)
                                         : (<BsEye className="eye-icon icon-btn" />)
@@ -186,7 +182,7 @@ function AuthPage() {
                 <div className="form-cont">
                     {showLoginForm && <LoginForm />}
                     {showRegisterForm && <RegisterForm />}
-                    <button className="AuthPage__change-form-btn text-btn" onClick={handleFormChange}>
+                    <button className="AuthPage__change-form-btn text-btn" onClick={() => {setShowLoginForm(!showLoginForm), setShowRegisterForm(!showRegisterForm)}}>
                         {showLoginForm ? "Create an account" : "Login to LimeDrive"}
                     </button>
                 </div>

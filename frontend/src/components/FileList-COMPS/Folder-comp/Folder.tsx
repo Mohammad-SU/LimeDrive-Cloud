@@ -176,11 +176,11 @@ function Folder({ folder, onSelect }: FolderProps) {
                     className="text-cont"
                     onClick={openFolder} 
                     tabIndex={0}
-                    onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                            openFolder(event);
-                        }
-                    }}
+                    // onKeyDown={(event) => { // Might include different function from click?
+                    //     if (event.key === 'Enter') {
+                    //         openFolder(event);
+                    //     }
+                    // }}
                     aria-label="Folder"
                 >
                     {folder.name}

@@ -106,12 +106,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                     <div className='btn-segment' ref={btnSegmentRef}>
                         <button 
                             className="icon-btn-wrapper" 
-                            onMouseDown={() => setShowDropdown(current => !current)}                                 
-                            onKeyDown={(event) => {
-                                if (event.key === 'Enter') {
-                                    setShowDropdown(current => !current);
-                                }
-                            }}
+                            onMouseDown={() => setShowDropdown(current => !current)}
                         >
                             <BsThreeDots className="dots-icon icon-btn"/>
                         </button>

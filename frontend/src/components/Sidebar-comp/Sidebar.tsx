@@ -176,7 +176,7 @@ function Sidebar() {
                     <AiFillFolderAdd className="modal-icon" /> 
                     Create folder
                 </h1>
-                <button className="icon-btn-wrapper" type="button" onClick={() => setShowNewFolderModal(false)}>
+                <button className="icon-btn-wrapper" type="button" onClick={() => setShowNewFolderModal(false)} tabIndex={-1}>
                     <AiOutlineClose className="close-icon icon-btn" />
                 </button>
                 
@@ -193,6 +193,7 @@ function Sidebar() {
                         ref={folderNameInputRef}
                         required
                         disabled={loading}
+                        aria-label="Input for new folder name"
                     />
                     <div className="error-and-loading">
                         {loading ?

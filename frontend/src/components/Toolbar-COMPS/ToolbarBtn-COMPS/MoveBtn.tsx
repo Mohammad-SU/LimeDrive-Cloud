@@ -113,11 +113,6 @@ function MoveBtn() {
                             <span 
                                 className="text-cont" 
                                 tabIndex={0}
-                                onKeyDown={(event) => {
-                                    if (event.key === 'Enter') {
-                                        handleFolderClick(folder);
-                                    }
-                                }}
                             >
                                 {folder.name}
                             </span>

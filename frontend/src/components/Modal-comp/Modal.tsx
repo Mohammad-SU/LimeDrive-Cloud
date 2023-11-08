@@ -64,12 +64,12 @@ function Modal({
         return () => {
             window.removeEventListener('keydown', handleEscapeKey);
         };
-    }, []);
+    }, [onCloseClick]);
 
     return (
         <>
             {isModalVisible &&
-                <FocusTrap>
+                <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}>
                     <ModalType {...attributes}>
                         {children}
                         <DynamicClip
