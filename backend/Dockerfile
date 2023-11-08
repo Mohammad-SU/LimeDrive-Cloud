@@ -10,7 +10,7 @@ RUN composer install
 EXPOSE 8000
 
 RUN touch /etc/cron.d/laravelschedule
-RUN echo "* * * * * root php /app/artisan schedule:run >> /var/log/cron.log 2>&1" > /etc/cron.d/laravelschedule
+RUN echo "0 0 * * * root php /app/artisan schedule:run >> /var/log/cron.log 2>&1" > /etc/cron.d/laravelschedule
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 

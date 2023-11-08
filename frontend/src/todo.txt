@@ -1,5 +1,3 @@
-one api token pruning is working then change sanctum config to one week and cron to daily
-
 implement rest of move modal:
     - add toast msg if user attempts to move their only selected folder inside itself
     - moving logic
@@ -62,7 +60,6 @@ make it so after file is uploaded, the file in UploadInfo component accurately r
 move to and highlight new folder after user creates it
 make tabbing to a file name and pressing enter cause it to open (use useGlobalEnterKey hook?)
 add more specific/better icons for files in FileList and UploadInfo
-test if laravel schedule cronjob is working properly (change config, schedule, pruning expired limit to 1 minute)
 implement all toolbar functions
 implement sorting categories in the place of toolbar when no files are selected
 implement more server-side validation for files and folders (size, allowed characters)?

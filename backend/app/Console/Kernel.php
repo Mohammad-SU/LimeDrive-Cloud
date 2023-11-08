@@ -12,8 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // If a token is expired this should delete them
-        $schedule->command('sanctum:prune-expired')->everyMinute();
+        // If a token is expired based on expiration value in config (expiration not explicitly stored on database) for more than 24 hours then this should delete them
+        $schedule->command('sanctum:prune-expired')->daily();
     }
 
     /**
