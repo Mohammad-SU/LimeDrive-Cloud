@@ -1,3 +1,5 @@
+one api token pruning is working then change sanctum config to one week and cron to daily
+
 implement rest of move modal:
     - add toast msg if user attempts to move their only selected folder inside itself
     - moving logic

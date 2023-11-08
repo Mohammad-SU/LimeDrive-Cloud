@@ -32,7 +32,7 @@ function Header() {
     async function logout() {
         try {
             setLoadLogout(true);
-            await apiSecure.post('/logout', null)
+            await apiSecure.post('/logout')
             setFiles([])
             setFolders([])
             setUser({id: null, username: null, email: null})
