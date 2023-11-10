@@ -170,7 +170,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             }, 8000);
             setConflictingItemsTimeout(timeoutId);
             if (newConflictingItems.length == itemsToMove.length) {
-                return showToast({message: `Cannot move: please rename or deselect items with the same name between both directories.`, showFailIcon: true});
+                return showToast({message: `Cannot move any items: please rename or deselect items with the same name between both directories.`, showFailIcon: true});
             }
         }
 
@@ -192,12 +192,17 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
                     parent_folder_id: parseInt((targetFolder.id as string).substring(2))
                 }
             })
-            setProcessingItems([...newItemsToMove, targetFolder])
+            setProcessingItems((prevProcessingItems) => {
+                const uniqueNewItems = newItemsToMove.filter((newItem) => !prevProcessingItems.some((item) => item.id === newItem.id));
+                return [...prevProcessingItems, ...uniqueNewItems];
+            });
             removeFromSelectedItems(newItemsToMove)
 
-            newItemsToMove.length == 1 ?
-                showToast({message: "Moving item...", loading: true})
-                : showToast({message: `Moving ${selectedItems.length} items...`, loading: true})
+            newItemsToMove.length == 1 && newConflictingItems.length == 0 ?
+                showToast({message: "Moving 1 item...", loading: true})
+            : newItemsToMove.length > 1 && newConflictingItems.length == 0 ?
+                showToast({message: `Moving ${newItemsToMove.length} items...`, loading: true})
+            : showToast({message: `Moving ${newItemsToMove.length} of ${itemsToMove.length} items (conflicts/errors were detected)...`, loading: true})
 
             const response = await apiSecure.post('/updatePaths', {
                 items: itemsToMoveData
@@ -212,20 +217,20 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
                     foldersToUpdate[item.id] = { app_path: item.updated_path }
                     : filesToUpdate[item.id as number] = { app_path: item.updated_path }
             });
-            const movedFilesNum = Object.keys(filesToUpdate).length
-            const movedFoldersNum = Object.keys(foldersToUpdate).length
-            if (movedFilesNum > 0) {
+            const movedFiles = Object.keys(filesToUpdate)
+            const movedFolders = Object.keys(foldersToUpdate)
+            if (movedFiles.length > 0) {
                 updateFiles(filesToUpdate);
             }
-            if (movedFoldersNum > 0) {
+            if (movedFolders.length > 0) {
                 updateFolders(foldersToUpdate);
             }
 
-            movedFilesNum + movedFoldersNum == 1 && newConflictingItems.length == 0 ?
-                showToast({message: "1 item moved.", showSuccessIcon: true})
-            : movedFilesNum + movedFoldersNum > 1 && newConflictingItems.length == 0 ?
-                showToast({message: `${movedFilesNum + movedFoldersNum} items moved.`, showSuccessIcon: true})
-            : showToast({message: `Moved ${movedFilesNum + movedFoldersNum} of ${itemsToMove.length} items (conflicts/errors were detected)`, showSuccessIcon: true})
+            newItemsToMove.length == 1 && newConflictingItems.length == 0 ?
+                showToast({message: "1 item successfully moved.", showSuccessIcon: true})
+            : newItemsToMove.length > 1 && newConflictingItems.length == 0 ?
+                showToast({message: `${newItemsToMove.length} items successfully moved.`, showSuccessIcon: true})
+            : showToast({message: `${newItemsToMove.length} out of ${itemsToMove.length} items were successfully moved (conflicts/errors were detected)`, showSuccessIcon: true})
         } 
         catch (error) {
             console.error(error);
@@ -234,7 +239,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             }
         }
         finally {
-            setProcessingItems([])
+            setProcessingItems((prevProcessingItems) => prevProcessingItems.filter((item) => !newItemsToMove.some((newItem) => newItem.id === item.id)));
         }
     }
     

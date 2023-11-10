@@ -1,8 +1,8 @@
-import { memo, useState, useRef, useEffect} from 'react'
+import { memo, useState, useRef} from 'react'
 import "./Sidebar.scss"
 import axios from 'axios';
 import { Link } from "react-router-dom"
-import { AiOutlineClockCircle, AiOutlineStar, AiOutlinePicture, AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile, AiOutlineClose } from 'react-icons/ai'
+import { AiOutlinePicture, AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile } from 'react-icons/ai'
 import { TfiFiles } from 'react-icons/tfi'
 import { SlTrash } from 'react-icons/sl'
 import { IoArrowUpSharp, IoPeopleOutline } from 'react-icons/io5'
@@ -135,14 +135,6 @@ function Sidebar() {
                         <IoPeopleOutline className="nav-icon shared" />
                         Shared
                     </Link>
-                    <Link to="/recent">
-                        <AiOutlineClockCircle className="nav-icon" />
-                        Recent
-                    </Link>
-                    <Link to="/starred">
-                        <AiOutlineStar className="nav-icon starred" />
-                        Starred
-                    </Link>
                     <Link to="/media-gallery">
                         <AiOutlinePicture className="nav-icon media-gallery"/>
                         Media Gallery
@@ -176,9 +168,6 @@ function Sidebar() {
                     <AiFillFolderAdd className="modal-icon" /> 
                     Create folder
                 </h1>
-                <button className="icon-btn-wrapper" type="button" onClick={() => setShowNewFolderModal(false)} tabIndex={-1}>
-                    <AiOutlineClose className="close-icon icon-btn" />
-                </button>
                 
                 <div className="input-cont">
                     <label htmlFor="folder-name-input">Folder name</label>

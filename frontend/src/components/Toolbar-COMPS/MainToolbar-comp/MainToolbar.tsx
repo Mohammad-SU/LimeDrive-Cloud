@@ -43,7 +43,7 @@ function MainToolbar() {
                     
                     <div className="toolbar-divider" />
 
-                    <MoveBtn />
+                    <MoveBtn toolbarRendered={showToolbar}/>
                     <DynamicClip clipPathId="MoveBtnClip" animation={showToolbar} numRects={4}/>
 
                     <button className="RenameBtn">

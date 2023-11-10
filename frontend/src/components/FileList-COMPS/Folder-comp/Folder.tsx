@@ -18,7 +18,6 @@ function Folder({ folder, onSelect }: FolderProps) {
     const [isSelectDelayed, setIsSelectDelayed] = useState(false);
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
-    const [isDroppedOn, setIsDroppedOn] = useState(false)
     const [isConflicting, setIsConflicting] = useState(false)
     const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
     const { selectedItems, currentPath, conflictingItems, processingItems } = useFileContext()
@@ -62,11 +61,8 @@ function Folder({ folder, onSelect }: FolderProps) {
         selectedItems.length > 0 ? setShowCheckbox(true) : setShowCheckbox(false)
     }, [selectedItems]);
     useEffect(() => {
-        const newIsProcessing = processingItems.some(sentItem => sentItem.id === folder.id)
+        const newIsProcessing = processingItems.some(processingItem => processingItem.id === folder.id)
         setIsProcessing(newIsProcessing)
-        if (!newIsProcessing) {
-            setIsDroppedOn(false)
-        }
     }, [processingItems]);
     useEffect(() => {
         const newIsConflicting = conflictingItems.some(conflictingItem => conflictingItem.id === folder.id)
@@ -101,10 +97,7 @@ function Folder({ folder, onSelect }: FolderProps) {
                 setSameDragAndDropId(true) 
                 : setSameDragAndDropId(false)
         },
-        onDragEnd(event) {
-            if (event.over?.id === folder.id) {
-                setIsDroppedOn(true)
-            }
+        onDragEnd() {
             setIsSelectDragging(false)
         },
     });
@@ -123,6 +116,9 @@ function Folder({ folder, onSelect }: FolderProps) {
     const navigate = useNavigate()
     const openFolder = (event: React.MouseEvent | React.KeyboardEvent) => {
         event.stopPropagation();
+        if (isProcessing) {
+            return
+        }
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
 
         if (!isCheckboxClicked) {
@@ -139,14 +135,13 @@ function Folder({ folder, onSelect }: FolderProps) {
     const formattedDate = formatDate(new Date(folder.date));
 
     return (
-        <div 
+        <div // Dont give style when dropped on but prevent drag operations in filecontext if its in processing items and user tries to move it
             className={`Folder 
                 ${isSelected ? 'selected' : ''}
                 ${isSelectDelayed ? 'select-delayed' : ''}
                 ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
                 ${isProcessing ? 'processing' : ''}
-                ${isDroppedOn && isProcessing ? 'dropped-on' : ''}
             `}
             id={folder.id}
             onClick={handleFolderClick}

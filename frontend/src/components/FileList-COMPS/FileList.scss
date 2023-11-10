@@ -23,16 +23,17 @@
             font-size: 1.4rem;
         }
 
-        .MainToolbar {
+        .tool-area {
+            position: relative;
             display: flex;
-            justify-content: space-between;
-            margin-top: 1.1rem;
+            align-items: center;
+            height: 5rem;
+            margin-bottom: 0.2rem;
         }
 
         .list-header-row {
             display: flex;
             align-items: center;
-            padding-top: 1.2rem;
             padding-bottom: 1.1rem;
     
             background: black;
@@ -99,9 +100,6 @@
                     cursor: not-allowed !important;
                 }
             }
-            &.dropped-on {
-                outline: .125rem solid lime;
-            }
             &:focus-visible {
                 outline: none;
             }
@@ -110,6 +108,10 @@
                 @include btn-selection-styles;
                 &:hover .list-checkbox {
                     opacity: 1;
+                }
+                .text-cont:hover {
+                    @include other-selection-styles;
+                    cursor: pointer;
                 }
 
                 &.select-delayed {
@@ -171,11 +173,6 @@
                         white-space: nowrap;
                         text-overflow: ellipsis;
                         overflow: hidden;
-
-                        &:hover {
-                            @include other-selection-styles;
-                            cursor: pointer;
-                        }
                     }
                 }
             }

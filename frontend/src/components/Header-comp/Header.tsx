@@ -80,9 +80,9 @@ function Header() {
                     <BsPersonFillGear className="user-settings-icon icon-btn"/>
                 </button>
                 {isDropdownVisible &&
-                    <div className="user-dropdown" ref={dropdownRef} tabIndex={-1}>
-                        <Link className="dropdown-btn-link" to="/settings">
-                            <button className="settings-btn">
+                    <div className="user-dropdown" ref={dropdownRef}>
+                        <Link className="dropdown-btn-link" to="/settings" tabIndex={0}>
+                            <button className="settings-btn" tabIndex={-1}>
                                 Settings
                             </button>
                         </Link>

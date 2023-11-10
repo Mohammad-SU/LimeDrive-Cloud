@@ -4,6 +4,7 @@ import useDelayedExit from '../../hooks/useDelayedExit';
 import DynamicClip from '../DynamicClip';
 import Backdrop from '../Backdrop-comp/Backdrop';
 import "./Modal.scss";
+import { AiOutlineClose } from 'react-icons/ai';
 
 interface ModalProps {
     className: string;
@@ -71,6 +72,9 @@ function Modal({
             {isModalVisible &&
                 <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}>
                     <ModalType {...attributes}>
+                        <button className="icon-btn-wrapper" type="button" onClick={onCloseClick} tabIndex={-1}>
+                            <AiOutlineClose className="close-icon icon-btn" />
+                        </button>
                         {children}
                         <DynamicClip
                             clipPathId={clipPathId}

@@ -29,12 +29,12 @@ function MainPage() {
     return (
             <div className="MainPage">
                 <Header />
-                <div className="main-content">
+                <main className="main-content">
                     <Sidebar />
                     <div className="content">
                         <Outlet />
                     </div>
-                </div>
+                </main>
             </div>
     )
 }

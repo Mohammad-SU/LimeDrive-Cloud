@@ -7,10 +7,12 @@ import { FolderType } from "../../../types"
 import { SlCursorMove } from 'react-icons/sl'
 import { AiOutlineFolder } from 'react-icons/ai';
 import Breadcrumb from "../../FileList-COMPS/Breadcrumb-comp/Breadcrumb"
+import { useUserContext } from "../../../contexts/UserContext"
 
-function MoveBtn() {
-    const { folders, currentPath, selectedItems, filterItemsByPath } = useFileContext()
+function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
+    const { folders, currentPath, selectedItems, filterItemsByPath, handleMoveItems } = useFileContext()
     const { showToast } = useToast()
+    const { apiSecure } = useUserContext()
     const [toolbarMoveClicked, setToolbarMoveClicked] = useState(false);
     const [showMoveModal, setShowMoveModal] = useState(false)
     const [moveListPath, setMoveListPath] = useState(currentPath)
@@ -36,7 +38,7 @@ function MoveBtn() {
         if (hasSubfolders(currentPath.slice(0, -1))) {
             setMoveListPath(currentPath);
         } 
-        else { // If current folder doesnt have subfolders, then setMoveListPath to parent path
+        else { // If current folder doesnt have subfolders, then setMoveListPath to parent path to prevent empty list that wouldn't benefit the user
             const currentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1))
             if (currentFolder) {
                 const lastIndex = currentPath.lastIndexOf(currentFolder.name);
@@ -50,12 +52,11 @@ function MoveBtn() {
 
     useEffect(() => {
         let newTargetFolder = targetFolder
-        if (moveListPath.slice(0, -1) != targetFolder?.app_path) {
+        if (moveListPath.slice(0, -1) != targetFolder?.app_path) { // For resetting targetFolder when modal is closed and then reopened and making sure there's no subfolder issues
             newTargetFolder = folders.find((folder) => folder.app_path === moveListPath.slice(0, -1));
             setTargetFolder(newTargetFolder);
         }
-        
-        if (!newTargetFolder || hasSubfolders(newTargetFolder.app_path)) {
+        if (!newTargetFolder || hasSubfolders(newTargetFolder.app_path)) { // Render subfolders
             setMoveListFolders(
                 filterItemsByPath(folders, moveListPath).sort((a, b) => a.name.localeCompare(b.name)) as FolderType[] // Sort A-Z
             ) 
@@ -64,26 +65,38 @@ function MoveBtn() {
 
     const handleFolderClick = (folder: FolderType) => {
         const prevTarget = targetFolder
-        if (prevTarget && !hasSubfolders(prevTarget.app_path)) {
-            setMoveListPath(moveListPath.replace(prevTarget.name, folder.name));
-        } else {
+        if (prevTarget && !hasSubfolders(prevTarget.app_path)) { // If prevTarget didn't have subfolders then the end of the breadcrumb should be REPLACED with the new target's name for correct rendering of folders under that path, and to prevent unnecessary stacking in the breadcrumb
+            const lastOccurrenceIndex = moveListPath.lastIndexOf(prevTarget.name);
+            setMoveListPath(moveListPath.slice(0, lastOccurrenceIndex) + folder.name + "/");
+        } else { // Otherwise ADD target folder's name to the end of the breadcrumb
             const firstSlashIndex = moveListPath.indexOf('/');
             const newPath = "LimeDrive/" +  moveListPath.substring(firstSlashIndex + 1);
             setMoveListPath(newPath + folder.name + "/")
         }
 
-        if (!selectedItems.some(selectedItem => selectedItem.id === folder.id)) {
+        if (!selectedItems.some(selectedItem => selectedItem.id === folder.id)) { // If the user clicks on a folder that is NOT part of the folders that they selected for moving
             setTargetFolder(folder)
         }
     }
 
-    const handleModalMoveClick = () => {
-        if ((!targetFolder && moveListPath != "LimeDrive/") || selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name)) {
+    const handleModalMoveClick = async () => {
+        if ((!targetFolder && moveListPath != "LimeDrive/") || selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name)) { // In case user removes disabled attribute from modal move btn
             return
         }
-        else if (selectedItems.length == 1 && moveListPath.startsWith(targetFolder!.app_path)) {
+        else if (selectedItems.length == 1 && moveListPath.startsWith(selectedItems[0].app_path)) {
             return showToast({message: `Cannot move folder inside itself.`, showFailIcon: true});
         }
+
+        let newTargetFolder = targetFolder
+        if (moveListPath == "LimeDrive/") { // If user wants to move items to root
+            newTargetFolder = {
+                id: 'd_0',
+                name: 'LimeDrive',
+                app_path: 'LimeDrive',
+                date: new Date(),
+            };
+        }
+        handleMoveItems(selectedItems, newTargetFolder!, apiSecure)
     }
 
     return (
@@ -95,8 +108,9 @@ function MoveBtn() {
 
             <Modal 
                 className="move-modal"
-                render={showMoveModal}
+                render={showMoveModal && toolbarRendered}
                 clipPathId="moveModalClip"
+                numRects={10}
                 onCloseClick={() => setShowMoveModal(false)}
             >
                 <h1>

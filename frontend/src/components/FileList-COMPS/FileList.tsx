@@ -1,6 +1,5 @@
 import { memo, useMemo, useState, useEffect } from 'react'
 import "./FileList.scss"
-import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom'
 import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSensors, MouseSensor, TouchSensor } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
@@ -11,6 +10,7 @@ import { FileType } from '../../types'
 import { FolderType } from '../../types'
 import { ItemTypes } from '../../types';
 import Breadcrumb from './Breadcrumb-comp/Breadcrumb'
+import SortingToolbar from '../Toolbar-COMPS/SortingToolbar-comp/SortingToolbar';
 import MainToolbar from '../Toolbar-COMPS/MainToolbar-comp/MainToolbar'
 import Checkbox from './Checkbox-comp/Checkbox'
 import Folder from "./Folder-comp/Folder"
@@ -216,7 +216,10 @@ function FileList() {
             <div className={`FileList ${emptyDirectory ? 'empty-directory' : ''}`}>
                 <div className="FileList-main-header">
                     <Breadcrumb path={currentPath} setPath={setCurrentPath}/>
-                    <MainToolbar />
+                    <div className="tool-area">
+                        <SortingToolbar />
+                        <MainToolbar />
+                    </div>
 
                     <div className="list-header-row">
                         <Checkbox

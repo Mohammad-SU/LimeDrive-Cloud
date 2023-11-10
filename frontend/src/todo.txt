@@ -1,8 +1,3 @@
-implement rest of move modal:
-    - moving logic
-    - disable move btn during processing
-    - when multiple selected items and invalid target folders for some items, continue move but tell user that only some of all items were moved
-
 add option on Modal component to show close/x btn.
 for breadcrumb - instead of window resize event always running overflow check, make it only run it if breadcrumb width has changed, possibly add breadcrumb width to deps?
 implement rest of breadcrumb (animations, hiddensegments btnonly, really long single item to show up on its own in visiblesegments, overflow in dropdown)
@@ -10,20 +5,23 @@ hide overflow for long item names in drag overlay
 make "creating folder..." show as toast
 fix long item names causing icons to disappear
 fix text overflow next line when uploadInfo is collapsed and spinner is visible
-show user how many items are selected on corner of screen on breadcrumb level
+show user how many items are selected next to filelist name heading
 bold end of path in breadcrumbs or reduce opacity of what is before it?
 fix file upload selection where user selecting same file again if it was the directly previous selected file not working
 Make "in <folder>" in uploadInfo a jump link and highlight/blink the file after jumping to it, also correct it so the links are correct
 check for duplication when uploading - add (1) or more numbers to end of file name if there is a duplicate in same path
 implement "space left" on bottom left corner
+move to and highlight new folder after user creates it
+make it so after file is uploaded, the file in UploadInfo component accurately reflects the directory path that the file was uploaded to
+check if cookie is automatically sent in normal api axios instance, and if so then remove apiSecure axios instance as it's not needed
+fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too)
 
 Priority: 
-    - Moving
     - Deleting, set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page, toast notifications, underline/bold sidebar links if user is on that page
     - Previews
     - folder uploading, allow more variety in folder characters
     - finish implementing search function
-    - file sorting in place of toolbar when its not visible
+    - finish sorting toolbar logic
     - full page animations with DynamicClip
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
     - settings page, toast notifications
@@ -47,15 +45,18 @@ Deleting:
 Previews:
     - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
 
-toast notifications for errors
+toast notification stacking
+remember to put toast notifications for some errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars
 vertically align text in buttons?
 aria labels
+make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
+more complex logic to allow for users to conduct multiple move operations quickly
+backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
+instantly close maintoolbar if only one selected item and was double-clicked for opening withing certain remaining amount of milliseconds from select delay and toolbar animation (!showToolbarInstant || isToolbarVisible as render jsx conditions? use useeffect and/or context?)
 
 add short scss animations for conflict icons and tooltips?
 change all filetype foldertype combinations to ItemTypes if better
-make it so after file is uploaded, the file in UploadInfo component accurately reflects the directory path that the file was uploaded to
-move to and highlight new folder after user creates it
 make tabbing to a file name and pressing enter cause it to open (use useGlobalEnterKey hook?)
 add more specific/better icons for files in FileList and UploadInfo
 implement all toolbar functions
@@ -90,6 +91,7 @@ prevent file/folder hover styles during click delay?
 create new folder button in move modal
 better backend validation
 research accessibility and improve it on the app
+add folders on sidebar
 
 future update ideas:
     undo btn/features

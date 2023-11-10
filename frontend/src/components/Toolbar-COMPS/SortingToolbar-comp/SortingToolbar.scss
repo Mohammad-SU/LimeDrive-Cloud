@@ -1,0 +1,35 @@
+.SortingToolbar {
+    display: flex;
+    gap: 2rem;
+
+    .main-sort-cont, .secondary-sort-cont {
+        display: flex;
+        gap: 0.7rem;
+        
+        button {
+            font-size: 1rem;
+            padding: 0.5rem 0.9rem;
+            padding-bottom: 0.6rem;
+            border: 2px solid lime;
+            border-radius: 999px;
+
+            .chevron {
+                margin-bottom: -0.22rem;
+                margin-left: 0.6rem;
+            }
+        }
+
+        .recents-sort-btn {
+            clip-path: url(#recentsSortClip);
+        }
+        .starred-sort-btn {
+            clip-path: url(#starredSortClip);
+        }
+        .type-sort-btn {
+            clip-path: url(#typeSortClip);
+        }
+        .people-sort-btn {
+            clip-path: url(#peopleSortClip);
+        }
+    }
+} 

@@ -133,8 +133,8 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                                     );
                                 } else {
                                     return (
-                                        <Link className="dropdown-btn-link" to={linkToPath} key={index}>
-                                            <button className="item" {...commonAttributes}>
+                                        <Link className="dropdown-btn-link" to={linkToPath} key={index} tabIndex={0}>
+                                            <button className="item" {...commonAttributes} tabIndex={-1}>
                                                     {decodeURIComponent(segment)}
                                             </button>
                                         </Link>
@@ -144,7 +144,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                             <DynamicClip
                                 clipPathId={"breadcrumbDropdownClip"}
                                 animation={showDropdown}
-                                numRects={6}
+                                numRects={Math.min(hiddenSegments.length + 1, 7)}
                             />
                         </nav>
                     }

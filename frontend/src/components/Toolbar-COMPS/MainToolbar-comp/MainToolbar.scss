@@ -1,11 +1,18 @@
+@import "../../../global.scss";
+
 .MainToolbar {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    z-index: 2;
     clip-path: url("#MainToolbarClip");
 
     .main-tools, .sharing-tools {
         display: flex;
         gap: 1rem;
 
-        > button {
+        > button { // ">" to not affect modal breadcrumb
             display: flex;
             align-items: center;
             gap: 0.45rem;
@@ -13,6 +20,8 @@
             padding: 0.5rem;
             padding-right: 0.6rem;
             border: 1px solid lime;
+            background: black;
+            @include btn-selection-styles;
 
             .tool-icon {
                 font-size: 1.4rem;

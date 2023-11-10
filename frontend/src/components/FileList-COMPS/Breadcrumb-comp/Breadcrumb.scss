@@ -43,15 +43,26 @@
         padding-bottom: 0.8rem;
         margin-top: 2rem;
         background: black;
-        border: 1px solid lime;
+        border: .0625rem solid lime;
         clip-path: url(#breadcrumbDropdownClip);
         z-index: 2;
+        max-height: 19.9rem;
+        max-width: 20rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        &::-webkit-scrollbar-track {
+            outline: none;
+            border-left: 2px dashed lime;
+        }
+        &::-webkit-scrollbar-thumb {
+            border-left: 2px solid lime;
+        }
 
         button {
             width: 100%;
             text-align: center;
             padding: 0 1rem;
-            max-width: 20rem;
             height: 2rem;
             overflow: hidden;
             text-overflow: ellipsis;
