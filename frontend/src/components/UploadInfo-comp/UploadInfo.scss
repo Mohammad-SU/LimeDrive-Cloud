@@ -1,6 +1,6 @@
 .UploadInfo {
     position: absolute;
-    width: 23rem;
+    width: 23.5rem;
     bottom: 0;
     right: 0;
     z-index: 3;
@@ -15,11 +15,13 @@
         padding: 0.7rem;
         padding-right: 0.5rem;
         border: .0625rem solid lime;
+        white-space: nowrap;
         cursor: pointer;
 
-        .spinner-after {
-            &::after {
-                margin-right: 5.7rem;
+        p {
+            margin: 0;
+            .spinner-after::after {
+                margin-left: 1rem;
             }
         }
 

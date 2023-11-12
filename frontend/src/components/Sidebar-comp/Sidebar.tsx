@@ -1,7 +1,7 @@
 import { memo, useState, useRef} from 'react'
 import "./Sidebar.scss"
 import axios from 'axios';
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { AiOutlinePicture, AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile } from 'react-icons/ai'
 import { TfiFiles } from 'react-icons/tfi'
 import { SlTrash } from 'react-icons/sl'
@@ -21,6 +21,7 @@ function Sidebar() {
     const { apiSecure } = useUserContext()
     const { currentPath, folders, addFolders } = useFileContext()
     const { showToast } = useToast()
+    const navigate = useNavigate()
     const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
 
     const newMenuRef = useRef<HTMLUListElement | null>(null)
@@ -44,6 +45,13 @@ function Sidebar() {
     const isFolderNameValid = /^[a-zA-Z0-9\s-_]+$/.test(formData.newFolderName)
     const [loading, setLoading] = useState<boolean>(false)
 
+    const handleModalOpen = () => {
+        if (backendErrorMsg) { // For if error occurs while modal is closed (toast would already tell the user)
+            setBackendErrorMsg(null)
+        }
+        setShowNewFolderModal(true)
+        setShowNewMenu(false)
+    }
     const handleCreateFolder = async () => {
         if (!isFolderNameValid || loading) {
             return;
@@ -51,22 +59,36 @@ function Sidebar() {
 
         try {
             setLoading(true)
-            const matchingFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
-            const parent_folder_id = matchingFolder ? matchingFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
+            const parentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
+            const app_path = currentPath + formData.newFolderName
+            const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
+            showToast({message: "Creating folder...", loading: true})
+            setShowNewFolderModal(false);
             const response = await apiSecure.post('/uploadFolder', {
                 name: formData.newFolderName,
-                app_path: currentPath + formData.newFolderName,
+                app_path: app_path,
                 parent_folder_id: parent_folder_id
             });
-    
+
             addFolders(response.data)
-            setShowNewFolderModal(false);
-            showToast({message: "Folder added.", showSuccessIcon: true})
+            showToast({message: "Folder created.", showSuccessIcon: true})
+            formData.newFolderName = ''
+
+            setTimeout(() => { // Wait for folder with it's id to be properly rendered to the DOM
+                if (currentPath == parentFolder?.app_path + "/" || parent_folder_id === "0" && currentPath == "LimeDrive/") { // Jump to folder if user is still in same path
+                    navigate(currentPath.slice(0, -1)+"#d_"+response.data.id)
+                    const element = document.getElementById(`d_${response.data.id}`);
+                    if (element) {
+                        element.scrollIntoView({ behavior: "smooth" });
+                    }
+                }
+            }, 1);
         } 
         catch (error) {
             console.error(error);
             if (axios.isAxiosError(error)) {
                 setBackendErrorMsg(error?.response?.data.message)
+                showToast({message: "Error. Please check your connection.", showFailIcon: true})
             }
         }
         finally {
@@ -86,10 +108,7 @@ function Sidebar() {
                 </button>
                 {isNewMenuVisible &&
                     <ul className="new-menu" ref={newMenuRef}>
-                        <button onClick={() => {
-                            setShowNewFolderModal(true)
-                            setShowNewMenu(false)
-                        }}>
+                        <button onClick={handleModalOpen}>
                             <AiFillFolderAdd className="menu-icon" />
                             Create folder
                         </button>
@@ -158,9 +177,10 @@ function Sidebar() {
                 render={showNewFolderModal}
                 clipPathId="newFolderModalClip"
                 onCloseClick={() => setShowNewFolderModal(false)}
+                closeBtnTabIndex={loading ? 0 : -1}
                 onVisible={() => folderNameInputRef.current?.focus()}
                 onExit={() => {
-                    formData.newFolderName = '';
+                    if (!loading) {formData.newFolderName = ''}
                     setBackendErrorMsg(null)
                 }}
             >
@@ -186,17 +206,11 @@ function Sidebar() {
                     />
                     <div className="error-and-loading">
                         {loading ?
-                            <div className="creating-wrapper">
-                                <span>Creating folder...</span>
-                                <LoadingBar loading={loading}/>
-                            </div>
-                            
+                            <LoadingBar loading={loading}/> 
                             : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
                                 "Invalid folder name format."
-
                             : backendErrorMsg ?
                                 "Error. Please check connection."
-
                             : null
                         }
                     </div>
@@ -209,7 +223,7 @@ function Sidebar() {
                     <button 
                         className='modal-primary-btn'
                         type="submit"
-                        disabled={formData.newFolderName == '' || backendErrorMsg != null || !isFolderNameValid || loading}
+                        disabled={formData.newFolderName == '' || !isFolderNameValid || loading}
                     >
                         Create
                     </button>

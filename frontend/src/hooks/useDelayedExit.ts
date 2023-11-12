@@ -29,7 +29,7 @@ function useDelayedExit({ shouldRender, delayMs = 300, onExitCallback }: Delayed
                 clearTimeout(timeoutId);
             }
         };
-    }, [delayMs, shouldRender, onExitCallback]);
+    }, [shouldRender]);
 
     return { isVisible };
 }

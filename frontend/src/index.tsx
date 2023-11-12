@@ -35,7 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <ToastProvider>
             <FileProvider>
                 <UserProvider>
-                        <RouterProvider router={router} />
+                    <RouterProvider router={router} />
                 </UserProvider>
             </FileProvider>
         </ToastProvider>

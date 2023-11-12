@@ -5,7 +5,6 @@ import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSe
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { useFileContext } from '../../contexts/FileContext'
 import { useUserContext } from '../../contexts/UserContext'
-import { useToast } from '../../contexts/ToastContext';
 import { FileType } from '../../types'
 import { FolderType } from '../../types'
 import { ItemTypes } from '../../types';
@@ -19,7 +18,7 @@ import { AiOutlineFile, AiOutlineFolder } from 'react-icons/ai';
 
 function FileList() {
     const { 
-        currentPath, 
+        currentPath,
         setCurrentPath, 
         files, 
         folders, 
@@ -32,7 +31,6 @@ function FileList() {
         handleMoveItems,
         processingItems 
     } = useFileContext()
-    const { showToast } = useToast()
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -228,7 +226,10 @@ function FileList() {
                             onClick={handleHeaderCheckboxClick}
                             showMinus={showDeselectAll}
                         />
-                        <p className="name-header">Name</p>
+                        <p className="name-header">
+                            Name 
+                            {selectedItems.length > 0 && <span>[{selectedItems.length} selected]</span>}
+                        </p>
                         <p>Type</p>
                         <p>Size</p>
                         <p>Uploaded (D/M/Y)</p>
@@ -247,8 +248,8 @@ function FileList() {
                             <>
                                 <div className="main-drag-cont">
                                     {draggedItem.type === undefined ?
-                                        <AiOutlineFolder className="drag-icon-folder"/>
-                                        : <AiOutlineFile className="drag-icon-file"/>
+                                        <AiOutlineFolder className="drag-icon folder"/>
+                                        : <AiOutlineFile className="drag-icon file"/>
                                     }
                                     <p>{draggedItem.name}</p>
 

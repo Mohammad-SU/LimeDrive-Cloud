@@ -73,6 +73,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     const apiSecure = axios.create({
         baseURL: import.meta.env.VITE_API_URL,
+        withCredentials: true,
     });
 
     api.interceptors.response.use (

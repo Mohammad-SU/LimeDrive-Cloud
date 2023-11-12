@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
 import FocusTrap from 'focus-trap-react';
 import useDelayedExit from '../../hooks/useDelayedExit';
 import DynamicClip from '../DynamicClip';
@@ -14,6 +14,8 @@ interface ModalProps {
     onExit?: () => void;
     onVisible?: () => void;
     onCloseClick: () => void;
+    showCloseBtn?: boolean;
+    closeBtnTabIndex?: number;
     clipPathId: string;
     numRects?: number;
     children?: React.ReactNode;
@@ -27,6 +29,8 @@ function Modal({
     onExit,
     onVisible,
     onCloseClick,
+    showCloseBtn = true,
+    closeBtnTabIndex = 0,
     clipPathId,
     numRects = 10,
     children,
@@ -43,8 +47,15 @@ function Modal({
         } : {}),
     }
 
+    const [newRender, setNewRender] = useState(false)
+    useEffect(() => { // Handle multiple render issues
+        render ? 
+            setNewRender(true)
+            : setNewRender(false)
+    }, [render])
+
     const { isVisible: isModalVisible } = useDelayedExit({
-        shouldRender: render,
+        shouldRender: newRender,
         delayMs: renderDelay,
         onExitCallback: onExit,
     })
@@ -72,19 +83,21 @@ function Modal({
             {isModalVisible &&
                 <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}>
                     <ModalType {...attributes}>
-                        <button className="icon-btn-wrapper" type="button" onClick={onCloseClick} tabIndex={-1}>
-                            <AiOutlineClose className="close-icon icon-btn" />
-                        </button>
+                        {showCloseBtn && 
+                            <button className="icon-btn-wrapper close-btn" type="button" onClick={onCloseClick} tabIndex={closeBtnTabIndex}>
+                                <AiOutlineClose className="icon-btn" />
+                            </button>
+                        }
                         {children}
                         <DynamicClip
                             clipPathId={clipPathId}
-                            animation={render}
+                            animation={newRender}
                             numRects={numRects}
                         />
                     </ModalType>
                 </FocusTrap>
             }
-            <Backdrop render={render} onClick={onCloseClick}/> {/* Use render instead of isModalVisible as render condition since backdrop should be invisible faster*/}
+            <Backdrop render={newRender} onClick={onCloseClick}/> {/* Use render instead of isModalVisible as render condition since backdrop should be invisible faster*/}
         </>
     );
 }

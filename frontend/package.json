@@ -25,6 +25,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
     "react-router-dom": "^6.14.2",
+    "react-router-hash-link": "^2.4.3",
     "react-virtualized": "^9.22.5",
     "resize-observer-polyfill": "^1.5.1"
   },
@@ -37,6 +38,7 @@
     "@types/node": "^20.6.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "@types/react-router-hash-link": "^2.4.9",
     "@types/testing-library__jest-dom": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",

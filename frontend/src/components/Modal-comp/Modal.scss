@@ -16,6 +16,13 @@
     border: 1px solid lime;
     background: black;
 
+    :where(.close-btn) {
+        position: absolute;
+        font-size: 1.5rem;
+        top: .5rem;
+        right: .5rem;
+    }
+
     :where(h1) {
         font-size: 1.4rem;
         margin: 0;

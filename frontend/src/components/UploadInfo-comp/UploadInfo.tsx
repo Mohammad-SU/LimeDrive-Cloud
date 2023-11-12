@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, memo } from 'react'
 import "../../global.scss"
 import "./UploadInfo.scss"
 import axios, { CancelTokenSource } from 'axios';
-import { Link } from 'react-router-dom'
+import { HashLink as Link } from 'react-router-hash-link';
 import { useUserContext } from '../../contexts/UserContext.tsx'
 import { useFileContext } from '../../contexts/FileContext.tsx';
 import useDelayedExit from '../../hooks/useDelayedExit.ts';
@@ -12,6 +12,11 @@ import { IoMdClose } from 'react-icons/io'
 import ProgressBar from '../LoadingBar-COMPS/ProgressBar.tsx'
 import DynamicClip from '../DynamicClip.tsx';
 
+interface QueueFile {
+    fileObj: File,
+    id: number | null;
+}
+
 function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputElement> }) {
     const [showUploadInfo, setshowUploadInfo] = useState(true)
     const { isVisible: isUploadInfoVisible } = useDelayedExit({
@@ -19,12 +24,12 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         delayMs: 300,
     });
 
-    const { currentPath, folders, addFiles, addFolders } = useFileContext()
+    const { currentPath, files, folders, addFiles, addFolders } = useFileContext()
     
     const [fileErrors, setFileErrors] = useState(new Map());
-    const [currentlyUploadingFile, setCurrentlyUploadingFile] = useState<File | null>(null);
-    const [prevUploadedFiles, setPrevUploadedFiles] = useState<File[]>([]); // Files in the list that have been successfully uploaded and will not be sent again
-    const [uploadQueue, setUploadQueue] = useState<File[]>([]); // Files in the list to be sent to backend
+    const [currentlyUploadingFile, setCurrentlyUploadingFile] = useState<QueueFile | null>(null);
+    const [prevUploadedFiles, setPrevUploadedFiles] = useState<QueueFile[]>([]); // Files in the list that have been successfully uploaded and will not be sent again
+    const [uploadQueue, setUploadQueue] = useState<QueueFile[]>([]); // Files in the list to be sent to backend
     const [uploadListFilesNum, setUploadListFilesNum] = useState<number>(0) // Number of files in the list in total, including both current and successful uploads
     const [currentUploadIndex, setCurrentUploadIndex] = useState<number>(-1); // Current file to be uploaded in uploadQueue (negative means no files in uploadQueue)
     const [successfulUploadNum, setSuccessfulUploadNum] = useState<number>(0);
@@ -34,8 +39,12 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files
+        console.log(selectedFiles)
         if (!selectedFiles) return
-        const newFiles = Array.from(selectedFiles);
+        const newFiles: QueueFile[] = Array.from(selectedFiles).map((fileObj) => ({
+            fileObj,
+            id: null,
+        }));
         setSelectedCurrentPath(currentPath)
 
         if (!currentlyUploadingFile) {
@@ -45,7 +54,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             const newFileErrors = new Map(); // Reset file error map
             setFileErrors(newFileErrors);
     
-            setPrevUploadedFiles((prevFiles: File[]) => [ ...successfulFiles, ...prevFiles])
+            setPrevUploadedFiles((prevFiles: QueueFile[]) => [ ...successfulFiles, ...prevFiles])
             setUploadListFilesNum((prevValue) => prevValue + newFiles.length)
     
             setUploadQueue([...newFiles, ...failedFiles])
@@ -65,7 +74,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                 ...newFiles,
             ]
 
-            setPrevUploadedFiles((prevFiles: File[]) => [...successfulFiles, ...prevFiles]);
+            setPrevUploadedFiles((prevFiles: QueueFile[]) => [...successfulFiles, ...prevFiles]);
             setUploadQueue(updatedUploadQueue);
             setUploadListFilesNum((prevValue) => prevValue + newFiles.length);
             setCurrentUploadIndex((prevIndex) => prevIndex - successfulFiles.length); // Subtract for correct index due to successful files being removed from uploadQueue and being added to prevUploadedFiles
@@ -75,12 +84,11 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
 
     const { apiSecure } = useUserContext()
     
-    const uploadFile = async (file: File) => {
+    const uploadFile = async (file: QueueFile) => {
         const formData = new FormData();
-        formData.append('file', file)
+        formData.append('file', file.fileObj) // Actual js file object
 
-        const app_path = selectedCurrentPath.endsWith('/') ? selectedCurrentPath + file.name : selectedCurrentPath + '/' + file.name;
-        formData.append('app_path', app_path) // e.g. app_path = LimeDrive/LimeDrive.txt
+        formData.append('app_path', selectedCurrentPath + file.fileObj.name) // e.g. app_path = LimeDrive/LimeDrive.txt
 
         const matchingFolder = folders.find((folder) => folder.app_path === selectedCurrentPath.slice(0, -1));
         const parent_folder_id = matchingFolder ? matchingFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
@@ -105,6 +113,13 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             })
 
             addFiles(response.data)
+            const updatedQueueFile = { fileObj: file.fileObj, id: response.data.id };
+            setUploadQueue((prevQueue) => // Update the corresponing file's id in uploadQueue
+                prevQueue.map((queueFile) =>
+                    queueFile === file ? updatedQueueFile : queueFile
+                )
+            );
+
             setSuccessfulUploadNum(current => current + 1)
         } 
         catch (error) {
@@ -140,7 +155,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             (file, index) => !fileErrors.has(file) && index < currentUploadIndex
         )
         
-        const filesToRetry: File[] = uploadQueue.filter((file) => fileErrors.has(file));
+        const filesToRetry: QueueFile[] = uploadQueue.filter((file) => fileErrors.has(file));
 
         const queuedFiles = uploadQueue.filter (
             (file, index) => index > currentUploadIndex && !successfulFiles.includes(file)
@@ -149,19 +164,18 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         const newFileErrors = new Map()
         setFileErrors(newFileErrors);
 
-        const updatedUploadQueue: File[] = [
-            uploadQueue[currentUploadIndex], // Move true/original 'currently uploading file' to front
+        const updatedUploadQueue: QueueFile[] = [
+            ...(currentlyUploadingFile ? [currentlyUploadingFile] : []),
             ...filesToRetry,
             ...queuedFiles,
         ]
 
         setUploadQueue(updatedUploadQueue);
         setCurrentUploadIndex(0);
-        setCurrentlyUploadingFile(null) // Trigger useEffect to run
-        setPrevUploadedFiles((prevFiles: File[]) => [...successfulFiles, ...prevFiles]);
+        setPrevUploadedFiles((prevFiles: QueueFile[]) => [...successfulFiles, ...prevFiles]);
     }
     
-    const onCancelClick = (fileToRemove: File) => {
+    const onCancelClick = (fileToRemove: QueueFile) => {
         if (fileToRemove == currentlyUploadingFile && currentFileProgress === 100) {
             return
         }
@@ -184,7 +198,45 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         if (currentlyUploadingFile) return
         setshowUploadInfo(false)
     }
-    
+
+    const renderFileDetails = (file: QueueFile, index: number, isUploaded: boolean) => {
+        const correspondingFile = files.find((appFile) => appFile.id === file.id);
+        const parentPath = correspondingFile?.app_path ? correspondingFile.app_path.substring(0, correspondingFile.app_path.lastIndexOf('/')) : '';
+        const parentFolderName = parentPath ? parentPath.substring(parentPath.lastIndexOf('/') + 1) : '';
+        return (
+            <div className="file" key={index}>
+                <AiFillFileText className="file-icon" />
+                <div className="file-info">
+                    <div className="name">{file.fileObj.name}</div>
+                        <div className="progress-and-location">
+                            {!isUploaded && index === currentUploadIndex ? 
+                                <ProgressBar progress={currentFileProgress} />
+                                : !isUploaded && index > currentUploadIndex ? 
+                                    <span>Queued</span>
+                                : fileErrors.has(file) ? 
+                                    <span>Error. Check connection.</span>
+                                : <>In <span className="link">
+                                        <Link to={parentPath+'#'+file.id} smooth>{parentFolderName}</Link>
+                                    </span></>
+                            }
+                        </div>
+                    
+                </div>
+                {index >= currentUploadIndex && !fileErrors.has(file) ? 
+                    <button
+                        className="cancel-btn"
+                        onClick={() => onCancelClick(file)}
+                        disabled={index === currentUploadIndex && currentFileProgress === 100}
+                    >
+                        Cancel
+                    </button>
+                    : fileErrors.has(file) ? 
+                        <button className="retry-btn" onClick={onRetryClick}>Retry</button>
+                    : <button>Copy Link</button>
+                }
+            </div>
+        );
+    };    
 
     return (
         <>
@@ -193,15 +245,22 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                 type="file"
                 style={{ display: 'none' }}
                 onChange={handleFileSelect}
+                onClick={(event) => ((event.target as HTMLInputElement).value = '')} // So that if user selects the exact same files as the last time, onChange still runs
                 multiple
             />
             {uploadListFilesNum > 0 && isUploadInfoVisible &&
                 <div className="UploadInfo">
-                    <div className="header" onClick={() => setCollapseUploadList(prevState => !prevState)}>
-                        {successfulUploadNum} of {uploadListFilesNum} {uploadListFilesNum > 1 ? 'uploads' : 'upload'} complete
-                        {currentlyUploadingFile && collapseUploadList &&
-                            <span className="spinner-after"></span>
-                        }
+                    <div className="header" onClick={() => {setCollapseUploadList(prevState => !prevState), console.log(uploadQueue)}}>
+                        <p>
+                            {successfulUploadNum < uploadListFilesNum && currentlyUploadingFile ?
+                                `${successfulUploadNum} of ${uploadListFilesNum} ${uploadListFilesNum > 1 ? 'uploads' : 'upload'} complete`
+                                : `${successfulUploadNum} ${successfulUploadNum > 1 ? 'uploads' : 'upload'} complete ${fileErrors.size > 0 ? `(${fileErrors.size} failed)` : ''}`
+                            }
+                            
+                            {currentlyUploadingFile && collapseUploadList &&
+                                <span className="spinner-after"></span>
+                            }
+                        </p>
 
                         <div className="header__icons-cont">
                             <button className="icon-btn-wrapper">
@@ -220,54 +279,8 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                     
                     {!collapseUploadList &&
                         <div className="upload-list">
-                            {uploadQueue.map((file, index) => (
-                                    <div className="file" key={index}>
-                                        <AiFillFileText className="file-icon" />
-                                        <div className="file-info">
-                                            <div className="name">{file.name}</div>
-                                            <div className="progress-and-location">
-                                                {index === currentUploadIndex ? 
-                                                    <ProgressBar progress={currentFileProgress} />
-
-                                                    : index > currentUploadIndex ?
-                                                        <span>Queued</span>
-
-                                                    : fileErrors.has(file) ? 
-                                                        <span>Error. Check connection.</span>
-
-                                                    : <>In <span className="link"><Link to={`LimeDrive/${file.name}`}>LimeDrive</Link></span></>
-                                                }
-                                            </div>
-                                        </div>
-                                        {index >= currentUploadIndex && !fileErrors.has(file) ?
-                                            <button 
-                                                className="cancel-btn" 
-                                                onClick={() => onCancelClick(file)}
-                                                disabled={index === currentUploadIndex && currentFileProgress === 100}
-                                            >
-                                                Cancel
-                                            </button>
-                                            
-                                            : fileErrors.has(file) ? 
-                                                <button className="retry-btn" onClick={onRetryClick}>Retry</button>
-                                            
-                                            : <button>Copy Link</button>
-                                        }
-                                        
-                                    </div>
-                            ))}
-                            {prevUploadedFiles.map((file, index) => (
-                                <div className="file" key={index}>
-                                    <AiFillFileText className="file-icon" />
-                                    <div className="file-info">
-                                        <div className="name">{file.name}</div>
-                                        <div className="location">
-                                            In <span className="link"><Link to={`LimeDrive/${file.name}`}>LimeDrive</Link></span>
-                                        </div>
-                                    </div>
-                                    <button>Copy Link</button>
-                                </div>
-                            ))}
+                            {uploadQueue.map((file, index) => renderFileDetails(file, index, false))}
+                            {prevUploadedFiles.map((file, index) => renderFileDetails(file, index, true))}
                         </div>
                     }
                     <DynamicClip

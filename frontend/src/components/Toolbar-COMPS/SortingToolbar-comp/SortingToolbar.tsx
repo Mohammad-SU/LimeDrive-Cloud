@@ -7,7 +7,7 @@ import { BsChevronDown } from 'react-icons/bs'
 
 function SortingToolbar() {
     const { selectedItems } = useFileContext()
-    const [showToolbar, setShowToolbar] = useState(false)
+    const [showToolbar, setShowToolbar] = useState(true)
     useEffect(() => {
         setShowToolbar(selectedItems.length < 1);
     }, [selectedItems]);

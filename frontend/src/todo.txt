@@ -1,23 +1,8 @@
-add option on Modal component to show close/x btn.
-for breadcrumb - instead of window resize event always running overflow check, make it only run it if breadcrumb width has changed, possibly add breadcrumb width to deps?
-implement rest of breadcrumb (animations, hiddensegments btnonly, really long single item to show up on its own in visiblesegments, overflow in dropdown)
-hide overflow for long item names in drag overlay
-make "creating folder..." show as toast
-fix long item names causing icons to disappear
-fix text overflow next line when uploadInfo is collapsed and spinner is visible
-show user how many items are selected next to filelist name heading
-bold end of path in breadcrumbs or reduce opacity of what is before it?
-fix file upload selection where user selecting same file again if it was the directly previous selected file not working
-Make "in <folder>" in uploadInfo a jump link and highlight/blink the file after jumping to it, also correct it so the links are correct
 check for duplication when uploading - add (1) or more numbers to end of file name if there is a duplicate in same path
-implement "space left" on bottom left corner
-move to and highlight new folder after user creates it
-make it so after file is uploaded, the file in UploadInfo component accurately reflects the directory path that the file was uploaded to
-check if cookie is automatically sent in normal api axios instance, and if so then remove apiSecure axios instance as it's not needed
-fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too)
 
 Priority: 
     - Deleting, set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page, toast notifications, underline/bold sidebar links if user is on that page
+    - Add checks in uploadInfo link elements for if file is deleted or in trash
     - Previews
     - folder uploading, allow more variety in folder characters
     - finish implementing search function
@@ -38,6 +23,8 @@ Priority:
     - handle folder name and path name limits with file names
     - fix date when daylight savings time (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
     - add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it, possibly with a hover tooltip for the extra info? or add the info to the side of the login form
+    - implement "space left" on bottom left corner
+    - react virtualisation for large lists
 
 Deleting:
     - confirmation, and then move to recycle bin, make it so items must be restored to preview/open folders if there are any with file counts inside? check what dropbox/google drive does?
@@ -45,6 +32,7 @@ Deleting:
 Previews:
     - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
 
+fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too) by adding padding bottom?
 toast notification stacking
 remember to put toast notifications for some errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars
@@ -70,7 +58,6 @@ shift click for item selection
 add left click dropdown menu
 file sharing
 settings page
-react virtualisation for large lists
 gallery
 starred
 malware check
@@ -92,7 +79,7 @@ create new folder button in move modal
 better backend validation
 research accessibility and improve it on the app
 add folders on sidebar
+divider element in newMenu in sidebar that has margin top and bottom similar to newMenu's top and bottom padding
 
 future update ideas:
     undo btn/features
-    show conflict resolution modal when conflicts detected during move operations

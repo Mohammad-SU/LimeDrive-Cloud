@@ -58,7 +58,10 @@
                 box-sizing: border-box;
     
                 &.name-header {
-                    flex: 3;
+                    flex: 3; 
+                    span {
+                        margin-left: 0.9rem;
+                    }
                 }
             }
         }
@@ -81,7 +84,8 @@
             display: flex;
             align-items: center;
             padding: 1rem 0;
-            border-bottom: .0625rem solid rgba(0, 255, 0, 0.700);
+            border-bottom: .0625rem solid rgba(0, 255, 0, 0.500);
+            scroll-margin-top: 12rem;
             cursor: default !important;
 
             &.over {
@@ -116,6 +120,15 @@
 
                 &.select-delayed {
                     background: rgba(0, 255, 0, 0.150); 
+                }
+            }
+            &.targeted {
+                outline: 2px dashed transparent;
+                animation: blink-targeted 1s infinite;          
+            }
+            @keyframes blink-targeted {
+                50% {
+                    outline-color: lime;
                 }
             }
         
@@ -160,7 +173,7 @@
                             position: absolute;
                             padding: 0.6rem;
                             margin-left: -1rem;
-                            margin-top: -0.22rem;
+                            margin-top: -0.38rem;
                             font-size: 0.8rem;
 
                             background: black;
@@ -194,17 +207,29 @@
             gap: 0.5rem;
     
             padding: 0.4rem 0.7rem;
+            padding-right: 0.8rem;
             z-index: 9999;
     
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.400);
             border: 2px dashed lime;
             background: black;
     
-            .drag-icon-folder {
-                font-size: 2.3rem;
+
+            .drag-icon {
+                flex-shrink: 0;
+                margin-top: -0.15rem;
+                &.folder {
+                    font-size: 2.3rem;
+                }
+                &.file {
+                    font-size: 2rem;
+                }
             }
-            .drag-icon-file {
-                font-size: 2rem;
+            
+            p {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
     
             .item-counter{
