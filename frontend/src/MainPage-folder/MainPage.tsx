@@ -26,7 +26,7 @@ function MainPage() {
     }
 
     const [previousTargetedElement, setPreviousTargetedElement] = useState<HTMLElement | null>(null);
-    const isMounted = useRef(false); // For skipping on first page load
+    const isMounted = useRef(false); // For skipping on first page load (WORKS IN PRODUCTION)
     useEffect(() => {// Because :targeted pseudo-class doesnt work with react
         if (!isMounted.current) {
             isMounted.current = true;
@@ -36,8 +36,8 @@ function MainPage() {
             }
             return;
         }
-        const targetElement = document.getElementById(location.hash.substring(1));
 
+        const targetElement = document.getElementById(location.hash.substring(1));
         if (targetElement) {
             if (previousTargetedElement) {
                 previousTargetedElement.classList.remove('targeted');
@@ -52,8 +52,8 @@ function MainPage() {
             }, 5000);
 
             return () => clearTimeout(timeoutId);
-        }
-    }, [location.hash]);
+        } 
+    }, [location]);
 
     return (
             <div className="MainPage">
