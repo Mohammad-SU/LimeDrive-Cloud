@@ -46,7 +46,6 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                 setMoveListPath(newPath);
             }
         }
-        setTargetFolder(undefined)
         setToolbarMoveClicked(false);
     }, [currentPath, toolbarMoveClicked]);
 

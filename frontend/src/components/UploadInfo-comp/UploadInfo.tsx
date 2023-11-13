@@ -222,7 +222,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                         </div>
                     
                 </div>
-                {index >= currentUploadIndex && !fileErrors.has(file) ? 
+                {index >= currentUploadIndex && !fileErrors.has(file) && !isUploaded ? 
                     <button
                         className="cancel-btn"
                         onClick={() => onCancelClick(file)}
@@ -230,7 +230,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                     >
                         Cancel
                     </button>
-                    : fileErrors.has(file) ? 
+                    : fileErrors.has(file) && !isUploaded ? 
                         <button className="retry-btn" onClick={onRetryClick}>Retry</button>
                     : <button>Copy Link</button>
                 }

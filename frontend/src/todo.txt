@@ -32,6 +32,7 @@ Deleting:
 Previews:
     - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
 
+box shadow for newMenu and other modals?
 fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too) by adding padding bottom?
 toast notification stacking
 remember to put toast notifications for some errors
@@ -52,7 +53,6 @@ implement sorting categories in the place of toolbar when no files are selected
 implement more server-side validation for files and folders (size, allowed characters)?
 check for duplication when user tries to add folders, prevent folder creation if there is duplicate in same path
 decrease header sizings?
-box shadows?
 file list sorting based on header row label/arrow icon clicks
 shift click for item selection
 add left click dropdown menu

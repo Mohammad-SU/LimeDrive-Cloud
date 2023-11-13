@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react'
+import { memo, useState, useEffect, useRef } from 'react'
 import "./MainPage.scss"
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useUserContext } from '../contexts/UserContext.tsx';
@@ -26,8 +26,16 @@ function MainPage() {
     }
 
     const [previousTargetedElement, setPreviousTargetedElement] = useState<HTMLElement | null>(null);
-
+    const isMounted = useRef(false); // For skipping on first page load
     useEffect(() => {// Because :targeted pseudo-class doesnt work with react
+        if (!isMounted.current) {
+            isMounted.current = true;
+            if (location.hash) {
+                const { pathname } = location;
+                navigate(pathname, { replace: true });
+            }
+            return;
+        }
         const targetElement = document.getElementById(location.hash.substring(1));
 
         if (targetElement) {
@@ -45,7 +53,7 @@ function MainPage() {
 
             return () => clearTimeout(timeoutId);
         }
-    }, [location]);
+    }, [location.hash]);
 
     return (
             <div className="MainPage">
