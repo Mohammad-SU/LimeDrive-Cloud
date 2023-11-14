@@ -26,7 +26,7 @@ function MainPage() {
     }
 
     const [previousTargetedElement, setPreviousTargetedElement] = useState<HTMLElement | null>(null);
-    const isMounted = useRef(false); // For skipping on first page load (WORKS IN PRODUCTION)
+    const isMounted = useRef(false); // For skipping on first page load (WORKS IN PRODUCTION DUE TO REACT STRICT MODE BEING DISABLED)
     useEffect(() => {// Because :targeted pseudo-class doesnt work with react
         if (!isMounted.current) {
             isMounted.current = true;
@@ -36,23 +36,34 @@ function MainPage() {
             }
             return;
         }
-
-        const targetElement = document.getElementById(location.hash.substring(1));
-        if (targetElement) {
-            if (previousTargetedElement) {
-                previousTargetedElement.classList.remove('targeted');
+    
+        let mainTimeoutId: NodeJS.Timeout;
+        let removeTimeoutId: NodeJS.Timeout;
+        mainTimeoutId = setTimeout(() => { // For waiting for proper rendering
+            const targetElement = document.getElementById(location.hash.substring(1));
+            if (targetElement) {
+                if (previousTargetedElement) {
+                    previousTargetedElement.classList.remove('targeted');
+                }
+    
+                targetElement.classList.add('targeted');
+    
+                setPreviousTargetedElement(targetElement);
+    
+                removeTimeoutId = setTimeout(() => {
+                    targetElement.classList.remove('targeted');
+                }, 5000);
             }
+        }, 50);
 
-            targetElement.classList.add('targeted');
-
-            setPreviousTargetedElement(targetElement);
-
-            const timeoutId = setTimeout(() => {
-                targetElement.classList.remove('targeted');
-            }, 5000);
-
-            return () => clearTimeout(timeoutId);
-        } 
+        return () => {
+            if (mainTimeoutId) {
+                clearTimeout(mainTimeoutId);
+            }
+            if (removeTimeoutId) {
+                clearTimeout(removeTimeoutId);
+            }
+        };
     }, [location]);
 
     return (

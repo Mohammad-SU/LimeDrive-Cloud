@@ -17,7 +17,7 @@ function MainToolbar() {
         setShowToolbar(selectedItems.length > 0);
     }, [selectedItems]);
 
-    const { isVisible: isToolbarVisible } = useDelayedExit({
+    const { isVisible: isToolbarVisible }  = useDelayedExit({
         shouldRender: showToolbar
     })
 

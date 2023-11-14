@@ -1,29 +1,29 @@
-check for duplication when uploading - add (1) or more numbers to end of file name if there is a duplicate in same path
+duplicate name check when creating folder
 
-Priority: 
+Priority:
+    - folder uploading, allow more variety in folder characters
     - Deleting, set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page, toast notifications, underline/bold sidebar links if user is on that page
     - Add checks in uploadInfo link elements for if file is deleted or in trash
     - Previews
-    - folder uploading, allow more variety in folder characters
     - finish implementing search function
     - finish sorting toolbar logic
     - full page animations with DynamicClip
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
+    - implement "space left" on bottom left corner
     - settings page, toast notifications
     - Recents with thumbnails on all files page, and recents page
-    - make website title reflect page/folder accurately
+    -- make website title reflect page/folder accurately
     - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
     - favicon
     - Repsonsive CSS, long press for opening files/folders on touch devices
     - test thoroughly
     - Add to portfolio
-    - Starring, toast notifications
+    - Starring
     - Sharing
     - add tooltips with bulb icon (in gap inside toolbar/space after sorting categories?)
     - handle folder name and path name limits with file names
     - fix date when daylight savings time (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
     - add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it, possibly with a hover tooltip for the extra info? or add the info to the side of the login form
-    - implement "space left" on bottom left corner
     - react virtualisation for large lists
 
 Deleting:
@@ -43,6 +43,7 @@ make it so if there is a loading toast and it is overwritten, then the loading t
 more complex logic to allow for users to conduct multiple move operations quickly
 backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
 instantly close maintoolbar if only one selected item and was double-clicked for opening withing certain remaining amount of milliseconds from select delay and toolbar animation (!showToolbarInstant || isToolbarVisible as render jsx conditions? use useeffect and/or context?)
+add folder creation jump link as button on toast so user can choose to jump to it, but still highlight on folder creation regardless by adding targeted class manually
 
 add short scss animations for conflict icons and tooltips?
 change all filetype foldertype combinations to ItemTypes if better

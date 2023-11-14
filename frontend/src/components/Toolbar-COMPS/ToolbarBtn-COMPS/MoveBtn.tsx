@@ -68,9 +68,8 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
             const lastOccurrenceIndex = moveListPath.lastIndexOf(prevTarget.name);
             setMoveListPath(moveListPath.slice(0, lastOccurrenceIndex) + folder.name + "/");
         } else { // Otherwise ADD target folder's name to the end of the breadcrumb
-            const firstSlashIndex = moveListPath.indexOf('/');
-            const newPath = "LimeDrive/" +  moveListPath.substring(firstSlashIndex + 1);
-            setMoveListPath(newPath + folder.name + "/")
+            setMoveListPath(moveListPath + folder.name + "/")
+            console.log(moveListPath + folder.name + "/")
         }
 
         if (!selectedItems.some(selectedItem => selectedItem.id === folder.id)) { // If the user clicks on a folder that is NOT part of the folders that they selected for moving

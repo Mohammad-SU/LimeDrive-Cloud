@@ -9,12 +9,14 @@ import useDelayedExit from '../../hooks/useDelayedExit.ts';
 import { AiFillFileText } from 'react-icons/ai'
 import { IoChevronDownSharp, IoChevronUpSharp } from 'react-icons/io5'
 import { IoMdClose } from 'react-icons/io'
+import { FileType } from '../../types/FileType.ts';
 import ProgressBar from '../LoadingBar-COMPS/ProgressBar.tsx'
 import DynamicClip from '../DynamicClip.tsx';
 
 interface QueueFile {
     fileObj: File,
     id: number | null;
+    app_path: string;
 }
 
 function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputElement> }) {
@@ -34,52 +36,64 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const [currentUploadIndex, setCurrentUploadIndex] = useState<number>(-1); // Current file to be uploaded in uploadQueue (negative means no files in uploadQueue)
     const [successfulUploadNum, setSuccessfulUploadNum] = useState<number>(0);
     const [currentFileProgress, setCurrentFileProgress] = useState<number | null>(0);
-    const [selectedCurrentPath, setSelectedCurrentPath] = useState(currentPath)
     const cancelTokenSource = useRef<CancelTokenSource | null>(null);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files
-        console.log(selectedFiles)
         if (!selectedFiles) return
-        const newFiles: QueueFile[] = Array.from(selectedFiles).map((fileObj) => ({
-            fileObj,
-            id: null,
-        }));
-        setSelectedCurrentPath(currentPath)
 
-        if (!currentlyUploadingFile) {
-            const successfulFiles = fileErrors.size > 0 ? uploadQueue.filter((file) => !fileErrors.has(file)) : uploadQueue; // If no file errors then add entire uploadQueue
-            const failedFiles = fileErrors.size > 0 ? uploadQueue.filter((file) => fileErrors.has(file)) : []; // Failed uploads to add back to queue, empty array if none
-    
-            const newFileErrors = new Map(); // Reset file error map
-            setFileErrors(newFileErrors);
-    
-            setPrevUploadedFiles((prevFiles: QueueFile[]) => [ ...successfulFiles, ...prevFiles])
-            setUploadListFilesNum((prevValue) => prevValue + newFiles.length)
-    
-            setUploadQueue([...newFiles, ...failedFiles])
-            setCurrentUploadIndex(0)
-            setCurrentlyUploadingFile(uploadQueue[currentUploadIndex])
-        }
-        else { // If files are currently being uploaded
-            const successfulFiles = uploadQueue.filter (
-                (file, index) => !fileErrors.has(file) && index < currentUploadIndex
-            )
-            const remainingFiles = uploadQueue.filter ( // Includes currently uploading file, queued files, and failed files
-                (file, index) => index >= currentUploadIndex && !successfulFiles.includes(file)
-            )
+        const newCurrentPath = currentPath
+        const successfulFiles = uploadQueue.filter (
+            (file, index) => !fileErrors.has(file) && index < currentUploadIndex
+        )
 
-            const updatedUploadQueue = [
-                ...remainingFiles,
-                ...newFiles,
-            ]
+        const samePathFiles = [ // Includes app's files and queue files (which includes failed files in the queue) but not successfull files that have not yet been added to prevUploadedFiles
+            ...files.filter((file) => file.app_path === newCurrentPath + file.name),
+            ...uploadQueue.filter((queuefile) => !successfulFiles.includes(queuefile) && queuefile.app_path === newCurrentPath + queuefile.fileObj.name), // Incase a file is uploading to the same path but hasnt been fully uploaded yet so that it will still be included in the conflict check
+        ];
+        console.log(samePathFiles)
+        const newFiles: QueueFile[] = Array.from(selectedFiles).map((selectedFile) => {
+            const suffixRegex = /\(\d+\)(?=\D*$)/;  // Remove last occurence of existing suffix such as (1), (2), etc
+            const similarFileNames = samePathFiles.filter((file: QueueFile | FileType) => {
+                let baseName: string;
+                'fileObj' in file ?
+                    baseName = (file as QueueFile).fileObj.name.replace(suffixRegex, '')
+                    : baseName = (file as FileType).name.replace(suffixRegex, '');
 
-            setPrevUploadedFiles((prevFiles: QueueFile[]) => [...successfulFiles, ...prevFiles]);
-            setUploadQueue(updatedUploadQueue);
-            setUploadListFilesNum((prevValue) => prevValue + newFiles.length);
-            setCurrentUploadIndex((prevIndex) => prevIndex - successfulFiles.length); // Subtract for correct index due to successful files being removed from uploadQueue and being added to prevUploadedFiles
-            setCurrentlyUploadingFile(uploadQueue[currentUploadIndex])
-        }
+                const selectedBaseName = selectedFile.name.replace(suffixRegex, '');
+                return baseName === selectedBaseName;
+            });
+    
+            let fileName = selectedFile.name; // Note: if the user intentionally put a suffix before uploading then their suffix will still be preserved
+            const dotIndex = fileName.lastIndexOf('.');
+            const baseName = dotIndex !== -1 ? fileName.slice(0, dotIndex) : fileName;
+            const extension = dotIndex !== -1 ? fileName.slice(dotIndex) : '';
+
+            fileName = similarFileNames.length > 0 ? `${baseName}(${similarFileNames.length})${extension}` : fileName;
+            const renamedFileObj = new File([selectedFile], fileName, { type: selectedFile.type });
+    
+            return {
+                fileObj: renamedFileObj,
+                id: null,
+                app_path: newCurrentPath + fileName,
+            };
+        });
+
+        const remainingFiles = uploadQueue.filter ( // Includes currently uploading file, queued files, and failed files
+            (file, index) => index >= currentUploadIndex && !successfulFiles.includes(file)
+        )
+
+        const updatedUploadQueue = [
+            ...remainingFiles,
+            ...newFiles,
+        ]
+
+        const newFileErrors = new Map(); // Reset file error map
+        setFileErrors(newFileErrors);
+        setPrevUploadedFiles((prevFiles: QueueFile[]) => [...successfulFiles, ...prevFiles]);
+        setUploadQueue(updatedUploadQueue);
+        setUploadListFilesNum((prevValue) => prevValue + newFiles.length);
+        setCurrentUploadIndex(0);
     }
 
     const { apiSecure } = useUserContext()
@@ -88,10 +102,11 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         const formData = new FormData();
         formData.append('file', file.fileObj) // Actual js file object
 
-        formData.append('app_path', selectedCurrentPath + file.fileObj.name) // e.g. app_path = LimeDrive/LimeDrive.txt
+        formData.append('app_path', file.app_path) // e.g. app_path = LimeDrive/LimeDrive.txt
 
-        const matchingFolder = folders.find((folder) => folder.app_path === selectedCurrentPath.slice(0, -1));
-        const parent_folder_id = matchingFolder ? matchingFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
+        const lastSlashIndex = file.app_path.lastIndexOf('/');
+        const parentFolder = folders.find((folder) => folder.app_path === file.app_path.substring(0, lastSlashIndex));
+        const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory (LimeDrive) id
         formData.append('parent_folder_id', parent_folder_id)
 
         const source = axios.CancelToken.source();
@@ -113,7 +128,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             })
 
             addFiles(response.data)
-            const updatedQueueFile = { fileObj: file.fileObj, id: response.data.id };
+            const updatedQueueFile = { fileObj: file.fileObj, id: response.data.id, app_path: response.data.app_path };
             setUploadQueue((prevQueue) => // Update the corresponing file's id in uploadQueue
                 prevQueue.map((queueFile) =>
                     queueFile === file ? updatedQueueFile : queueFile
@@ -216,7 +231,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                                 : fileErrors.has(file) ? 
                                     <span>Error. Check connection.</span>
                                 : <>In <span className="link">
-                                        <Link to={parentPath+'#'+file.id} smooth>{parentFolderName}</Link>
+                                        <Link to={parentPath+'#'+file.id} smooth>{parentFolderName}</Link> {/* Based on parent path instead of the queue file's path so that this link updates when the user moves that file*/}
                                     </span></>
                             }
                         </div>
@@ -250,7 +265,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             />
             {uploadListFilesNum > 0 && isUploadInfoVisible &&
                 <div className="UploadInfo">
-                    <div className="header" onClick={() => {setCollapseUploadList(prevState => !prevState), console.log(uploadQueue)}}>
+                    <div className="header" onClick={() => setCollapseUploadList(prevState => !prevState)}>
                         <p>
                             {successfulUploadNum < uploadListFilesNum && currentlyUploadingFile ?
                                 `${successfulUploadNum} of ${uploadListFilesNum} ${uploadListFilesNum > 1 ? 'uploads' : 'upload'} complete`
