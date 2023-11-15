@@ -12,8 +12,8 @@ import Breadcrumb from './Breadcrumb-comp/Breadcrumb'
 import SortingToolbar from '../Toolbar-COMPS/SortingToolbar-comp/SortingToolbar';
 import MainToolbar from '../Toolbar-COMPS/MainToolbar-comp/MainToolbar'
 import Checkbox from './Checkbox-comp/Checkbox'
-import Folder from "./Folder-comp/Folder"
-import File from "./File-comp/File"
+import Folder from "./Folder"
+import File from "./File"
 import { AiOutlineFile, AiOutlineFolder } from 'react-icons/ai';
 
 function FileList() {
@@ -34,12 +34,11 @@ function FileList() {
 
     const navigate = useNavigate()
     const location = useLocation()
-    const path = decodeURIComponent(location.pathname.slice(1) + "/")
+    const path = decodeURIComponent(location.pathname).slice(1) + "/"
     useEffect(() => {
         folders.some(folder => folder.app_path === path.slice(0, -1)) || path == "LimeDrive/" ? // if the URL path doesn't match a real directory path then navigate to root
             setCurrentPath(path)
             : navigate("/LimeDrive")
-
         setConflictingItems([]);
     }, [path]);
 

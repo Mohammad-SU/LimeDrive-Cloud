@@ -133,7 +133,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                                     );
                                 } else {
                                     return (
-                                        <Link className="dropdown-btn-link" to={linkToPath} key={index} tabIndex={0}>
+                                        <Link className="dropdown-btn-link" to={(linkToPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match))} key={index} tabIndex={0}>
                                             <button className="item" {...commonAttributes} tabIndex={-1}>
                                                     {decodeURIComponent(segment)}
                                             </button>
@@ -176,7 +176,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                                 {decodeURIComponent(segment)}
                             </button>
                             :
-                            <Link to={linkToPath} {...commonAttributes} ref={isLastCustomSegment ? (lastSegmentMainRef as React.RefObject<HTMLAnchorElement>) : null}>
+                            <Link to={(linkToPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match))} {...commonAttributes} ref={isLastCustomSegment ? (lastSegmentMainRef as React.RefObject<HTMLAnchorElement>) : null}>
                                 {decodeURIComponent(segment)}
                             </Link>
                         }

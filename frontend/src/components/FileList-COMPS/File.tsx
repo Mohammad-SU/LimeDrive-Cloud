@@ -1,11 +1,10 @@
 import { memo, useState, useEffect } from 'react'
 import { DateTime } from 'luxon';
-import "./File.scss"
-import { FileType } from '../../../types/index.ts';
-import { useFileContext } from '../../../contexts/FileContext.tsx';
+import { FileType } from '../../types/index.ts';
+import { useFileContext } from '../../contexts/FileContext.tsx';
 import { useDraggable, useDndMonitor } from '@dnd-kit/core';
 import { AiOutlineFile, AiOutlineExclamation} from 'react-icons/ai';
-import Checkbox from '../Checkbox-comp/Checkbox.tsx';
+import Checkbox from './Checkbox-comp/Checkbox.tsx';
 
 interface FileProps {
     file: FileType;

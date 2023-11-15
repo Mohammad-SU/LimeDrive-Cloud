@@ -1,8 +1,7 @@
-duplicate name check when creating folder
-
 Priority:
-    - folder uploading, allow more variety in folder characters
-    - Deleting, set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page, toast notifications, underline/bold sidebar links if user is on that page
+    - folder uploading, check each folder and subfolder to make sure their folder names follow the valid format (test by invalidating normal characters)
+    - shift click for item selection
+    - Deleting, set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page, underline/bold sidebar links if user is on that page (react router navlink component)
     - Add checks in uploadInfo link elements for if file is deleted or in trash
     - Previews
     - finish implementing search function
@@ -11,11 +10,12 @@ Priority:
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
     - implement "space left" on bottom left corner
     - settings page, toast notifications
-    - Recents with thumbnails on all files page, and recents page
-    -- make website title reflect page/folder accurately
+    - Suggested with thumbnails on all files page, and recents page
+    - malware check
+    - make website title reflect page/folder accurately
     - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
     - favicon
-    - Repsonsive CSS, long press for opening files/folders on touch devices
+    - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
     - test thoroughly
     - Add to portfolio
     - Starring
@@ -42,9 +42,10 @@ aria labels
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 more complex logic to allow for users to conduct multiple move operations quickly
 backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
+fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
+
 instantly close maintoolbar if only one selected item and was double-clicked for opening withing certain remaining amount of milliseconds from select delay and toolbar animation (!showToolbarInstant || isToolbarVisible as render jsx conditions? use useeffect and/or context?)
 add folder creation jump link as button on toast so user can choose to jump to it, but still highlight on folder creation regardless by adding targeted class manually
-
 add short scss animations for conflict icons and tooltips?
 change all filetype foldertype combinations to ItemTypes if better
 make tabbing to a file name and pressing enter cause it to open (use useGlobalEnterKey hook?)
@@ -55,18 +56,15 @@ implement more server-side validation for files and folders (size, allowed chara
 check for duplication when user tries to add folders, prevent folder creation if there is duplicate in same path
 decrease header sizings?
 file list sorting based on header row label/arrow icon clicks
-shift click for item selection
 add left click dropdown menu
 file sharing
 settings page
 gallery
 starred
-malware check
 check if file extension column is not needed on database and then remove if so
 add backgrounds/more details for loading pages
 add info and tips readme file that is stored in all user's file list
 add default files/folders for showcasing along with "restore default files" if user's want them back if they deleted them (without resetting user data and tell them that this won't)
-responsive CSS and check if correct on other browsers
 email verification
 allow Google and Facebook to be used for logins? (OAuth)
 remove useState import from all files where it's not used

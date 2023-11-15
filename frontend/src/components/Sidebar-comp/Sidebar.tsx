@@ -1,7 +1,7 @@
 import { memo, useState, useRef} from 'react'
 import "./Sidebar.scss"
 import axios from 'axios';
-import { Link, useNavigate } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { AiOutlinePicture, AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile } from 'react-icons/ai'
 import { TfiFiles } from 'react-icons/tfi'
 import { SlTrash } from 'react-icons/sl'
@@ -42,7 +42,8 @@ function Sidebar() {
     }, (event) => {
         setBackendErrorMsg(null);
     })
-    const isFolderNameValid = /^[a-zA-Z0-9\s-_]+$/.test(formData.newFolderName)
+    const isFolderNameValid = /^[^<>\\/:?*"|]{1,255}$/.test(formData.newFolderName.trim());
+    const isConflictingName = folders.some((folder) => folder.app_path == currentPath + folder.name && folder.name == formData.newFolderName.trim());
     const [loading, setLoading] = useState<boolean>(false)
 
     const handleModalOpen = () => {
@@ -53,19 +54,19 @@ function Sidebar() {
         setShowNewMenu(false)
     }
     const handleCreateFolder = async () => {
-        if (!isFolderNameValid || loading) {
+        if (formData.newFolderName.trim() == '' || !isFolderNameValid || isConflictingName || loading) {
             return;
         }
 
         try {
             setLoading(true)
             const parentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
-            const app_path = currentPath + formData.newFolderName
+            const app_path = currentPath + formData.newFolderName.trim()
             const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
             showToast({message: "Creating folder...", loading: true})
             setShowNewFolderModal(false);
             const response = await apiSecure.post('/uploadFolder', {
-                name: formData.newFolderName,
+                name: formData.newFolderName.trim(),
                 app_path: app_path,
                 parent_folder_id: parent_folder_id
             });
@@ -95,6 +96,14 @@ function Sidebar() {
             setLoading(false)
         }
     };
+
+    const handleFolderUploadClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.directory = true;
+            fileInputRef.current.webkitdirectory = true;
+            fileInputRef.current.click();
+        }
+    };
     
     return (
         <>
@@ -116,6 +125,7 @@ function Sidebar() {
                         <button 
                             className="file-upload-btn"
                             onClick={() => {
+                                fileInputRef!.current!.webkitdirectory = false;
                                 fileInputRef?.current?.click()
                                 setShowNewMenu(false)
                             }}
@@ -127,10 +137,14 @@ function Sidebar() {
                             File upload
                         </button>
 
-                        <button onClick={() => {
-                            fileInputRef?.current?.click()
-                            setShowNewMenu(false)
-                        }}>
+                        <button 
+                            className="folder-upload-btn"
+                            onClick={() => {
+                                fileInputRef!.current!.webkitdirectory = true;
+                                fileInputRef?.current?.click();
+                                setShowNewMenu(false)
+                            }}
+                        >
                             <div className="menu-icon">
                                 <AiFillFolder className="outer-icon"/>
                                 <IoArrowUpSharp className="inner-icon"/>
@@ -146,22 +160,22 @@ function Sidebar() {
                 />
                 
                 <nav>
-                    <Link to="/LimeDrive">
+                    <NavLink to="/LimeDrive">
                         <TfiFiles className="nav-icon all-files" />
                         All Files
-                    </Link>
-                    <Link to="/shared">
+                    </NavLink>
+                    <NavLink to="/shared">
                         <IoPeopleOutline className="nav-icon shared" />
                         Shared
-                    </Link>
-                    <Link to="/media-gallery">
+                    </NavLink>
+                    <NavLink to="/media-gallery">
                         <AiOutlinePicture className="nav-icon media-gallery"/>
                         Media Gallery
-                    </Link>
-                    <Link to="/recycle-bin">
+                    </NavLink>
+                    <NavLink to="/recycle-bin">
                         <SlTrash className="nav-icon recycle-bin"/>
                         Recycle Bin
-                    </Link>
+                    </NavLink>
                 </nav>
 
                 <div className="space-left">
@@ -207,8 +221,10 @@ function Sidebar() {
                     <div className="error-and-loading">
                         {loading ?
                             <LoadingBar loading={loading}/> 
-                            : (!isFolderNameValid && formData.newFolderName !='') || (backendErrorMsg == 'Invalid folder name format.') ? 
-                                "Invalid folder name format."
+                            : (!isFolderNameValid && formData.newFolderName.trim() !== '') || (backendErrorMsg == 'Invalid folder name format.') ? 
+                                "Name cannot contain: < > \\ / : ? * \" |"
+                            : isConflictingName ?
+                                "Name conflicts with an existing folder in this directory."
                             : backendErrorMsg ?
                                 "Error. Please check connection."
                             : null
@@ -223,7 +239,7 @@ function Sidebar() {
                     <button 
                         className='modal-primary-btn'
                         type="submit"
-                        disabled={formData.newFolderName == '' || !isFolderNameValid || loading}
+                        disabled={formData.newFolderName.trim() == '' || !isFolderNameValid || isConflictingName || loading}
                     >
                         Create
                     </button>

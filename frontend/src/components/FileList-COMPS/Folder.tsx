@@ -1,12 +1,11 @@
 import { memo, useState, useEffect } from 'react'
 import { DateTime } from 'luxon';
 import { useNavigate } from 'react-router-dom';
-import "./Folder.scss"
-import { FolderType } from '../../../types';
-import { useFileContext } from '../../../contexts/FileContext';
+import { FolderType } from '../../types';
+import { useFileContext } from '../../contexts/FileContext';
 import { useDraggable, useDroppable, useDndMonitor } from '@dnd-kit/core';
 import { AiOutlineFolder, AiOutlineExclamation} from 'react-icons/ai';
-import Checkbox from '../Checkbox-comp/Checkbox';
+import Checkbox from './Checkbox-comp/Checkbox';
 
 interface FolderProps {
     folder: FolderType;
@@ -123,8 +122,8 @@ function Folder({ folder, onSelect }: FolderProps) {
 
         if (!isCheckboxClicked) {
             const firstSlashIndex = currentPath.indexOf('/');
-            const newPath = currentPath.substring(firstSlashIndex + 1);
-            navigate(newPath + folder.name);
+            const newPath = currentPath.substring(firstSlashIndex + 1)
+            navigate((newPath + folder.name).replace(/[^\/]+/g, (match) => encodeURIComponent(match))) // encode but excluding slashes
         }
     }
 

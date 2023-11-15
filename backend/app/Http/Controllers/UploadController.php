@@ -45,7 +45,7 @@ class UploadController extends Controller
         $name = $request->input('name');
         $app_path = $request->input('app_path');
 
-        if (!preg_match('/^[a-zA-Z0-9\s_\-]+$/', $name) || !$app_path) {
+        if (!preg_match('/^[^<>\\/:?*"|]{1,255}$/', $name) || !$app_path) {
             return response()->json(['message' => 'Invalid folder name format or no app_path provided.'], 400);
         }
 

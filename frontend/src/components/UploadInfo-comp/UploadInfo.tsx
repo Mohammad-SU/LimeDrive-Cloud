@@ -51,7 +51,6 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             ...files.filter((file) => file.app_path === newCurrentPath + file.name),
             ...uploadQueue.filter((queuefile) => !successfulFiles.includes(queuefile) && queuefile.app_path === newCurrentPath + queuefile.fileObj.name), // Incase a file is uploading to the same path but hasnt been fully uploaded yet so that it will still be included in the conflict check
         ];
-        console.log(samePathFiles)
         const newFiles: QueueFile[] = Array.from(selectedFiles).map((selectedFile) => {
             const suffixRegex = /\(\d+\)(?=\D*$)/;  // Remove last occurence of existing suffix such as (1), (2), etc
             const similarFileNames = samePathFiles.filter((file: QueueFile | FileType) => {
@@ -231,13 +230,13 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                                 : fileErrors.has(file) ? 
                                     <span>Error. Check connection.</span>
                                 : <>In <span className="link">
-                                        <Link to={parentPath+'#'+file.id} smooth>{parentFolderName}</Link> {/* Based on parent path instead of the queue file's path so that this link updates when the user moves that file*/}
+                                        <Link to={(parentPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match))+'#'+file.id} smooth>{parentFolderName}</Link> {/* Based on parent path instead of the queue file's path so that this link updates when the user moves that file*/}
                                     </span></>
                             }
                         </div>
                     
                 </div>
-                {index >= currentUploadIndex && !fileErrors.has(file) && !isUploaded ? 
+                {index >= currentUploadIndex && !fileErrors.has(file) && !isUploaded ?
                     <button
                         className="cancel-btn"
                         onClick={() => onCancelClick(file)}
