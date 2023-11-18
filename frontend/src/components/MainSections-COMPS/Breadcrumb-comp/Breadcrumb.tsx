@@ -117,8 +117,9 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                             {hiddenSegments.map((segment, index) => {
                                 const linkToPath = `/${pathSegments.slice(0, index + 1).join('/')}`;
                                 const commonAttributes = {
-                                    onClick: () => {
-                                        if (path !== linkToPath) {
+                                    onClick: (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+                                        const isAnchor = (event.target as HTMLElement).tagName === 'A';
+                                        if (path !== linkToPath && (!isAnchor || (!event.shiftKey && !event.ctrlKey))) { // Ignore key press conditions if not anchor type
                                             setPath(linkToPath.substring(1) + "/");
                                         }
                                     },
@@ -155,8 +156,9 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                 const isLastCustomSegment = index === pathSegments.length - 1 && pathSegments.length > 1;
                 const linkToPath = `/${pathSegments.slice(0, hiddenSegments.length + index + 1).join('/')}`;
                 const commonAttributes = {
-                    onClick: () => {
-                        if (path !== linkToPath) {
+                    onClick: (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+                        const isAnchor = (event.target as HTMLElement).tagName === 'A';
+                        if (path !== linkToPath && (!isAnchor || (!event.shiftKey && !event.ctrlKey))) { // Ignore key press conditions if not anchor type
                             setPath(linkToPath.substring(1) + "/");
                         }
                     },

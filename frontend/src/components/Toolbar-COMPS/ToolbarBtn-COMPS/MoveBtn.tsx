@@ -6,7 +6,7 @@ import { useToast } from "../../../contexts/ToastContext"
 import { FolderType } from "../../../types"
 import { SlCursorMove } from 'react-icons/sl'
 import { AiOutlineFolder } from 'react-icons/ai';
-import Breadcrumb from "../../FileList-COMPS/Breadcrumb-comp/Breadcrumb"
+import Breadcrumb from "../../MainSections-COMPS/Breadcrumb-comp/Breadcrumb"
 import { useUserContext } from "../../../contexts/UserContext"
 
 function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {

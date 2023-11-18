@@ -1,10 +1,10 @@
 import { memo, useState, useEffect } from 'react'
 import { DateTime } from 'luxon';
-import { FileType } from '../../types/index.ts';
-import { useFileContext } from '../../contexts/FileContext.tsx';
+import { FileType } from '../../../types/index.ts';
+import { useFileContext } from '../../../contexts/FileContext.tsx';
 import { useDraggable, useDndMonitor } from '@dnd-kit/core';
 import { AiOutlineFile, AiOutlineExclamation} from 'react-icons/ai';
-import Checkbox from './Checkbox-comp/Checkbox.tsx';
+import Checkbox from '../Checkbox-comp/Checkbox.tsx';
 
 interface FileProps {
     file: FileType;
@@ -20,8 +20,8 @@ function File({ file, onSelect }: FileProps) {
 
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
         if (isProcessing) return
+
         const isCtrlPressed = event.ctrlKey || event.metaKey;
-        const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
         let newIsSelected;
 

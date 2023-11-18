@@ -1,6 +1,6 @@
-@import '../../global';
+@import '../../../global.scss';
 
-.FileList {
+.AllFiles {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -9,7 +9,7 @@
         height: 100%;
     }
 
-    .FileList-main-header {
+    .section-main-header {
         position: sticky;
         padding: 0 2.5rem;
         margin-right: 0.1rem;
@@ -51,7 +51,7 @@
             }
         
             p {
-                padding: 0 0.2rem;
+                padding-right: 1rem;
                 flex: 1;
                 margin: 0;
                 font-weight: bold;
@@ -87,6 +87,7 @@
             border-bottom: .0625rem solid rgba(0, 255, 0, 0.500);
             scroll-margin-top: 12rem;
             cursor: default !important;
+            user-select: none;
 
             &.over {
                 outline: 2px solid lime;
@@ -119,7 +120,7 @@
                 }
 
                 &.select-delayed {
-                    background: rgba(0, 255, 0, 0.150); 
+                    background: rgba(0, 255, 0, 0.37); 
                 }
             }
             &.targeted {
@@ -138,16 +139,17 @@
             }
         
             p {
-                padding: 0 0.2rem;
+                padding-right: 1rem;
                 margin: 0;
                 flex: 1;
-        
+                text-overflow: ellipsis;
+                overflow: hidden;
+
                 &.name {
                     display: flex;
                     align-items: center;
                     gap: 0.7rem;
                     flex: 3;
-                    overflow: hidden;
 
                     .icon-cont {
                         flex-shrink: 0;

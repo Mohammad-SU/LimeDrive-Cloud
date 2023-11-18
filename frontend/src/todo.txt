@@ -1,9 +1,8 @@
 Priority:
-    - folder uploading, check each folder and subfolder to make sure their folder names follow the valid format (test by invalidating normal characters)
-    - shift click for item selection
     - Deleting, set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page, underline/bold sidebar links if user is on that page (react router navlink component)
     - Add checks in uploadInfo link elements for if file is deleted or in trash
     - Previews
+    - Downloading, Renaming
     - finish implementing search function
     - finish sorting toolbar logic
     - full page animations with DynamicClip
@@ -27,23 +26,28 @@ Priority:
     - react virtualisation for large lists
 
 Deleting:
-    - confirmation, and then move to recycle bin, make it so items must be restored to preview/open folders if there are any with file counts inside? check what dropbox/google drive does?
+    - confirmation, and then move to recycle bin? check what dropbox/google drive does?
+    - move selection code into a custom hook?
 
 Previews:
     - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
+    - in preview, add extra buttons such as open in new tab/download, etc, use dropbox/google drive for inspiration
 
 box shadow for newMenu and other modals?
 fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too) by adding padding bottom?
 toast notification stacking
-remember to put toast notifications for some errors
-adjust scrolls/item sizes so they dont cause unnecessary scrollbars
+remember to put toast notifications for errors
+adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
 vertically align text in buttons?
 aria labels
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
-more complex logic to allow for users to conduct multiple move operations quickly
 backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
 
+instead of delaying item selection, make item selection instant and implement below suggestion? Or implement below suggestion without removing selection delay? 
+for folder opening use delay clip animation on entire main-list/list items?
+
+folder uploading, check each folder and subfolder to make sure their folder names follow the valid format (test by invalidating normal characters), remove if true condition on file selection handlefileselect condition
 instantly close maintoolbar if only one selected item and was double-clicked for opening withing certain remaining amount of milliseconds from select delay and toolbar animation (!showToolbarInstant || isToolbarVisible as render jsx conditions? use useeffect and/or context?)
 add folder creation jump link as button on toast so user can choose to jump to it, but still highlight on folder creation regardless by adding targeted class manually
 add short scss animations for conflict icons and tooltips?
@@ -61,6 +65,8 @@ file sharing
 settings page
 gallery
 starred
+filters for deleted section (allow users to search non-deleted folders to see if it had any items in the recycle bin)
+make selecting an item and then copying it/pressing ctrl c make it add to a state (not clipboard) so user can paste it into another folder or so
 check if file extension column is not needed on database and then remove if so
 add backgrounds/more details for loading pages
 add info and tips readme file that is stored in all user's file list
@@ -79,6 +85,8 @@ better backend validation
 research accessibility and improve it on the app
 add folders on sidebar
 divider element in newMenu in sidebar that has margin top and bottom similar to newMenu's top and bottom padding
+different layouts for filelist
+add help section?
 
 future update ideas:
     undo btn/features

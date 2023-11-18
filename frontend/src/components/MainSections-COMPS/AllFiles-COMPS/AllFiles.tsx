@@ -1,22 +1,22 @@
 import { memo, useMemo, useState, useEffect, useRef } from 'react'
-import "./FileList.scss"
+import "./AllFiles.scss"
 import { useLocation, useNavigate } from 'react-router-dom'
 import { DndContext, DragOverlay, DragStartEvent, DragEndEvent, useSensor, useSensors, MouseSensor, TouchSensor } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
-import { useFileContext } from '../../contexts/FileContext'
-import { useUserContext } from '../../contexts/UserContext'
-import { FileType } from '../../types'
-import { FolderType } from '../../types'
-import { ItemTypes } from '../../types';
-import Breadcrumb from './Breadcrumb-comp/Breadcrumb'
-import SortingToolbar from '../Toolbar-COMPS/SortingToolbar-comp/SortingToolbar';
-import MainToolbar from '../Toolbar-COMPS/MainToolbar-comp/MainToolbar'
-import Checkbox from './Checkbox-comp/Checkbox'
-import Folder from "./Folder"
-import File from "./File"
+import { useFileContext } from '../../../contexts/FileContext'
+import { useUserContext } from '../../../contexts/UserContext'
+import { FileType } from '../../../types'
+import { FolderType } from '../../../types'
+import { ItemTypes } from '../../../types';
+import Breadcrumb from '../Breadcrumb-comp/Breadcrumb'
+import SortingToolbar from '../../Toolbar-COMPS/SortingToolbar-comp/SortingToolbar';
+import MainToolbar from '../../Toolbar-COMPS/MainToolbar-comp/MainToolbar'
+import Checkbox from '../Checkbox-comp/Checkbox'
+import Folder from "./Folder-AllFiles"
+import File from "./File-AllFiles"
 import { AiOutlineFile, AiOutlineFolder } from 'react-icons/ai';
 
-function FileList() {
+function AllFiles() {
     const { 
         currentPath,
         setCurrentPath, 
@@ -57,7 +57,10 @@ function FileList() {
             return dateB.getTime() - dateA.getTime();
         });
     }, [files, currentPath]);
+    
+    const sortedItems = [...sortedFolders, ...sortedFiles];
 
+    const [lastClickedItem, setLastClickedItem] = useState<ItemTypes | null>(null)
     const handleItemSelection = (item: ItemTypes, event: React.MouseEvent<HTMLDivElement>, isItemSelected: boolean) => {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
@@ -71,27 +74,32 @@ function FileList() {
                 removeFromSelectedItems([item]);
             }
         } 
-        // else if (isShiftPressed && lastClickedItem) { // Multiple selections with files together in a range
-        //     const itemToSelect: (FileType | FolderType)[] = [];
-        //     const startIndex = selectedItems.findIndex(selectedItem => selectedItem.id === lastClickedItem.id);
-        //     const endIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id);
+        else if (isShiftPressed && lastClickedItem) { // Multiple selections with files together in a range
+            const itemToSelect: ItemTypes[] = [];
+            const startIndex = sortedItems.findIndex(sortedItem => sortedItem.id === lastClickedItem.id);
+            const endIndex = sortedItems.findIndex(sortedItem => sortedItem.id === item.id);
     
-        //     if (startIndex >= 0 && endIndex >= 0) {
-        //         const start = Math.min(startIndex, endIndex);
-        //         const end = Math.max(startIndex, endIndex);
+            if (startIndex >= 0 && endIndex >= 0) {
+                const start = Math.min(startIndex, endIndex);
+                const end = Math.max(startIndex, endIndex);
     
-        //         for (let i = start; i <= end; i++) {
-        //             itemToSelect.push(selectedItems[i]);
-        //         }
-        //     }
+                for (let i = start; i <= end; i++) {
+                    itemToSelect.push(sortedItems[i]);
+                }
+            }
     
-        //     setSelectedItems(itemToSelect);
-        // }
+            setSelectedItems(itemToSelect);
+        }
         else { // Regular item click logic
             setSelectedItems([item])
         }
-    
-        // setLastClickedItem(Item)
+
+        setSelectedItems((prevSelectedItems) => { // Functional form to make condition based on latest state
+            if (prevSelectedItems.length == 1 || isCtrlPressed) {
+                setLastClickedItem(item);
+            }
+            return prevSelectedItems;
+        });
     }
 
     const [showSelectAll, setShowSelectAll] = useState(false);
@@ -100,7 +108,7 @@ function FileList() {
     const handleHeaderCheckboxClick = () => {
         if (!showSelectAll && !showDeselectAll) {
             setShowSelectAll(true)
-            const itemsToSelect = [...sortedFiles, ...sortedFolders].filter(
+            const itemsToSelect = [...sortedFiles, ...sortedFolders].filter( // Select all sorted items that are not processing
                 (item) => !processingItems.some((sentItem) => sentItem.id === item.id)
             );
             addToSelectedItems(itemsToSelect);
@@ -108,8 +116,8 @@ function FileList() {
         else {
             setShowSelectAll(false)
             setShowDeselectAll(false)
-            removeFromSelectedItems(sortedFiles)
-            removeFromSelectedItems(sortedFolders)
+            setSelectedItems([])
+            setLastClickedItem(null)
         }
     };
 
@@ -135,6 +143,7 @@ function FileList() {
                 if (event.key === 'Escape') {
                     event.preventDefault();
                     setSelectedItems([]);
+                    setLastClickedItem(null)
                 }
                 if (event.ctrlKey && event.key === 'a') {
                     event.preventDefault();
@@ -152,6 +161,7 @@ function FileList() {
 
     useEffect(() => {
         setSelectedItems([])
+        setLastClickedItem(null)
     }, [currentPath])
 
     const mouseSensor = useSensor(MouseSensor, {
@@ -210,8 +220,8 @@ function FileList() {
     const emptyDirectory = sortedFiles.length + sortedFolders.length == 0
 
     return (
-            <div className={`FileList ${emptyDirectory ? 'empty-directory' : ''}`}>
-                <div className="FileList-main-header">
+            <div className={`AllFiles ${emptyDirectory ? 'empty-directory' : ''}`}>
+                <div className="section-main-header">
                     <Breadcrumb path={currentPath} setPath={setCurrentPath}/>
                     <div className="tool-area">
                         <SortingToolbar />
@@ -271,4 +281,4 @@ function FileList() {
     )
 }
 
-export default memo(FileList)
+export default memo(AllFiles)

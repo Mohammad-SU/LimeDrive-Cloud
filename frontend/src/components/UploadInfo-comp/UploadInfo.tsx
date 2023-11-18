@@ -42,41 +42,95 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         const selectedFiles = event.target.files
         if (!selectedFiles) return
 
-        const newCurrentPath = currentPath
         const successfulFiles = uploadQueue.filter (
             (file, index) => !fileErrors.has(file) && index < currentUploadIndex
         )
 
-        const samePathFiles = [ // Includes app's files and queue files (which includes failed files in the queue) but not successfull files that have not yet been added to prevUploadedFiles
-            ...files.filter((file) => file.app_path === newCurrentPath + file.name),
-            ...uploadQueue.filter((queuefile) => !successfulFiles.includes(queuefile) && queuefile.app_path === newCurrentPath + queuefile.fileObj.name), // Incase a file is uploading to the same path but hasnt been fully uploaded yet so that it will still be included in the conflict check
-        ];
-        const newFiles: QueueFile[] = Array.from(selectedFiles).map((selectedFile) => {
-            const suffixRegex = /\(\d+\)(?=\D*$)/;  // Remove last occurence of existing suffix such as (1), (2), etc
-            const similarFileNames = samePathFiles.filter((file: QueueFile | FileType) => {
-                let baseName: string;
-                'fileObj' in file ?
-                    baseName = (file as QueueFile).fileObj.name.replace(suffixRegex, '')
-                    : baseName = (file as FileType).name.replace(suffixRegex, '');
+        const newCurrentPath = currentPath
+        let newFiles: QueueFile[]
 
-                const selectedBaseName = selectedFile.name.replace(suffixRegex, '');
-                return baseName === selectedBaseName;
+        if (fileInputRef?.current?.webkitdirectory == false || true) { // For file selection dialog (remove "true" condition after folder uploading is implemented)
+            const samePathFiles = [ // Includes app's files and queue files (which includes failed files in the queue) but not successfull files that have not yet been added to prevUploadedFiles
+                ...files.filter((file) => file.app_path === newCurrentPath + file.name),
+                ...uploadQueue.filter((queuefile) => !successfulFiles.includes(queuefile) && queuefile.app_path === newCurrentPath + queuefile.fileObj.name), // Incase a file is uploading to the same path but hasnt been fully uploaded yet so that it will still be included in the conflict check
+            ];
+            newFiles = Array.from(selectedFiles).map((selectedFile) => {
+                const suffixRegex = /\(\d+\)(?=\D*$)/;  // Remove last occurence of existing suffix such as (1), (2), etc.`
+                const similarFileNames = samePathFiles.filter((file: QueueFile | FileType) => {
+                    let baseName: string;
+                    'fileObj' in file ?
+                        baseName = (file as QueueFile).fileObj.name.replace(suffixRegex, '')
+                        : baseName = (file as FileType).name.replace(suffixRegex, '');
+    
+                    const selectedBaseName = selectedFile.name.replace(suffixRegex, '');
+                    return baseName === selectedBaseName;
+                });
+        
+                let fileName = selectedFile.name; // Note: if the user intentionally put a (1), (2), etc. suffix before uploading then their suffix will still be preserved
+                const dotIndex = fileName.lastIndexOf('.');
+                const baseName = dotIndex !== -1 ? fileName.slice(0, dotIndex) : fileName;
+                const extension = dotIndex !== -1 ? fileName.slice(dotIndex) : '';
+    
+                fileName = similarFileNames.length > 0 ? `${baseName}(${similarFileNames.length})${extension}` : fileName;
+                const renamedFileObj = new File([selectedFile], fileName, { type: selectedFile.type });
+        
+                return {
+                    fileObj: renamedFileObj,
+                    id: null,
+                    app_path: newCurrentPath + fileName,
+                };
             });
-    
-            let fileName = selectedFile.name; // Note: if the user intentionally put a suffix before uploading then their suffix will still be preserved
-            const dotIndex = fileName.lastIndexOf('.');
-            const baseName = dotIndex !== -1 ? fileName.slice(0, dotIndex) : fileName;
-            const extension = dotIndex !== -1 ? fileName.slice(dotIndex) : '';
+        }
+        else { // For folder selection dialog
+            // const deepestPath = Array.from(selectedFiles).reduce((deepest, selectedFile) => { // Get deepest webkitRelativePath from selectedFiles based on number of slashes
+            //     const slashesCount = (selectedFile.webkitRelativePath.match(/\//g) || []).length;
+            //     return slashesCount > deepest.slashesCount ? { path: selectedFile.webkitRelativePath, slashesCount } : deepest;
+            // }, { path: '', slashesCount: -1 }).path;
 
-            fileName = similarFileNames.length > 0 ? `${baseName}(${similarFileNames.length})${extension}` : fileName;
-            const renamedFileObj = new File([selectedFile], fileName, { type: selectedFile.type });
-    
-            return {
-                fileObj: renamedFileObj,
-                id: null,
-                app_path: newCurrentPath + fileName,
-            };
-        });
+            // const deepestPathFolderNames = deepestPath.split('/').slice(0, -1); // slice removes the last element (file name)
+
+            // /* things to do when adding this feature   
+            //     - abort uploading files inside folder if folder fails creation (add them to file error map)
+            //     - add selectedfiles to newFiles with correct app_paths, all at once
+            //     - add previous folder names in same path to create path for a deeper folder
+            //     - show toast for folder successfully uploaded when all files and folders inside top level folder have been uploaded (with or without errors)?
+            // */
+
+            // const handleCreateFolder = async () => {
+            //     try {
+            //         const parentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
+            //         const app_path = currentPath + formData.newFolderName.trim()
+            //         const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
+            //         setShowNewFolderModal(false);
+            //         const response = await apiSecure.post('/uploadFolder', {
+            //             name: formData.newFolderName.trim(),
+            //             app_path: app_path,
+            //             parent_folder_id: parent_folder_id
+            //         });
+        
+            //         addFolders(response.data)
+            //         showToast({message: "Folder created.", showSuccessIcon: true})
+            //         formData.newFolderName = ''
+        
+            //         setTimeout(() => { // Wait for folder with it's id to be properly rendered to the DOM
+            //             if (currentPath == parentFolder?.app_path + "/" || parent_folder_id === "0" && currentPath == "LimeDrive/") { // Jump to folder if user is still in same path
+            //                 navigate(currentPath.slice(0, -1)+"#d_"+response.data.id)
+            //                 const element = document.getElementById(`d_${response.data.id}`);
+            //                 if (element) {
+            //                     element.scrollIntoView({ behavior: "smooth" });
+            //                 }
+            //             }
+            //         }, 1);
+            //     } 
+            //     catch (error) {
+            //         console.error(error);
+            //         if (axios.isAxiosError(error)) {
+            //             setBackendErrorMsg(error?.response?.data.message)
+            //             showToast({message: "Error creating folder. Please check your connection.", showFailIcon: true})
+            //         }
+            //     }
+            // }
+        }
 
         const remainingFiles = uploadQueue.filter ( // Includes currently uploading file, queued files, and failed files
             (file, index) => index >= currentUploadIndex && !successfulFiles.includes(file)
@@ -100,7 +154,6 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const uploadFile = async (file: QueueFile) => {
         const formData = new FormData();
         formData.append('file', file.fileObj) // Actual js file object
-
         formData.append('app_path', file.app_path) // e.g. app_path = LimeDrive/LimeDrive.txt
 
         const lastSlashIndex = file.app_path.lastIndexOf('/');

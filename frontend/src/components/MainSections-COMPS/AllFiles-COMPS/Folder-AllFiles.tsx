@@ -1,11 +1,11 @@
 import { memo, useState, useEffect } from 'react'
 import { DateTime } from 'luxon';
 import { useNavigate } from 'react-router-dom';
-import { FolderType } from '../../types';
-import { useFileContext } from '../../contexts/FileContext';
+import { FolderType } from '../../../types';
+import { useFileContext } from '../../../contexts/FileContext';
 import { useDraggable, useDroppable, useDndMonitor } from '@dnd-kit/core';
 import { AiOutlineFolder, AiOutlineExclamation} from 'react-icons/ai';
-import Checkbox from './Checkbox-comp/Checkbox';
+import Checkbox from '../Checkbox-comp/Checkbox';
 
 interface FolderProps {
     folder: FolderType;
@@ -23,6 +23,7 @@ function Folder({ folder, onSelect }: FolderProps) {
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
         if (isProcessing) return
+        
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
@@ -31,6 +32,10 @@ function Folder({ folder, onSelect }: FolderProps) {
         if (isCtrlPressed || isCheckboxClicked) {
             newIsSelected = !isSelected
             setIsSelected(newIsSelected);
+            onSelect(folder, event, newIsSelected);
+        }
+        else if (isShiftPressed) {
+            newIsSelected = true
             onSelect(folder, event, newIsSelected);
         }
         else {

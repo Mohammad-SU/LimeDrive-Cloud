@@ -7,7 +7,8 @@ import { FileProvider } from './contexts/FileContext';
 import { ToastProvider } from './contexts/ToastContext';
 import AuthPage from "./AuthPage-folder/AuthPage"
 import MainPage from "./MainPage-folder/MainPage"
-import FileList from './components/FileList-COMPS/FileList';
+import AllFiles from './components/MainSections-COMPS/AllFiles-COMPS/AllFiles';
+import { BsRecycle } from 'react-icons/bs';
 
 const router = createBrowserRouter([
     {
@@ -24,7 +25,11 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/LimeDrive/*",
-                element: <FileList />,
+                element: <AllFiles />,
+            },
+            {
+                path: "/recycle-bin",
+                element: <BsRecycle />,
             },
         ],
     }

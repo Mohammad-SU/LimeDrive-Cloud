@@ -96,14 +96,6 @@ function Sidebar() {
             setLoading(false)
         }
     };
-
-    const handleFolderUploadClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.directory = true;
-            fileInputRef.current.webkitdirectory = true;
-            fileInputRef.current.click();
-        }
-    };
     
     return (
         <>
@@ -140,8 +132,9 @@ function Sidebar() {
                         <button 
                             className="folder-upload-btn"
                             onClick={() => {
-                                fileInputRef!.current!.webkitdirectory = true;
-                                fileInputRef?.current?.click();
+                                // fileInputRef!.current!.webkitdirectory = true;
+                                // fileInputRef?.current?.click();
+                                showToast({message: "Folder uploads not yet featured. Please manually create folders and upload files instead.", showFailIcon: true})
                                 setShowNewMenu(false)
                             }}
                         >
