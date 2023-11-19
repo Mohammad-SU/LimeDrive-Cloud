@@ -11,14 +11,14 @@ interface CheckboxProps {
 
 function Checkbox({ className, checked, showMinus, onClick }: CheckboxProps) {
     return (
-        <div
+        <button
             className={`Checkbox ${checked ? 'checked' : ''} ${className ? className : ''}`} 
             onClick={onClick}
             data-checkbox
         >
             {checked && <AiOutlineCheck className="checkbox-icon"/>}
             {showMinus && <AiOutlineMinus className="checkbox-icon"/>}
-        </div>
+        </button>
     )
 }
 

@@ -94,6 +94,7 @@ add folders on sidebar
 divider element in newMenu in sidebar that has margin top and bottom similar to newMenu's top and bottom padding
 different layouts for filelist
 add help section?
+stricter security features such as password-protected file/folders/ and encryption, decryption keys?
 
 future update ideas:
     undo btn/features

@@ -249,7 +249,7 @@ function AllFiles() {
                     <div className={`main-list ${emptyDirectory ? 'empty-directory' : ''}`}>
                         {foldersMapped}
                         {filesMapped}
-                        {emptyDirectory && <h1 className="empty-message">Empty directory. Click "New" to add items.</h1>}
+                        {emptyDirectory && <h1 className="empty-message">Empty folder. Click "New" to add items.</h1>}
                     </div>
 
                     <DragOverlay className="drag-overlay" style={{width: 300}}>
