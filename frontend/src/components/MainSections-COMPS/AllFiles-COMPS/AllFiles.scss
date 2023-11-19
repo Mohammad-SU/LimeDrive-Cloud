@@ -5,7 +5,7 @@
     flex-direction: column;
     box-sizing: border-box;
 
-    &.empty-directory {
+    &.empty-folder {
         height: 100%;
     }
 
@@ -70,7 +70,7 @@
     .main-list {
         margin: 0 2.5rem;
 
-        &.empty-directory {
+        &.empty-folder {
             display: flex;
             justify-content: center;
             align-items: center;

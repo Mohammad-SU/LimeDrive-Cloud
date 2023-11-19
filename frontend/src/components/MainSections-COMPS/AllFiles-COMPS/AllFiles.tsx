@@ -36,7 +36,7 @@ function AllFiles() {
     const location = useLocation()
     const path = decodeURIComponent(location.pathname).slice(1) + "/"
     useEffect(() => {
-        folders.some(folder => folder.app_path === path.slice(0, -1)) || path == "LimeDrive/" ? // if the URL path doesn't match a real directory path then navigate to root
+        folders.some(folder => folder.app_path === path.slice(0, -1)) || path == "LimeDrive/" ? // if the URL path doesn't match a real folder path then navigate to root
             setCurrentPath(path)
             : navigate("/LimeDrive")
         setConflictingItems([]);
@@ -217,10 +217,10 @@ function AllFiles() {
             onSelect={handleItemSelection}
         />
     })
-    const emptyDirectory = sortedFiles.length + sortedFolders.length == 0
+    const emptyFolder = sortedFiles.length + sortedFolders.length == 0
 
     return (
-            <div className={`AllFiles ${emptyDirectory ? 'empty-directory' : ''}`}>
+            <div className={`AllFiles ${emptyFolder ? 'empty-folder' : ''}`}>
                 <div className="section-main-header">
                     <Breadcrumb path={currentPath} setPath={setCurrentPath}/>
                     <div className="tool-area">
@@ -246,10 +246,10 @@ function AllFiles() {
                 </div>
 
                 <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} modifiers={[snapCenterToCursor]} sensors={sensors}>
-                    <div className={`main-list ${emptyDirectory ? 'empty-directory' : ''}`}>
+                    <div className={`main-list ${emptyFolder ? 'empty-folder' : ''}`}>
                         {foldersMapped}
                         {filesMapped}
-                        {emptyDirectory && <h1 className="empty-message">Empty folder. Click "New" to add items.</h1>}
+                        {emptyFolder && <h1 className="empty-message">Empty folder. Click "New" to add items.</h1>}
                     </div>
 
                     <DragOverlay className="drag-overlay" style={{width: 300}}>
