@@ -1,9 +1,6 @@
-@import "../../../global";
+@import "../../../../global.scss";
 
-.move-modal {
-    display: flex;
-    flex-direction: column;
-    
+.move-modal {    
     width: 30rem;
     height: 30rem;
     clip-path: url("#moveModalClip");

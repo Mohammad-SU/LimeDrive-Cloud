@@ -1,5 +1,6 @@
 Priority:
-    - Deleting, set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page, underline/bold sidebar links if user is on that page (react router navlink component)
+    - Deleting, close tab index for its modal, change content text depending on name of folder/file or if multiple selected
+    - underline/bold sidebar links if user is in that section,
     - Add checks in uploadInfo link elements for if file is deleted or in trash
     - Previews
     - Downloading, Renaming
@@ -25,14 +26,20 @@ Priority:
     - add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it, possibly with a hover tooltip for the extra info? or add the info to the side of the login form
     - react virtualisation for large lists
 
-Deleting:
-    - confirmation, and then move to recycle bin? check what dropbox/google drive does?
+for main sections add general scss to MainPage.scss (such as the title where the breadcrumb is the, the general list/header row scss? and other stuff. so that scss code isnt duplicated too much)
+set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
+disable all toolbar btns when no selected items and also return from functions
+
+Deleting (future?):
+    - confirmation, and then move to recycle bin? check what dropbox/google drive does
     - move selection code into a custom hook?
 
 Previews:
     - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
     - in preview, add extra buttons such as open in new tab/download, etc, use dropbox/google drive for inspiration
 
+change margin top of move modal heading (also change heights of folders in there so their borders dont look weird in that case)
+when adding delay for open file on double click, remember escape key press timeout clear code
 box shadow for newMenu and other modals?
 fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too) by adding padding bottom?
 toast notification stacking

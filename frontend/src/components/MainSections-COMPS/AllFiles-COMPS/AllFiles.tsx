@@ -65,17 +65,18 @@ function AllFiles() {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
+        let newSelectedItems = selectedItems
 
         if (isCtrlPressed || isCheckboxClicked) { // Multiple selections with possibly separated file locations, also logic for checkbox clicks
             if (isItemSelected) {
-                addToSelectedItems([item]);
+                newSelectedItems = [...selectedItems, item]
             }
             else {
-                removeFromSelectedItems([item]);
+                newSelectedItems = selectedItems.filter(selectedItem => selectedItem.id !== item.id)
             }
         } 
         else if (isShiftPressed && lastClickedItem) { // Multiple selections with files together in a range
-            const itemToSelect: ItemTypes[] = [];
+            const itemsToSelect: ItemTypes[] = [];
             const startIndex = sortedItems.findIndex(sortedItem => sortedItem.id === lastClickedItem.id);
             const endIndex = sortedItems.findIndex(sortedItem => sortedItem.id === item.id);
     
@@ -84,22 +85,21 @@ function AllFiles() {
                 const end = Math.max(startIndex, endIndex);
     
                 for (let i = start; i <= end; i++) {
-                    itemToSelect.push(sortedItems[i]);
+                    itemsToSelect.push(sortedItems[i]);
                 }
             }
-    
-            setSelectedItems(itemToSelect);
+
+            newSelectedItems = itemsToSelect
         }
         else { // Regular item click logic
-            setSelectedItems([item])
+            newSelectedItems = [item]
         }
 
-        setSelectedItems((prevSelectedItems) => { // Functional form to make condition based on latest state
-            if (prevSelectedItems.length == 1 || isCtrlPressed) {
-                setLastClickedItem(item);
-            }
-            return prevSelectedItems;
-        });
+        if (newSelectedItems.length == 1 || isCtrlPressed) {
+            setLastClickedItem(item);
+        }
+
+        setSelectedItems(newSelectedItems);
     }
 
     const [showSelectAll, setShowSelectAll] = useState(false);

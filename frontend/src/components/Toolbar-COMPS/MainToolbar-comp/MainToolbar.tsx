@@ -2,10 +2,10 @@ import { memo, useState, useEffect } from 'react'
 import "./MainToolbar.scss"
 import useDelayedExit from '../../../hooks/useDelayedExit'
 import { useFileContext } from '../../../contexts/FileContext'
-import MoveBtn from '../ToolbarBtn-COMPS/MoveBtn'
+import MoveBtn from '../ToolbarBtn-COMPS/MoveBtn-comp/MoveBtn'
+import DeleteBtn from '../ToolbarBtn-COMPS/DeleteBtn-comp/DeleteBtn'
 import { AiOutlineDownload, AiOutlineStar } from 'react-icons/ai'
 import { BsEye, BsLink45Deg, BsShare } from 'react-icons/bs'
-import { SlTrash } from 'react-icons/sl'
 import { GoPencil } from 'react-icons/go'
 import DynamicClip from '../../DynamicClip'
 
@@ -35,11 +35,9 @@ function MainToolbar() {
                         Preview
                         <DynamicClip clipPathId="PreviewBtnClip" animation={showToolbar} numRects={4}/>
                     </button>
-                    <button className="DeleteBtn">
-                        <SlTrash className="tool-icon trash"/>
-                        Delete
-                        <DynamicClip clipPathId="DeleteBtnClip" animation={showToolbar} numRects={4}/>
-                    </button>
+
+                    <DeleteBtn toolbarRendered={showToolbar}/>
+                    <DynamicClip clipPathId="DeleteBtnClip" animation={showToolbar} numRects={4}/>
                     
                     <div className="toolbar-divider" />
 

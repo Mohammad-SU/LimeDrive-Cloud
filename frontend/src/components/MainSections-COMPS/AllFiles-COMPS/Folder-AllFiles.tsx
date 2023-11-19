@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react'
+import { memo, useState, useEffect, useRef } from 'react'
 import { DateTime } from 'luxon';
 import { useNavigate } from 'react-router-dom';
 import { FolderType } from '../../../types';
@@ -14,11 +14,11 @@ interface FolderProps {
 
 function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
-    const [isSelectDelayed, setIsSelectDelayed] = useState(false);
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [isConflicting, setIsConflicting] = useState(false)
-    const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
+    const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [showSelectDelayed, setShowSelectDelayed] = useState(false) // For select-delayed class since (clickTimeoutRef.current != null) doesnt apply the class for some reason
     const { selectedItems, currentPath, conflictingItems, processingItems } = useFileContext()
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
@@ -40,23 +40,23 @@ function Folder({ folder, onSelect }: FolderProps) {
         }
         else {
             newIsSelected = true
-            setIsSelectDelayed(true)
+            setShowSelectDelayed(true)
 
-            if (clickTimeout !== null) { // If a timeout was set, clear it to prevent the selection
-                clearTimeout(clickTimeout);
-                setClickTimeout(null);
+            if (event.detail === 2 && clickTimeoutRef.current != null) { // If double clicked, prevent selection
+                clearTimeout(clickTimeoutRef.current);
+                clickTimeoutRef.current = null;
+                setShowSelectDelayed(false)
             }
-            if (event.detail === 2) { // If double clicked, prevent selection
-                setIsSelectDelayed(false)
-                return;
+            else {
+                const timeout = setTimeout(() => {
+                    setIsSelected(newIsSelected);
+                    onSelect(folder, event, newIsSelected);
+                    clickTimeoutRef.current = null;
+                    setShowSelectDelayed(false)
+                }, 200);
+    
+                clickTimeoutRef.current = timeout;
             }
-            const timeout = setTimeout(() => {
-                setIsSelected(newIsSelected);
-                setIsSelectDelayed(false)
-                onSelect(folder, event, newIsSelected);
-            }, 200);
-
-            setClickTimeout(timeout);
         }
     }
 
@@ -105,10 +105,16 @@ function Folder({ folder, onSelect }: FolderProps) {
             setIsSelectDragging(false)
         },
     });
+
     useEffect(() => {
         function handleEscapeKey(event: KeyboardEvent) {
             if (event.key === 'Escape') {
                 setIsSelectDragging(false);
+                if (clickTimeoutRef.current !== null) {
+                    clearTimeout(clickTimeoutRef.current)
+                }
+                clickTimeoutRef.current = null
+                setShowSelectDelayed(false)
             }
         }
         window.addEventListener('keydown', handleEscapeKey);
@@ -142,7 +148,7 @@ function Folder({ folder, onSelect }: FolderProps) {
         <div // Dont give style when dropped on but prevent drag operations in filecontext if its in processing items and user tries to move it
             className={`Folder 
                 ${isSelected ? 'selected' : ''}
-                ${isSelectDelayed ? 'select-delayed' : ''}
+                ${showSelectDelayed ? 'select-delayed' : ''}
                 ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
                 ${isProcessing ? 'processing' : ''}

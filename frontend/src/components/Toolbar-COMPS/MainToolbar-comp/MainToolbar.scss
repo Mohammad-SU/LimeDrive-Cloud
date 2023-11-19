@@ -26,16 +26,16 @@
             .tool-icon {
                 font-size: 1.4rem;
 
-                &.eye, &.trash, &.move {
+                &.eye-icon, &.trash-icon, &.move-icon {
                     font-size: 1.25rem;
                 }
 
-                &.link {
+                &.link-icon {
                     font-size: 1.4rem;
                     margin-bottom: -0.1rem;
                 }
 
-                &.share {
+                &.share-icon {
                     font-size: 1.2rem;
                 }
             }

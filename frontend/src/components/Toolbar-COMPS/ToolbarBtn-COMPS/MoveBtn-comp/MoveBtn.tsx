@@ -1,13 +1,13 @@
 import "./MoveBtn.scss"
 import { memo, useState, useEffect } from 'react'
-import { useFileContext } from '../../../contexts/FileContext'
-import Modal from '../../Modal-comp/Modal'
-import { useToast } from "../../../contexts/ToastContext"
-import { FolderType } from "../../../types"
+import { useFileContext } from '../../../../contexts/FileContext'
+import Modal from '../../../Modal-comp/Modal'
+import { useToast } from "../../../../contexts/ToastContext"
+import { FolderType } from "../../../../types"
 import { SlCursorMove } from 'react-icons/sl'
 import { AiOutlineFolder } from 'react-icons/ai';
-import Breadcrumb from "../../MainSections-COMPS/Breadcrumb-comp/Breadcrumb"
-import { useUserContext } from "../../../contexts/UserContext"
+import Breadcrumb from "../../../MainSections-COMPS/Breadcrumb-comp/Breadcrumb"
+import { useUserContext } from "../../../../contexts/UserContext"
 
 function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     const { folders, currentPath, selectedItems, filterItemsByPath, handleMoveItems } = useFileContext()
@@ -100,7 +100,7 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     return (
         <>
             <button className="MoveBtn" onClick={handleToolbarMoveClick}>
-                <SlCursorMove className="tool-icon move"/>
+                <SlCursorMove className="tool-icon move-icon"/>
                 Move
             </button>
 
