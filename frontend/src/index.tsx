@@ -8,7 +8,6 @@ import { ToastProvider } from './contexts/ToastContext';
 import AuthPage from "./AuthPage-folder/AuthPage"
 import MainPage from "./MainPage-folder/MainPage"
 import AllFiles from './components/MainSections-COMPS/AllFiles-COMPS/AllFiles';
-import { BsRecycle } from 'react-icons/bs';
 
 const router = createBrowserRouter([
     {
@@ -26,10 +25,6 @@ const router = createBrowserRouter([
             {
                 path: "/LimeDrive/*",
                 element: <AllFiles />,
-            },
-            {
-                path: "/recycle-bin",
-                element: <BsRecycle />,
             },
         ],
     }

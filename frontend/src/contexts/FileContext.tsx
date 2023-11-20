@@ -4,7 +4,6 @@ import { FolderType } from '../types'
 import { ItemTypes } from '../types'
 import { useToast } from './ToastContext'
 import axios, { AxiosInstance } from 'axios'
-import { ppid } from 'process'
 
 interface FileContextType {
     currentPath: string
@@ -30,6 +29,8 @@ interface FileContextType {
 
     conflictingItems: ItemTypes[];
     setConflictingItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
+    sameFolderConflictingItems: FolderType[]
+    setSameFolderConflictingItems: React.Dispatch<React.SetStateAction<FolderType[]>>;
     handleMoveItems: (itemsToMove: ItemTypes[], targetFolder: FolderType, apiSecure: AxiosInstance) => void;
     processingItems: ItemTypes[];
     setProcessingItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
@@ -52,6 +53,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const [selectedItems, setSelectedItems] = useState<ItemTypes[]>([]);
     const [processingItems, setProcessingItems] = useState<ItemTypes[]>([]);
     const [conflictingItems, setConflictingItems] = useState<ItemTypes[]>([]);
+    const [sameFolderConflictingItems, setSameFolderConflictingItems] = useState<FolderType[]>([])
     const { showToast } = useToast()
 
     const addFiles = (newFiles: FileType[]) => { // Filter out new files that already exist in the current state
@@ -108,25 +110,30 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    const addToSelectedItems = (items: ItemTypes[]) => {
-        setSelectedItems((prevSelected) => {
-            const itemsArray = Array.isArray(items) ? items : [items];
-            const newItems = itemsArray.filter((item) => // Filter out items that are already selected
-                !prevSelected.some((selectedItem) => selectedItem.id === item.id)
+    const addItems = (newItems: ItemTypes[], setState: React.Dispatch<React.SetStateAction<ItemTypes[]>>) => {
+        setState((prevItems) => {
+            const itemsArray = Array.isArray(newItems) ? newItems : [newItems];
+            const uniqueNewItems = itemsArray.filter((item) =>
+                !prevItems.some((prevItem) => prevItem.id === item.id)
             );
-            return [...prevSelected, ...newItems];
+            return [...prevItems, ...uniqueNewItems];
         });
     };
 
-    const removeFromSelectedItems = (items: ItemTypes[]) => {
-        setSelectedItems((prevSelected) => {
+    const removeItems = (items: ItemTypes[], setState: React.Dispatch<React.SetStateAction<ItemTypes[]>>) => {
+        setState((prevItems) => {
             const itemsArray = Array.isArray(items) ? items : [items];
-            const newSelected = prevSelected.filter((prevItem) => // Filter out items to be removed
+            const newItems = prevItems.filter((prevItem) =>
                 !itemsArray.some((item) => item.id === prevItem.id)
             );
-            return newSelected;
+            return newItems;
         });
     };
+
+    const addToSelectedItems = (newItems: ItemTypes[]) => addItems(newItems, setSelectedItems);
+    const removeFromSelectedItems = (items: ItemTypes[]) => removeItems(items, setSelectedItems);
+    const addToProcessingItems = (newItems: ItemTypes[]) => addItems(newItems, setProcessingItems);
+    const removeFromProcessingItems = (items: ItemTypes[]) => removeItems(items, setProcessingItems);
 
     const filterItemsByPath = (items: ItemTypes[], path: string): ItemTypes[] => {
         const filteredItems = items.filter(item => {
@@ -155,7 +162,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
 
         const folderConflicts = foldersToMove.filter((folderToMove) => {
-            return targetDirectFolders.some((folderInTarget) => folderInTarget.name === folderToMove.name);
+            const isSameFolder = targetFolder.app_path.startsWith(folderToMove.app_path)
+            if (isSameFolder) {setSameFolderConflictingItems([folderToMove as FolderType])}
+            const isSameName = targetDirectFolders.some((folderInTarget) => folderInTarget.name === folderToMove.name);
+            return isSameFolder || isSameName;
         });
 
         newConflictingItems.push(...fileConflicts, ...folderConflicts);
@@ -167,9 +177,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             }
             const timeoutId = setTimeout(() => {
                 setConflictingItems([]);
+                setSameFolderConflictingItems([]);
             }, 8000);
             setConflictingItemsTimeout(timeoutId);
-            if (newConflictingItems.length == itemsToMove.length) {
+            if (newConflictingItems.length == itemsToMove.length) { // Different toast message not needed for sameFolderConflictingItems as MoveBtn.tsx handles that
                 return showToast({message: `Cannot move any items: please rename or deselect items with the same name between both directories.`, showFailIcon: true});
             }
         }
@@ -192,10 +203,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
                     parent_folder_id: parseInt((targetFolder.id as string).substring(2))
                 }
             })
-            setProcessingItems((prevProcessingItems) => {
-                const uniqueNewItems = newItemsToMove.filter((newItem) => !prevProcessingItems.some((item) => item.id === newItem.id));
-                return [...prevProcessingItems, ...uniqueNewItems];
-            });
+            addToProcessingItems(newItemsToMove)
             removeFromSelectedItems(newItemsToMove)
 
             newItemsToMove.length == 1 && newConflictingItems.length == 0 ?
@@ -235,11 +243,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         catch (error) {
             console.error(error);
             if (axios.isAxiosError(error)) {
-                showToast({ message: `Cannot move: please check your connection.`, showFailIcon: true });
+                showToast({ message: `Failed to move. Please check your connection.`, showFailIcon: true });
             }
         }
         finally {
-            setProcessingItems((prevProcessingItems) => prevProcessingItems.filter((item) => !newItemsToMove.some((newItem) => newItem.id === item.id)));
+            removeFromProcessingItems(newItemsToMove)
         }
     }
     
@@ -268,11 +276,13 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
             conflictingItems,
             setConflictingItems,
+            sameFolderConflictingItems,
+            setSameFolderConflictingItems,
             handleMoveItems,
             processingItems,
             setProcessingItems,
         };
-    }, [currentPath, files, folders, selectedItems, conflictingItems, processingItems])
+    }, [currentPath, files, folders, selectedItems, conflictingItems, sameFolderConflictingItems, processingItems])
 
     return (
         <FileContext.Provider value={contextValue}>

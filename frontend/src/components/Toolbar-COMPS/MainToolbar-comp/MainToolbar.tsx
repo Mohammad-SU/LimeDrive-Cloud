@@ -18,7 +18,8 @@ function MainToolbar() {
     }, [selectedItems]);
 
     const { isVisible: isToolbarVisible }  = useDelayedExit({
-        shouldRender: showToolbar
+        shouldRender: showToolbar,
+        delayMs: 200
     })
 
     return (
@@ -28,43 +29,43 @@ function MainToolbar() {
                     <button className="DownloadBtn">
                         <AiOutlineDownload className="tool-icon"/>
                         Download
-                        <DynamicClip clipPathId="DownloadBtnClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="DownloadBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                     <button className="PreviewBtn">
                         <BsEye className="tool-icon eye"/>
                         Preview
-                        <DynamicClip clipPathId="PreviewBtnClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="PreviewBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
 
                     <DeleteBtn toolbarRendered={showToolbar}/>
-                    <DynamicClip clipPathId="DeleteBtnClip" animation={showToolbar} numRects={4}/>
+                    <DynamicClip clipPathId="DeleteBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     
                     <div className="toolbar-divider" />
 
                     <MoveBtn toolbarRendered={showToolbar}/>
-                    <DynamicClip clipPathId="MoveBtnClip" animation={showToolbar} numRects={4}/>
+                    <DynamicClip clipPathId="MoveBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
 
                     <button className="RenameBtn">
                         <GoPencil className="tool-icon"/>
                         Rename
-                        <DynamicClip clipPathId="RenameBtnClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="RenameBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                     <button className="StarBtn">
                         <AiOutlineStar className="tool-icon"/>
                         Star
-                        <DynamicClip clipPathId="StarBtnClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="StarBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                 </div>
 
                 <div className="sharing-tools">
                     <button className="LinkBtn">
                         <BsLink45Deg className="tool-icon link"/>
-                        <DynamicClip clipPathId="LinkBtnClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="LinkBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                     <button className="ShareBtn">
                         <BsShare className="tool-icon share"/>
                         Share
-                        <DynamicClip clipPathId="ShareBtnClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="ShareBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                 </div>
             </div>

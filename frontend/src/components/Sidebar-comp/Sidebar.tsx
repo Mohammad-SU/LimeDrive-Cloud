@@ -63,8 +63,8 @@ function Sidebar() {
             const parentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
             const app_path = currentPath + formData.newFolderName.trim()
             const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
-            showToast({message: "Creating folder...", loading: true})
             setShowNewFolderModal(false);
+            showToast({message: "Creating folder...", loading: true})
             const response = await apiSecure.post('/uploadFolder', {
                 name: formData.newFolderName.trim(),
                 app_path: app_path,
@@ -89,7 +89,7 @@ function Sidebar() {
             console.error(error);
             if (axios.isAxiosError(error)) {
                 setBackendErrorMsg(error?.response?.data.message)
-                showToast({message: "Error. Please check your connection.", showFailIcon: true})
+                showToast({message: "Failed to create folder. Please check your connection.", showFailIcon: true})
             }
         }
         finally {
@@ -157,15 +157,15 @@ function Sidebar() {
                         <TfiFiles className="nav-icon all-files" />
                         All Files
                     </NavLink>
-                    <NavLink to="/shared">
+                    <NavLink to="/LimeDrive" onClick={() => showToast({message: "Sharing not yet featured.", showFailIcon: true})}>
                         <IoPeopleOutline className="nav-icon shared" />
                         Shared
                     </NavLink>
-                    <NavLink to="/media-gallery">
+                    <NavLink to="/LimeDrive" onClick={() => showToast({message: "Media gallery not yet featured.", showFailIcon: true})}>
                         <AiOutlinePicture className="nav-icon media-gallery"/>
                         Media Gallery
                     </NavLink>
-                    <NavLink to="/recycle-bin">
+                    <NavLink to="/LimeDrive" onClick={() => showToast({message: "Recycle bin not yet featured.", showFailIcon: true})}>
                         <SlTrash className="nav-icon recycle-bin"/>
                         Recycle Bin
                     </NavLink>

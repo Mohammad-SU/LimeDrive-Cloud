@@ -20,6 +20,8 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     const [targetFolder, setTargetFolder] = useState<FolderType | undefined>(undefined)
 
     const handleToolbarMoveClick = () => {
+        if (selectedItems.length == 0) return
+
         if (folders.length == 0) {
             showToast({message: `No folders available to move items to.`, showFailIcon: true});
         } else {
@@ -69,7 +71,6 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
             setMoveListPath(moveListPath.slice(0, lastOccurrenceIndex) + folder.name + "/");
         } else { // Otherwise ADD target folder's name to the end of the breadcrumb
             setMoveListPath(moveListPath + folder.name + "/")
-            console.log(moveListPath + folder.name + "/")
         }
 
         if (!selectedItems.some(selectedItem => selectedItem.id === folder.id)) { // If the user clicks on a folder that is NOT part of the folders that they selected for moving
@@ -77,8 +78,8 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
         }
     }
 
-    const handleModalMoveClick = async () => {
-        if ((!targetFolder && moveListPath != "LimeDrive/") || selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name)) { // In case user removes disabled attribute from modal move btn
+    const handleModalMoveClick = () => {
+        if ((!targetFolder && moveListPath != "LimeDrive/") || selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name) || selectedItems.length == 0) { // In case user removes disabled attribute from modal move btn
             return
         }
         else if (selectedItems.length == 1 && moveListPath.startsWith(selectedItems[0].app_path)) {
@@ -148,7 +149,8 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                         onClick={handleModalMoveClick}
                         disabled={
                             (!targetFolder && moveListPath != "LimeDrive/") ||                             
-                            selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name)
+                            selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name) ||
+                            selectedItems.length == 0
                         }
                     >
                         Move

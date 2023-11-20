@@ -3,11 +3,11 @@
     min-width: 100vh;
 }
 
-.main-content {
+.content-wrapper {
     display: flex;
     height: calc(100vh - 4rem);
 
-    .content {
+    .main-content {
         width: 100%;
         overflow-y: auto;
         border-top: none;

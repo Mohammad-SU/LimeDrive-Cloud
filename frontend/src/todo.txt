@@ -1,5 +1,6 @@
 Priority:
-    - Deleting, close tab index for its modal, change content text depending on name of folder/file or if multiple selected
+    - add separate state for samefolderconflicts when moving so that tooltip message is different?
+    - Deleting (add to processing items, remove from processing items in finally, deal with selected items removing/adding, backend)
     - underline/bold sidebar links if user is in that section,
     - Add checks in uploadInfo link elements for if file is deleted or in trash
     - Previews
@@ -26,6 +27,7 @@ Priority:
     - add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it, possibly with a hover tooltip for the extra info? or add the info to the side of the login form
     - react virtualisation for large lists
 
+change directory mentions to folder instead
 for main sections add general scss to MainPage.scss (such as the title where the breadcrumb is the, the general list/header row scss? and other stuff. so that scss code isnt duplicated too much)
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
@@ -38,6 +40,7 @@ Previews:
     - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
     - in preview, add extra buttons such as open in new tab/download, etc, use dropbox/google drive for inspiration
 
+make it so navigating in url in code (such as when creating folder and jump linking) adds targeted class manually, and timeout adds targeted-style class only (and removes targeted class) if location changed AND targeted class is already present on the element (prevents problems with going back in url causing re-highlight)
 change margin top of move modal heading (also change heights of folders in there so their borders dont look weird in that case)
 when adding delay for open file on double click, remember escape key press timeout clear code
 box shadow for newMenu and other modals?
@@ -52,7 +55,7 @@ backend validation for duplicate item name checking when moving and uploading, i
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
 
 instead of delaying item selection, make item selection instant and implement below suggestion? Or implement below suggestion without removing selection delay? 
-for folder opening use delay clip animation on entire main-list/list items?
+for folder opening use delay clip animation on entire main-list/list items? Although it may be annoying for users who want to open folders quickly
 
 folder uploading, check each folder and subfolder to make sure their folder names follow the valid format (test by invalidating normal characters), remove if true condition on file selection handlefileselect condition
 instantly close maintoolbar if only one selected item and was double-clicked for opening withing certain remaining amount of milliseconds from select delay and toolbar animation (!showToolbarInstant || isToolbarVisible as render jsx conditions? use useeffect and/or context?)

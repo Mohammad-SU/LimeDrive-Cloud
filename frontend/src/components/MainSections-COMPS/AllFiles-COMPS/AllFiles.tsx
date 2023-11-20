@@ -25,9 +25,9 @@ function AllFiles() {
         selectedItems, 
         setSelectedItems, 
         addToSelectedItems, 
-        removeFromSelectedItems, 
         filterItemsByPath, 
-        setConflictingItems, 
+        setConflictingItems,
+        setSameFolderConflictingItems,
         handleMoveItems,
         processingItems 
     } = useFileContext()
@@ -40,6 +40,7 @@ function AllFiles() {
             setCurrentPath(path)
             : navigate("/LimeDrive")
         setConflictingItems([]);
+        setSameFolderConflictingItems([])
     }, [path]);
 
     const sortedFolders = useMemo(() => {

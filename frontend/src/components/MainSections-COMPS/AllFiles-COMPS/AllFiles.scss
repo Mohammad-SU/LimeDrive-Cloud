@@ -43,7 +43,6 @@
                 position: relative;
                 margin-left: -1.8rem;
                 margin-right: 0.8rem;
-                z-index: 2;
             }
     
             &:hover .list-checkbox {
@@ -177,6 +176,7 @@
                             margin-left: -1rem;
                             margin-top: -0.38rem;
                             font-size: 0.8rem;
+                            text-align: center;
 
                             background: black;
                             outline: 1px solid lime;

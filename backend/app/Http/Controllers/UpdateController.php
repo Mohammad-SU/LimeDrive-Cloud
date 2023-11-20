@@ -20,12 +20,12 @@ class UpdateController extends Controller
 
         $updatedItems = [];
 
-        foreach ($items['items'] as $itemData) {
-            $id = $itemData['id'];
-            $new_path = $itemData['new_path'];
-            $parent_folder_id = $itemData['parent_folder_id'];
+        foreach ($items['items'] as $item) {
+            $id = $item['id'];
+            $new_path = $item['new_path'];
+            $parent_folder_id = $item['parent_folder_id'];
 
-            if (!isset($itemData['type'])) {
+            if (!isset($item['type'])) {
                 $updItem = Folder::find($id);
                 $this->updateChildPaths($updItem, $new_path, $updatedItems);
                 $updatedItems[] = ['id' => 'd_' . $updItem->id, 'updated_path' => $new_path];
@@ -48,17 +48,17 @@ class UpdateController extends Controller
     {
         $parent_folder_id = $parentFolder->id;
         
-        $files = File::where('parent_folder_id', $parent_folder_id)->get();
+        $subfiles = File::where('parent_folder_id', $parent_folder_id)->get();
 
-        foreach ($files as $file) { // parent_folder_id fields dont need to be changed for child files/folders
-            $file->app_path = $new_path . '/' . $file->name;
-            $file->save();
-            $updatedItems[] = ['id' => $file->id, 'updated_path' => $file->app_path];
+        foreach ($subfiles as $subfile) { // parent_folder_id fields dont need to be changed for child files/folders
+            $subfile->app_path = $new_path . '/' . $subfile->name;
+            $subfile->save();
+            $updatedItems[] = ['id' => $subfile->id, 'updated_path' => $subfile->app_path];
         }
 
-        $folders = Folder::where('parent_folder_id', $parent_folder_id)->get();
+        $subfolders = Folder::where('parent_folder_id', $parent_folder_id)->get();
         
-        foreach ($folders as $subfolder) {
+        foreach ($subfolders as $subfolder) {
             $subfolder->app_path = $new_path . '/' . $subfolder->name;
             $subfolder->save();
             $updatedItems[] = ['id' => 'd_' . $subfolder->id, 'updated_path' => $subfolder->app_path];

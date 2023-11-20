@@ -69,12 +69,12 @@ function MainPage() {
     return (
             <div className="MainPage">
                 <Header />
-                <main className="main-content">
+                <div className="content-wrapper">
                     <Sidebar />
-                    <div className="content">
+                    <main className="main-content">
                         <Outlet />
-                    </div>
-                </main>
+                    </main>
+                </div>
             </div>
     )
 }

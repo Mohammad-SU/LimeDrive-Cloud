@@ -119,7 +119,7 @@ function File({ file, onSelect }: FileProps) {
                     {isConflicting &&
                         <>
                             <AiOutlineExclamation className="conflict-icon"/>
-                            <span className="tooltip">Cannot move: conflicting<br/>name in target directory</span>
+                            <span className="tooltip">Cannot move: conflicting<br/>name in target folder</span>
                         </>
                     }
                 </span>

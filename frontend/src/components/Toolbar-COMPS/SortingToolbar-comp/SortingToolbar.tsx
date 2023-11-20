@@ -13,7 +13,8 @@ function SortingToolbar() {
     }, [selectedItems]);
 
     const { isVisible: isToolbarVisible } = useDelayedExit({
-        shouldRender: showToolbar
+        shouldRender: showToolbar,
+        delayMs: 200,
     })
 
     return (
@@ -22,23 +23,23 @@ function SortingToolbar() {
                 <div className="main-sort-cont">
                     <button className='recents-sort-btn'>
                         Recents
-                        <DynamicClip clipPathId="recentsSortClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="recentsSortClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                     <button className='starred-sort-btn'>
                         Starred
-                        <DynamicClip clipPathId="starredSortClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="starredSortClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                 </div>
                 <div className="secondary-sort-cont">
                     <button className='type-sort-btn'>
                         Type
                         <BsChevronDown className='chevron'/>
-                        <DynamicClip clipPathId="typeSortClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="typeSortClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                     <button className='people-sort-btn'>
                         People
                         <BsChevronDown className='chevron'/>
-                        <DynamicClip clipPathId="peopleSortClip" animation={showToolbar} numRects={4}/>
+                        <DynamicClip clipPathId="peopleSortClip" animation={showToolbar} animationDuration={200} numRects={4}/>
                     </button>
                 </div>
             </div>

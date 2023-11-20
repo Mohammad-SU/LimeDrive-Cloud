@@ -16,10 +16,17 @@ function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
-    const [isConflicting, setIsConflicting] = useState(false)
     const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [showSelectDelayed, setShowSelectDelayed] = useState(false) // For select-delayed class since (clickTimeoutRef.current != null) doesnt apply the class for some reason
-    const { selectedItems, currentPath, conflictingItems, processingItems } = useFileContext()
+    const { selectedItems, currentPath, conflictingItems, sameFolderConflictingItems, processingItems } = useFileContext()
+
+    const clearSelectDelayed = () => {
+        if (clickTimeoutRef.current !== null) {
+            clearTimeout(clickTimeoutRef.current)
+        }
+        clickTimeoutRef.current = null
+        setShowSelectDelayed(false)
+    }
 
     function handleFolderClick(event: React.MouseEvent<HTMLDivElement>) {
         if (isProcessing) return
@@ -42,18 +49,15 @@ function Folder({ folder, onSelect }: FolderProps) {
             newIsSelected = true
             setShowSelectDelayed(true)
 
-            if (event.detail === 2 && clickTimeoutRef.current != null) { // If double clicked, prevent selection
-                clearTimeout(clickTimeoutRef.current);
-                clickTimeoutRef.current = null;
-                setShowSelectDelayed(false)
+            if (event.detail === 2) { // If double clicked, prevent selection
+                clearSelectDelayed()
             }
             else {
                 const timeout = setTimeout(() => {
-                    setIsSelected(newIsSelected);
-                    onSelect(folder, event, newIsSelected);
-                    clickTimeoutRef.current = null;
-                    setShowSelectDelayed(false)
-                }, 200);
+                        setIsSelected(newIsSelected);
+                        onSelect(folder, event, newIsSelected);
+                        clearSelectDelayed()
+                }, 250);
     
                 clickTimeoutRef.current = timeout;
             }
@@ -68,10 +72,6 @@ function Folder({ folder, onSelect }: FolderProps) {
         const newIsProcessing = processingItems.some(processingItem => processingItem.id === folder.id)
         setIsProcessing(newIsProcessing)
     }, [processingItems]);
-    useEffect(() => {
-        const newIsConflicting = conflictingItems.some(conflictingItem => conflictingItem.id === folder.id)
-        setIsConflicting(newIsConflicting)
-    }, [conflictingItems]);
 
     const {attributes, listeners, isDragging, setNodeRef: dragSetNodeRef} = useDraggable({
         id: folder.id,
@@ -110,11 +110,7 @@ function Folder({ folder, onSelect }: FolderProps) {
         function handleEscapeKey(event: KeyboardEvent) {
             if (event.key === 'Escape') {
                 setIsSelectDragging(false);
-                if (clickTimeoutRef.current !== null) {
-                    clearTimeout(clickTimeoutRef.current)
-                }
-                clickTimeoutRef.current = null
-                setShowSelectDelayed(false)
+                clearSelectDelayed()
             }
         }
         window.addEventListener('keydown', handleEscapeKey);
@@ -125,13 +121,14 @@ function Folder({ folder, onSelect }: FolderProps) {
 
     const navigate = useNavigate()
     const openFolder = (event: React.MouseEvent | React.KeyboardEvent) => {
-        event.stopPropagation();
+        event.stopPropagation() // To prevent delayed selection when clicking name to open
         if (isProcessing) {
             return
         }
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
 
         if (!isCheckboxClicked) {
+            clearSelectDelayed()
             const firstSlashIndex = currentPath.indexOf('/');
             const newPath = currentPath.substring(firstSlashIndex + 1)
             navigate((newPath + folder.name).replace(/[^\/]+/g, (match) => encodeURIComponent(match))) // encode but excluding slashes
@@ -170,10 +167,16 @@ function Folder({ folder, onSelect }: FolderProps) {
             <p className="name">
                 <span className="icon-cont">
                     <AiOutlineFolder className="main-icon" />
-                    {isConflicting &&
+                    {conflictingItems.some(conflictingItem => conflictingItem.id === folder.id) &&
                         <>
                             <AiOutlineExclamation className="conflict-icon"/>
-                            <span className="tooltip">Cannot move: conflicting<br/>name in target directory</span>
+                            <span className="tooltip">
+                                Cannot move:
+                                {sameFolderConflictingItems.some(conflictingItem => conflictingItem.id === folder.id) ?
+                                    <> can't put<br/>folder inside itself</> // Leave space
+                                    : <> conflicting<br/>name in target folder</>
+                                }
+                            </span>
                         </>
                     }
                 </span>
