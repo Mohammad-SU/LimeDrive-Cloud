@@ -108,7 +108,7 @@
                 outline: none;
             }
 
-            &:not(.processing) {
+            &:not(.processing, .disable-default-hover) {
                 @include btn-selection-styles;
                 &:hover .list-checkbox {
                     opacity: 1;

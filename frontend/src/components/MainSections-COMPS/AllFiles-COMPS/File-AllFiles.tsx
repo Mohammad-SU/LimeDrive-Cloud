@@ -16,6 +16,7 @@ function File({ file, onSelect }: FileProps) {
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [isConflicting, setIsConflicting] = useState(false)
+    const [disableDefaultHover, setDisableDefaultHover] = useState(false)
     const { selectedItems, conflictingItems, processingItems } = useFileContext()
 
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
@@ -54,9 +55,11 @@ function File({ file, onSelect }: FileProps) {
             if (isSelected) {
                 setIsSelectDragging(true)
             }
+            setDisableDefaultHover(true)
         },
         onDragEnd() {
             setIsSelectDragging(false)
+            setDisableDefaultHover(false)
         },
     });
     useEffect(() => {
@@ -102,6 +105,7 @@ function File({ file, onSelect }: FileProps) {
                 ${isSelected ? 'selected' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
                 ${isProcessing ? 'processing' : ''}
+                ${disableDefaultHover ? 'disable-default-hover' : ''}
             `}
             id={file.id.toString()}
             onClick={handleFileClick}

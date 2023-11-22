@@ -17,8 +17,8 @@
     }
 
     &__main-cont {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        gap: 7rem;
 
         .generator {
             display: flex;
@@ -26,8 +26,9 @@
             align-items: center;
             width: 27rem;
             font-size: 1rem;
-            margin-right: 3.3rem;
             text-align: center;
+            margin-left: -2.5rem;
+            margin-right: 2.5rem;
 
             &__btn {
                 font-size: 1.1rem;
@@ -67,9 +68,9 @@
         }
 
         .info {
+            display: grid;
             width: 25rem;
             margin-bottom: 12rem;
-            margin-left: 3rem;
             text-align: center;
         }
     }

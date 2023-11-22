@@ -2,6 +2,7 @@ import "./DeleteBtn.scss"
 import { memo, useState, useEffect } from 'react'
 import { useFileContext } from '../../../../contexts/FileContext'
 import Modal from '../../../Modal-comp/Modal'
+import { ItemTypes } from "../../../../types"
 import { useToast } from "../../../../contexts/ToastContext"
 import { SlTrash } from 'react-icons/sl'
 import { IoWarningSharp } from "react-icons/io5";

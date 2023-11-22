@@ -18,7 +18,6 @@ function Header() {
     const dropdownRef = useRef<HTMLDivElement | null>(null)
     const { isVisible: isDropdownVisible } = useDelayedExit({
         shouldRender: showDropdown,
-        delayMs: 300,
     });
     useClickOutside(dropdownRef, () => {
         setShowDropdown(false);
@@ -30,6 +29,7 @@ function Header() {
     const navigate = useNavigate();
     const [loadLogout, setLoadLogout] = useState(false);
     async function logout() {
+        if (loadLogout) return
         try {
             setLoadLogout(true);
             await apiSecure.post('/logout')

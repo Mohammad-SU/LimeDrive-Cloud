@@ -67,7 +67,7 @@ function DynamicClip({
     }, [animation]);
 
     useEffect(() => {
-        if ((animation && clipPathValues[0].width >= 1) || (!animation && clipPathValues[0].x >= 1)) {
+        if ((animation && clipPathValues[0].width >= 1) || (!animation && clipPathValues[0].width <= 0)) {
             setShowClip(false);
             clearInterval(intervalRef.current);
         }

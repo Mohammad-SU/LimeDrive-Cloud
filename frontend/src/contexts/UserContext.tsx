@@ -12,6 +12,9 @@ interface UserContextType {
     setUser: React.Dispatch<React.SetStateAction<UserType>>;
     token: () => string | null;
     setToken: (newToken: string | null) => void;
+
+    isLoginInvalid: boolean;
+    setIsLoginInvalid: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -135,6 +138,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
     }, [token])
 
+    const [isLoginInvalid, setIsLoginInvalid] = useState(false)
+
     const contextValue: UserContextType = useMemo(() => {
         return {
             api,
@@ -142,9 +147,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             user,
             setUser,
             token: getTokenFromCookie,
-            setToken: setTokenInCookie
+            setToken: setTokenInCookie,
+
+            isLoginInvalid,
+            setIsLoginInvalid,
         };
-    }, [api, apiSecure, user, setUser, token, setToken]);
+    }, [api, apiSecure, user, setUser, token, setToken, isLoginInvalid]);
 
     return (
         <UserContext.Provider value={contextValue}>

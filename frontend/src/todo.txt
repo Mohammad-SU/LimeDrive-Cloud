@@ -1,5 +1,4 @@
 Priority:
-    - add separate state for samefolderconflicts when moving so that tooltip message is different?
     - Deleting (add to processing items, remove from processing items in finally, deal with selected items removing/adding, backend)
     - underline/bold sidebar links if user is in that section,
     - Add checks in uploadInfo link elements for if file is deleted or in trash
@@ -24,7 +23,7 @@ Priority:
     - add tooltips with bulb icon (in gap inside toolbar/space after sorting categories?)
     - handle folder name and path name limits with file names
     - fix date when daylight savings time (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
-    - add functionality for deleting older users when new user created and space is getting low, etc, and then add extra info under login form for invalid details that the invalid username may be a deleted account and the user can register it, possibly with a hover tooltip for the extra info? or add the info to the side of the login form
+    - add functionality for deleting older user accounts when new user created and space is getting low
     - react virtualisation for large lists
 
 change directory mentions to folder instead
@@ -57,6 +56,7 @@ fix handleDragEnd working when target folder is below toolbar but hidden due to 
 instead of delaying item selection, make item selection instant and implement below suggestion? Or implement below suggestion without removing selection delay? 
 for folder opening use delay clip animation on entire main-list/list items? Although it may be annoying for users who want to open folders quickly
 
+more detailed errors, such as if folder/file doesnt exist on database cause a backend error and then tell the user that the folder/file doesnt exist
 folder uploading, check each folder and subfolder to make sure their folder names follow the valid format (test by invalidating normal characters), remove if true condition on file selection handlefileselect condition
 instantly close maintoolbar if only one selected item and was double-clicked for opening withing certain remaining amount of milliseconds from select delay and toolbar animation (!showToolbarInstant || isToolbarVisible as render jsx conditions? use useeffect and/or context?)
 add folder creation jump link as button on toast so user can choose to jump to it, but still highlight on folder creation regardless by adding targeted class manually

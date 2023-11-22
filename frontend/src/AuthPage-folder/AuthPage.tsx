@@ -6,18 +6,16 @@ import { adjectives } from '../data/adjectives.ts'
 import { nouns } from '../data/nouns.ts'
 import { useUserContext } from '../contexts/UserContext.tsx'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
-import useGlobalEnterKey from '../hooks/useGlobalEnterKey.ts'
 import LimeDriveAscii from '../assets/images/ascii/LimeDrive-ascii.png'
 import LoadingBar from "../components/LoadingBar-COMPS/LoadingBar.tsx"
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
 import LoginForm from '../components/auth-COMPS/LoginForm.tsx'
 import RegisterForm from '../components/auth-COMPS/RegisterForm.tsx'
 
-function AuthPage() {
-    useGlobalEnterKey();
+function AuthPage() { // For some reason useGlobalEnterKey is not needed here if put in MainPage.tsx
     const navigate = useNavigate()
     const location = useLocation()
-    const { api, token } = useUserContext()
+    const { api, token, isLoginInvalid, setIsLoginInvalid } = useUserContext()
 
     useEffect(() => {
         if (token && location.pathname == "/auth") {
@@ -90,10 +88,9 @@ function AuthPage() {
         return result;
     }
     async function attemptRegistration() {
-        if (cooldown > 0) {
+        if (loading || cooldown > 0) {
             return
         }
-        startCooldown()
         setLoading(true)
         setErrorMessage(null)
         setGeneratedUsername(null)
@@ -106,7 +103,7 @@ function AuthPage() {
                 passwordReg: randomPassword,
                 skipTokenCreation: true,
             })
-
+            startCooldown()
             if (response.data.message == 'Registration successful.') {
                 setLoading(false)
                 setGeneratedUsername(randomUsername)
@@ -131,6 +128,11 @@ function AuthPage() {
     const [showPassword, setShowPassword] = useState<boolean>(false)
     const [showLoginForm, setShowLoginForm] = useState<boolean>(true)
     const [showRegisterForm, setShowRegisterForm] = useState<boolean>(false)
+    const handleFormChange = () => {
+        setShowLoginForm(!showLoginForm);
+        setShowRegisterForm(!showRegisterForm);
+        setIsLoginInvalid(false)
+    }
 
     return (
         <div className="AuthPage">
@@ -143,8 +145,11 @@ function AuthPage() {
                 <div className="generator"> 
                     <p>Don't want to register an account? Generate one! <br/> You can change the details later.</p>
                     
-                    <button className="generator__btn text-btn" onClick={attemptRegistration}>
-                        {cooldown ? `Wait (${cooldown})` : "Generate"}
+                    <button className="generator__btn text-btn" onClick={attemptRegistration} disabled={loading || cooldown > 0}>
+                        {loading ? "Generating..."
+                            : cooldown ? `Cooldown (${cooldown})` 
+                            : "Generate"
+                        }
                     </button>
 
                     {(loading || errorMessage) &&
@@ -182,12 +187,15 @@ function AuthPage() {
                 <div className="form-cont">
                     {showLoginForm && <LoginForm />}
                     {showRegisterForm && <RegisterForm />}
-                    <button className="AuthPage__change-form-btn text-btn" onClick={() => {setShowLoginForm(!showLoginForm), setShowRegisterForm(!showRegisterForm)}}>
+                    <button className="AuthPage__change-form-btn text-btn" onClick={handleFormChange}>
                         {showLoginForm ? "Create an account" : "Login to LimeDrive"}
                     </button>
                 </div>
 
-                <p className="info">Very old accounts may be deleted for space. <br /> Don't upload any sensitve or important files!</p>
+                <div className="info">
+                    <p>Very old accounts may be deleted for space.<br />Don't upload any sensitve or important files!</p>
+                    {showLoginForm && isLoginInvalid && <p>Sure that the login details were correct?<br />Deleted accounts can be re-registered.</p>}
+                </div>
             </div>
         </div>
     )

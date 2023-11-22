@@ -42,6 +42,7 @@ function RegisterForm() {
     }
 
     async function handleSubmit(event: React.FormEvent) {
+        if (loading) return
         event.preventDefault()
         setFormError(null)
         
@@ -160,10 +161,10 @@ function RegisterForm() {
             </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
 
-                <p className="form__error-and-loading">
-                    <span>{formError}</span>
-                    <LoadingBar loading={loading} />
-                </p>
+            <p className="form__error-and-loading">
+                <span>{formError}</span>
+                <LoadingBar loading={loading} />
+            </p>
 
             <button className="form__submit" type="submit" disabled={loading}>
                 Register

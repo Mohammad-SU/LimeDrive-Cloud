@@ -12,7 +12,7 @@ function LoginForm() {
         usernameOrEmailLog: '',
         passwordLog: '',
     })
-    const { api, setToken } = useUserContext();
+    const { api, setToken, setIsLoginInvalid } = useUserContext();
     const navigate = useNavigate();
     let backendError: AxiosError | null = null
     let backendErrorMsg: string | null = null
@@ -21,6 +21,7 @@ function LoginForm() {
     const isPasswordValid = formData.passwordLog.length >= 8
 
     const handleSubmit = async (event: React.FormEvent) => {
+        if (loading) return
         event.preventDefault()
         setFormError(null)
 
@@ -42,9 +43,12 @@ function LoginForm() {
                     backendError = error
                     backendErrorMsg = error?.response?.data.message
 
-                    backendErrorMsg === "Invalid login details."
-                    ? setFormError(backendErrorMsg)
-                    : setFormError("Error. Please check your connection.")
+                    if (backendErrorMsg === "Invalid login details.") {
+                        setFormError(backendErrorMsg)
+                        setIsLoginInvalid(true)
+                    } else {
+                        setFormError("Error. Please check your connection.")
+                    }
                 }
             }
             finally {
@@ -53,6 +57,7 @@ function LoginForm() {
         }
         else {
             setFormError("Invalid login details.")
+            setIsLoginInvalid(true)
         }
     }
 

@@ -16,6 +16,7 @@ function Folder({ folder, onSelect }: FolderProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
+    const [disableDefaultHover, setDisableDefaultHover] = useState(false)
     const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [showSelectDelayed, setShowSelectDelayed] = useState(false) // For select-delayed class since (clickTimeoutRef.current != null) doesnt apply the class for some reason
     const { selectedItems, currentPath, conflictingItems, sameFolderConflictingItems, processingItems } = useFileContext()
@@ -95,6 +96,7 @@ function Folder({ folder, onSelect }: FolderProps) {
             if (isSelected) {
                 setIsSelectDragging(true)
             }
+            setDisableDefaultHover(true)
         },
         onDragOver(event) {
             event.active.id == event.over?.id ?
@@ -103,6 +105,7 @@ function Folder({ folder, onSelect }: FolderProps) {
         },
         onDragEnd() {
             setIsSelectDragging(false)
+            setDisableDefaultHover(false)
         },
     });
 
@@ -142,13 +145,14 @@ function Folder({ folder, onSelect }: FolderProps) {
     const formattedDate = formatDate(new Date(folder.date));
 
     return (
-        <div // Dont give style when dropped on but prevent drag operations in filecontext if its in processing items and user tries to move it
+        <div
             className={`Folder 
                 ${isSelected ? 'selected' : ''}
                 ${showSelectDelayed ? 'select-delayed' : ''}
                 ${isOver && !sameDragAndDropId && !isSelected ? 'over' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
                 ${isProcessing ? 'processing' : ''}
+                ${disableDefaultHover ? 'disable-default-hover' : ''}
             `}
             id={folder.id}
             onClick={handleFolderClick}

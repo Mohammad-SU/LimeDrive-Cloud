@@ -191,7 +191,7 @@ function AllFiles() {
     
         setDraggedItem(draggedItem);
     }
-    const handleDragEnd = async (event: DragEndEvent) => {
+    const handleDragEnd = (event: DragEndEvent) => {
         const newDroppedOnItem = event.over?.data.current as FolderType;
         
         if (draggedItem && newDroppedOnItem && (draggedItem.id != newDroppedOnItem.id) && !selectedItems.some(item => item.id === newDroppedOnItem.id)) {

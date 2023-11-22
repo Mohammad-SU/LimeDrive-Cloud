@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-function useGlobalEnterKey() {
+function useGlobalEnterKey() {    
     const handleKeyPress = (event: KeyboardEvent) => {
         if (event.key === 'Enter' && document.activeElement) {
             const activeElement = document.activeElement as HTMLElement;

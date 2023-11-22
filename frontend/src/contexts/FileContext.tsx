@@ -33,7 +33,8 @@ interface FileContextType {
     setSameFolderConflictingItems: React.Dispatch<React.SetStateAction<FolderType[]>>;
     handleMoveItems: (itemsToMove: ItemTypes[], targetFolder: FolderType, apiSecure: AxiosInstance) => void;
     processingItems: ItemTypes[];
-    setProcessingItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
+    addToProcessingItems: (item: ItemTypes[]) => void;
+    removeFromProcessingItems: (item: ItemTypes[]) => void;
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined)
@@ -145,6 +146,12 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
     const [conflictingItemsTimeout, setConflictingItemsTimeout] = useState<NodeJS.Timeout | null>(null);
     const handleMoveItems = async (itemsToMove: ItemTypes[], targetFolder: FolderType, apiSecure: AxiosInstance) => {
+        if (processingItems.some(processingItem => processingItem.id === targetFolder.id)) {
+            return showToast({message: `Cannot move: target folder is currently being processed.`, showFailIcon: true});
+        } else if (itemsToMove.some(itemToMove => processingItems.some(processingItem => processingItem.id === itemToMove.id))) {
+            return showToast({message: `Cannot move: one or more selected items are currently being processed.`, showFailIcon: true});
+        }
+
         const foldersToMove = itemsToMove.filter((item) => {
             return !item.type;
         });
@@ -243,7 +250,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         catch (error) {
             console.error(error);
             if (axios.isAxiosError(error)) {
-                showToast({ message: `Failed to move. Please check your connection.`, showFailIcon: true });
+                showToast({message: `Failed to move. Please check your connection.`, showFailIcon: true });
             }
         }
         finally {
@@ -279,8 +286,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             sameFolderConflictingItems,
             setSameFolderConflictingItems,
             handleMoveItems,
+
             processingItems,
-            setProcessingItems,
+            addToProcessingItems,
+            removeFromProcessingItems,
         };
     }, [currentPath, files, folders, selectedItems, conflictingItems, sameFolderConflictingItems, processingItems])
 
