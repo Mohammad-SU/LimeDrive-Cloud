@@ -13,7 +13,7 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     const { apiSecure } = useUserContext()
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [modalHeadingType, setModalHeadingType] = useState('0 Items') // text type states due to exit animation
-    const [modalContentType, setModalContentType] = useState<React.ReactNode>('0 items')
+    const [modalContentType, setModalContentType] = useState('0 items')
 
     const handleToolbarDeleteClick = () => {
         if (selectedItems.length == 0) return
@@ -25,7 +25,7 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
         )
         setModalContentType(
             selectedItems.length == 1 ?
-                <span className="item-name">"{selectedItems[0].name}"</span>
+                `"${selectedItems[0].name}"`
             : `${selectedItems.length} items`
         )
     }

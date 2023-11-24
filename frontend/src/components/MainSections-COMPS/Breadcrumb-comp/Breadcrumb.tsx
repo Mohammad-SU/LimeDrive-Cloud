@@ -40,8 +40,8 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
         setTimeout(() => { // Delayed to make sure segmentWidths are accurately updated
             let totalWidth = 0;
             const maxWidth = breadcrumbRef.current!.getBoundingClientRect().width
-                - (btnSegmentRef?.current?.getBoundingClientRect()?.width || 0) 
-                - 20;
+                - (btnSegmentRef?.current?.getBoundingClientRect()?.width || 0)
+                - 20
             const segmentWidths = segmentRefs.current!.map(ref => {
                     if (ref) {
                         const rect = ref.getBoundingClientRect();

@@ -14,11 +14,22 @@
     
     .Breadcrumb {
         font-size: 1.1rem !important;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.5rem;
+
+        > .item:last-child {
+            display: flex; 
+                       
+            button {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
 
         .dropdown {
             font-size: 1rem;
             max-width: 16rem;
+            margin-top: 1.9rem;
         }
     }
 

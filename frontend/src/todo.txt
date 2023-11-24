@@ -52,7 +52,6 @@ aria labels
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
-
 instead of delaying item selection, make item selection instant and implement below suggestion? Or implement below suggestion without removing selection delay? 
 for folder opening use delay clip animation on entire main-list/list items? Although it may be annoying for users who want to open folders quickly
 
