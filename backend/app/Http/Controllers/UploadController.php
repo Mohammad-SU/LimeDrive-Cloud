@@ -14,7 +14,7 @@ class UploadController extends Controller
     {
         $user_id = $request->user()->id;
         $app_path = $request->input('app_path');
-        $cloud_path = Helpers::convertAppPath($user_id, $app_path); // change first instance of "LimeDrive" to "<user_id>" for B2 bucket
+        $cloud_path = Helpers::convertAppPath($user_id, $app_path); // Change first instance of "LimeDrive" to "<user_id>" for B2 bucket
         $requestFile = $request->file('file');
         $content = file_get_contents($requestFile->getRealPath());
     
@@ -39,7 +39,7 @@ class UploadController extends Controller
         return response()->json($uploadedFile);
     }    
 
-    public function uploadFolder(Request $request)
+    public function createFolder(Request $request)
     {
         $user_id = $request->user()->id;
         $name = $request->input('name');

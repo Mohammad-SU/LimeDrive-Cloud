@@ -52,8 +52,8 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     }, [currentPath, toolbarMoveClicked]);
 
     useEffect(() => {
-        let newTargetFolder = targetFolder
-        if (moveListPath.slice(0, -1) != targetFolder?.app_path) { // For resetting targetFolder when modal is closed and then reopened and making sure there's no subfolder issues
+        let newTargetFolder = { ...targetFolder } as FolderType | undefined;
+        if (moveListPath.slice(0, -1) != newTargetFolder?.app_path) { // For resetting targetFolder when modal is closed and then reopened and making sure there's no subfolder issues
             newTargetFolder = folders.find((folder) => folder.app_path === moveListPath.slice(0, -1));
             setTargetFolder(newTargetFolder);
         }
@@ -86,7 +86,7 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
             return showToast({message: `Cannot move folder inside itself.`, showFailIcon: true});
         }
 
-        let newTargetFolder = targetFolder
+        let newTargetFolder = { ...targetFolder } as FolderType | undefined;
         if (moveListPath == "LimeDrive/") { // If user wants to move items to root
             newTargetFolder = {
                 id: 'd_0',

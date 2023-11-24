@@ -144,11 +144,10 @@
 
 .new-folder-modal {
     justify-content: center;
-
     width: 22.5rem;
     height: 15rem;
-
     clip-path: url(#newFolderModalClip);
+    top: -2rem !important;
 
     h1 {
         display: flex;

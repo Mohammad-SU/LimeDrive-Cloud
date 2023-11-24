@@ -15,7 +15,6 @@ function File({ file, onSelect }: FileProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
-    const [isConflicting, setIsConflicting] = useState(false)
     const [disableDefaultHover, setDisableDefaultHover] = useState(false)
     const { selectedItems, conflictingItems, processingItems } = useFileContext()
 
@@ -44,10 +43,6 @@ function File({ file, onSelect }: FileProps) {
     useEffect(() => {
         setIsProcessing(processingItems.some(sentItem => sentItem.id === file.id));
     }, [processingItems]);
-    useEffect(() => {
-        const newIsConflicting = conflictingItems.some(conflictingItem => conflictingItem.id === file.id)
-        setIsConflicting(newIsConflicting)
-    }, [conflictingItems]);
 
     const [isSelectDragging, setIsSelectDragging] = useState(false)
     useDndMonitor({
@@ -120,7 +115,7 @@ function File({ file, onSelect }: FileProps) {
             <p className="name">
                 <span className="icon-cont">
                     <AiOutlineFile className="main-icon" />
-                    {isConflicting &&
+                    {conflictingItems.some(conflictingItem => conflictingItem.id === file.id) &&
                         <>
                             <AiOutlineExclamation className="conflict-icon"/>
                             <span className="tooltip">Cannot move: conflicting<br/>name in target folder</span>

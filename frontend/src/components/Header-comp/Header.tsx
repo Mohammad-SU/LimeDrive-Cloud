@@ -52,7 +52,7 @@ function Header() {
 
     return (
         <header className="Header">
-            <Link to="/home">
+            <Link to="/LimeDrive">
                 <div className="main-heading">
                     <GiOrange className="lime-icon"/>
                     <img

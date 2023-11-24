@@ -40,9 +40,8 @@ class UpdateController extends Controller
             $updItem->save();
         }
 
-        return response()->json(['message' => 'Items path updated successfully', 'updatedItems' => $updatedItems]);
+        return response()->json(['message' => 'Item path(s) updated successfully', 'updatedItems' => $updatedItems]);
     }
-
 
     private function updateChildPaths($parentFolder, $new_path, &$updatedItems) // Recursive function for updating children items' app_path
     {

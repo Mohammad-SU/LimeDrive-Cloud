@@ -35,7 +35,6 @@ function DynamicClip({
 
     useEffect(() => {
         setShowClip(true)
-
         intervalRef.current = setInterval(() => {
             setClipPathValues((prevValues) =>
                 prevValues.map((value, index) => {
@@ -68,8 +67,10 @@ function DynamicClip({
 
     useEffect(() => {
         if ((animation && clipPathValues[0].width >= 1) || (!animation && clipPathValues[0].width <= 0)) {
-            setShowClip(false);
             clearInterval(intervalRef.current);
+            if (clipPathValues[0].width >= 1) {
+                setShowClip(false)
+            }
         }
     }, [clipPathValues]);
 

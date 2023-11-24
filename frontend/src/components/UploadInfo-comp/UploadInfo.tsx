@@ -102,7 +102,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             //         const app_path = currentPath + formData.newFolderName.trim()
             //         const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
             //         setShowNewFolderModal(false);
-            //         const response = await apiSecure.post('/uploadFolder', {
+            //         const response = await apiSecure.post('/createFolder', {
             //             name: formData.newFolderName.trim(),
             //             app_path: app_path,
             //             parent_folder_id: parent_folder_id
@@ -266,22 +266,25 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         setshowUploadInfo(false)
     }
 
-    const renderFileDetails = (file: QueueFile, index: number, isUploaded: boolean) => {
+    const renderFileDetails = (file: QueueFile, index: number, isPrevUploaded: boolean) => {
         const correspondingFile = files.find((appFile) => appFile.id === file.id);
         const parentPath = correspondingFile?.app_path ? correspondingFile.app_path.substring(0, correspondingFile.app_path.lastIndexOf('/')) : '';
         const parentFolderName = parentPath ? parentPath.substring(parentPath.lastIndexOf('/') + 1) : '';
+        const isDeleted = !correspondingFile && (isPrevUploaded || (index < currentUploadIndex && !fileErrors.has(file)))
         return (
-            <div className="file" key={index}>
+            <div className={`file ${isDeleted ? 'deleted' : ''}`} key={index}>
                 <AiFillFileText className="file-icon" />
                 <div className="file-info">
-                    <div className="name">{file.fileObj.name}</div>
+                    <div className="name">{!isDeleted ? file.fileObj.name : "Deleted"}</div>
                         <div className="progress-and-location">
-                            {!isUploaded && index === currentUploadIndex ? 
+                            {!isPrevUploaded && index === currentUploadIndex ? 
                                 <ProgressBar progress={currentFileProgress} />
-                                : !isUploaded && index > currentUploadIndex ? 
+                                : !isPrevUploaded && index > currentUploadIndex ? 
                                     <span>Queued</span>
                                 : fileErrors.has(file) ? 
                                     <span>Error. Check connection.</span>
+                                : isDeleted ?
+                                    null
                                 : <>In <span className="link">
                                         <Link to={(parentPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match))+'#'+file.id} smooth>{parentFolderName}</Link> {/* Based on parent path instead of the queue file's path so that this link updates when the user moves that file*/}
                                     </span></>
@@ -289,7 +292,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                         </div>
                     
                 </div>
-                {index >= currentUploadIndex && !fileErrors.has(file) && !isUploaded ?
+                {index >= currentUploadIndex && !fileErrors.has(file) && !isPrevUploaded ?
                     <button
                         className="cancel-btn"
                         onClick={() => onCancelClick(file)}
@@ -297,8 +300,10 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                     >
                         Cancel
                     </button>
-                    : fileErrors.has(file) && !isUploaded ? 
+                    : fileErrors.has(file) && !isPrevUploaded ? 
                         <button className="retry-btn" onClick={onRetryClick}>Retry</button>
+                    : isDeleted ?
+                        null
                     : <button>Copy Link</button>
                 }
             </div>

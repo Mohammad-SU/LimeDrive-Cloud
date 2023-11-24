@@ -2,45 +2,60 @@ import "./DeleteBtn.scss"
 import { memo, useState, useEffect } from 'react'
 import { useFileContext } from '../../../../contexts/FileContext'
 import Modal from '../../../Modal-comp/Modal'
-import { ItemTypes } from "../../../../types"
 import { useToast } from "../../../../contexts/ToastContext"
 import { SlTrash } from 'react-icons/sl'
 import { IoWarningSharp } from "react-icons/io5";
 import { useUserContext } from "../../../../contexts/UserContext"
 
 function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
-    const { selectedItems, setFolders, setFiles } = useFileContext()
+    const { selectedItems, processingItems, addToProcessingItems, removeFromProcessingItems, removeFromSelectedItems, setFolders, setFiles } = useFileContext()
     const { showToast } = useToast()
     const { apiSecure } = useUserContext()
-    const [loading, setLoading] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [modalHeadingType, setModalHeadingType] = useState('0 Items') // text type states due to exit animation
+    const [modalContentType, setModalContentType] = useState<React.ReactNode>('0 items')
+
+    const handleToolbarDeleteClick = () => {
+        if (selectedItems.length == 0) return
+        setShowDeleteModal(true)
+        setModalHeadingType(
+            selectedItems.length == 1 && selectedItems[0].type == undefined ? "Folder"
+            : selectedItems.length == 1 ? "File"
+            : `${selectedItems.length} Items`
+        )
+        setModalContentType(
+            selectedItems.length == 1 ?
+                <span className="item-name">"{selectedItems[0].name}"</span>
+            : `${selectedItems.length} items`
+        )
+    }
 
     const handleModalDeleteClick = async () => {
-        if (selectedItems.length == 0) return
+        const newSelectedItems = selectedItems.slice();
+
+        if (newSelectedItems.length == 0) {
+            return showToast({message: `Cannot delete: no selected items.`, showFailIcon: true});
+        } else if (newSelectedItems.some(selectedItem => processingItems.some(processingItem => processingItem.id === selectedItem.id))) {
+            return showToast({message: `Cannot delete: one or more selected items are currently being processed.`, showFailIcon: true});
+        }
 
         try {
-            setLoading(true)
+            addToProcessingItems(newSelectedItems)
+            removeFromSelectedItems(newSelectedItems)
             setShowDeleteModal(false);
-            const textType = selectedItems.length == 1 ? (selectedItems[0].type == 'folder' ? 'folder' : 'file') : `${selectedItems.length} items`;
+            const textType = newSelectedItems.length == 1 ? (newSelectedItems[0].type == undefined ? 'folder' : 'file') : `${newSelectedItems.length} items`;
             showToast({message: `Deleting ${textType}...`, loading: true});
 
-            const itemsToDeleteData = selectedItems.map(item => {
-                const postId = !item.type ? // If folder (id has d_ prefix on the frontend) then filter it for the backend
-                    parseInt((item.id as string).substring(2))
-                    : item.id
-
-                return {
-                    id: postId,
-                    type: item.type,
-                }
-            })
-            const response = await apiSecure.post('/deleteItems', {
-                items: itemsToDeleteData
+            const response = await apiSecure.post('/deleteItems', { // folder ID d_ prefix is dealt with on the backend for this route
+                itemIds: newSelectedItems.map(item => ({
+                    id: item.id,
+                }))
             });
+            console.log(response.data)
 
             setFolders(existingFolders => {
                 return existingFolders.filter(existingFolder => {
-                    return !response.data.deletedFolderIds.some((deletedFolderId: number) => "d_" + deletedFolderId === existingFolder.id); // folder IDs have d_ prefix on frontend
+                    return !response.data.deletedFolderIds.some((deletedFolderId: string) => deletedFolderId === existingFolder.id);
                 });
             });
             setFiles(existingFiles => {
@@ -48,14 +63,14 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                     return !response.data.deletedFileIds.some((deletedFileId: number) => deletedFileId === existingFile.id);
                 });
             });
-            showToast({message: "Item deleted.", showSuccessIcon: true})
+            showToast({message: `${textType.charAt(0).toUpperCase() + textType.slice(1)} deleted.`, showSuccessIcon: true})
         } 
         catch (error) {
             console.error(error);
             showToast({message: "Failed to delete. Please check your connection.", showFailIcon: true})
         }
         finally {
-            setLoading(false)
+            removeFromProcessingItems(newSelectedItems)
         }
     }
 
@@ -63,10 +78,7 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
         <>
             <button 
                 className="DeleteBtn" 
-                onClick={() => {
-                    if (selectedItems.length == 0) return
-                    setShowDeleteModal(true)
-                }}
+                onClick={handleToolbarDeleteClick}
             >
                 <SlTrash className="tool-icon trash-icon"/>
                 Delete
@@ -78,31 +90,23 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                 clipPathId="deleteModalClip"
                 numRects={10}
                 onCloseClick={() => setShowDeleteModal(false)}
-                closeBtnTabIndex={loading ? 0 : -1}
+                closeBtnTabIndex={selectedItems.length == 0 ? 0 : -1}
+                onExit={() => {setModalHeadingType("0 Items"), setModalContentType("0 items")}}
             >
                 <h1>
-                    Delete {
-                        selectedItems.length == 1 && typeof selectedItems[0].id === "number" ? "File"
-                        : selectedItems.length == 1 && typeof selectedItems[0].id === "string" ? "Folder"
-                        : `${selectedItems.length} Items`
-                    }?
+                    Delete {modalHeadingType}?
                 </h1>
 
                 <div className="main-content">
                     <IoWarningSharp className="warning-icon"/>
                     <p>
-                        Are you sure you want to delete {
-                            selectedItems.length == 1 ?
-                                <span className="item-name">"{selectedItems[0].name}" </span> // Leave space
-                            : `${selectedItems.length} items `
-                        }
-                        <strong>permanently</strong>? 
+                        Are you sure you want to delete {modalContentType} <strong>permanently</strong>?
                         <br />(Recycle bin not yet featured)
                     </p>
                 </div>
 
                 <div className="modal-btn-cont">
-                    <button className='modal-cancel-btn' onClick={() => setShowDeleteModal(false)} disabled={false}>
+                    <button className='modal-cancel-btn' onClick={() => setShowDeleteModal(false)}>
                         Cancel
                     </button>
                     <button 

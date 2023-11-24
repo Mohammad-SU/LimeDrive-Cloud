@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UpdateController;
+use App\Http\Controllers\DeleteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,9 +24,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [UserController::class, 'logout']);
 
     Route::post('/uploadFile', [UploadController::class, 'uploadFile']);
-    Route::post('/uploadFolder', [UploadController::class, 'uploadFolder']);
+    Route::post('/createFolder', [UploadController::class, 'createFolder']);
 
     Route::post('/updatePaths', [UpdateController::class, 'updatePaths']);
+
+    Route::post('/deleteItems', [DeleteController::class, 'deleteItems']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);

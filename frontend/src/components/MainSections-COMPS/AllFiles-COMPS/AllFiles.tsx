@@ -66,14 +66,14 @@ function AllFiles() {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
-        let newSelectedItems = selectedItems
+        let newSelectedItems = selectedItems.slice()
 
         if (isCtrlPressed || isCheckboxClicked) { // Multiple selections with possibly separated file locations, also logic for checkbox clicks
             if (isItemSelected) {
-                newSelectedItems = [...selectedItems, item]
+                newSelectedItems = [...newSelectedItems, item]
             }
             else {
-                newSelectedItems = selectedItems.filter(selectedItem => selectedItem.id !== item.id)
+                newSelectedItems = newSelectedItems.filter(selectedItem => selectedItem.id !== item.id)
             }
         } 
         else if (isShiftPressed && lastClickedItem) { // Multiple selections with files together in a range

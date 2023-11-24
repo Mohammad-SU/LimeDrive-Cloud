@@ -15,7 +15,6 @@ import DynamicClip from '../DynamicClip.tsx';
 import useClickOutside from '../../hooks/useClickOutside.ts';
 import Modal from '../Modal-comp/Modal.tsx';
 import UploadInfo from '../UploadInfo-comp/UploadInfo'
-import LoadingBar from '../LoadingBar-COMPS/LoadingBar.tsx';
 
 function Sidebar() {
     const { apiSecure } = useUserContext()
@@ -44,7 +43,7 @@ function Sidebar() {
     })
     const isFolderNameValid = /^[^<>\\/:?*"|]{1,255}$/.test(formData.newFolderName.trim());
     const isConflictingName = folders.some((folder) => folder.app_path == currentPath + folder.name && folder.name == formData.newFolderName.trim());
-    const [loading, setLoading] = useState<boolean>(false)
+    const [creationCooldown, setCreationCooldown] = useState<boolean>(false)
 
     const handleModalOpen = () => {
         if (backendErrorMsg) { // For if error occurs while modal is closed (toast would already tell the user)
@@ -54,18 +53,22 @@ function Sidebar() {
         setShowNewMenu(false)
     }
     const handleCreateFolder = async () => {
-        if (formData.newFolderName.trim() == '' || !isFolderNameValid || isConflictingName || loading) {
+        if (formData.newFolderName.trim() == '' || !isFolderNameValid || isConflictingName || creationCooldown) {
             return;
         }
 
         try {
-            setLoading(true)
+            setCreationCooldown(true);
+            setTimeout(() => {
+                setCreationCooldown(false);
+            }, 350);
+
             const parentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
             const app_path = currentPath + formData.newFolderName.trim()
             const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
             setShowNewFolderModal(false);
             showToast({message: "Creating folder...", loading: true})
-            const response = await apiSecure.post('/uploadFolder', {
+            const response = await apiSecure.post('/createFolder', {
                 name: formData.newFolderName.trim(),
                 app_path: app_path,
                 parent_folder_id: parent_folder_id
@@ -73,7 +76,6 @@ function Sidebar() {
 
             addFolders(response.data)
             showToast({message: "Folder created.", showSuccessIcon: true})
-            formData.newFolderName = ''
 
             setTimeout(() => { // Wait for folder with it's id to be properly rendered to the DOM
                 if (currentPath == parentFolder?.app_path + "/" || parent_folder_id === "0" && currentPath == "LimeDrive/") { // Jump to folder if user is still in same path
@@ -91,9 +93,6 @@ function Sidebar() {
                 setBackendErrorMsg(error?.response?.data.message)
                 showToast({message: "Failed to create folder. Please check your connection.", showFailIcon: true})
             }
-        }
-        finally {
-            setLoading(false)
         }
     };
     
@@ -184,10 +183,10 @@ function Sidebar() {
                 render={showNewFolderModal}
                 clipPathId="newFolderModalClip"
                 onCloseClick={() => setShowNewFolderModal(false)}
-                closeBtnTabIndex={loading ? 0 : -1}
+                closeBtnTabIndex={creationCooldown && formData.newFolderName.trim() !== '' ? 0 : -1}
                 onVisible={() => folderNameInputRef.current?.focus()}
                 onExit={() => {
-                    if (!loading) {formData.newFolderName = ''}
+                    formData.newFolderName = ''
                     setBackendErrorMsg(null)
                 }}
             >
@@ -208,16 +207,14 @@ function Sidebar() {
                         maxLength={255}
                         ref={folderNameInputRef}
                         required
-                        disabled={loading}
+                        disabled={creationCooldown}
                         aria-label="Input for new folder name"
                     />
                     <div className="error-and-loading">
-                        {loading ?
-                            <LoadingBar loading={loading}/> 
-                            : (!isFolderNameValid && formData.newFolderName.trim() !== '') || (backendErrorMsg == 'Invalid folder name format.') ? 
+                        {(!isFolderNameValid && formData.newFolderName.trim() !== '') || (backendErrorMsg == 'Invalid folder name format.') ?
                                 "Name cannot contain: < > \\ / : ? * \" |"
                             : isConflictingName ?
-                                "Name conflicts with an existing folder in this directory."
+                                "Name conflicts with an existing folder in this path."
                             : backendErrorMsg ?
                                 "Error. Please check connection."
                             : null
@@ -226,13 +223,13 @@ function Sidebar() {
                 </div>
 
                 <div className="modal-btn-cont">
-                    <button className='modal-cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)} disabled={loading}>
+                    <button className='modal-cancel-btn' type="button" onClick={() => setShowNewFolderModal(false)} disabled={creationCooldown && formData.newFolderName.trim() !== ''}>
                         Cancel
                     </button>
                     <button 
                         className='modal-primary-btn'
                         type="submit"
-                        disabled={formData.newFolderName.trim() == '' || !isFolderNameValid || isConflictingName || loading}
+                        disabled={formData.newFolderName.trim() == '' || !isFolderNameValid || isConflictingName || creationCooldown}
                     >
                         Create
                     </button>
