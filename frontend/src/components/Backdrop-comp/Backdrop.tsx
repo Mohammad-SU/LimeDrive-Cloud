@@ -5,14 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface BackdropProps {
     render: boolean;
     onClick?: () => void;
+    className?: string;
 }
 
-function Backdrop({ render, onClick }: BackdropProps) {
+function Backdrop({ render, onClick, className }: BackdropProps) {
     return (
         <AnimatePresence>
             {render &&
                 <motion.div
-                    className="Backdrop"
+                    className={`Backdrop ${className}`}
                     onClick={onClick}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

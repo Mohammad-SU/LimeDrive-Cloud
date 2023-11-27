@@ -42,36 +42,34 @@ function RegisterForm() {
     }
 
     async function handleSubmit(event: React.FormEvent) {
-        if (loading) return
         event.preventDefault()
-        setFormError(null)
-        
-        if (isEmailValid && isUsernameValid && isPasswordValid && isPasswordMatch) {
-            setLoading(true)
-            try {
-                const response = await api.post('/register', formData)
+        if (loading) return
+        if (!isEmailValid || !isUsernameValid || !isPasswordValid || !isPasswordMatch) {
+            return renderError()
+        }
 
-                if (response.data.message == "Registration successful.") {
-                    setFormError(null)
-                    const { token } = response.data;
-                    setToken(token);
-                    navigate("/LimeDrive")
-                }
-            }
-            catch (error) {
-                console.error(error)
-                if (axios.isAxiosError(error)) {
-                    backendError = error
-                    backendErrorMsg = error?.response?.data.message
-                }
-                renderError()
-            } 
-            finally {
-                setLoading(false)
+        setFormError(null)
+        setLoading(true)
+        try {
+            const response = await api.post('/register', formData)
+
+            if (response.data.message == "Registration successful.") {
+                setFormError(null)
+                const { token } = response.data;
+                setToken(token);
+                navigate("/LimeDrive")
             }
         }
-        else {
+        catch (error) {
+            console.error(error)
+            if (axios.isAxiosError(error)) {
+                backendError = error
+                backendErrorMsg = error?.response?.data.message
+            }
             renderError()
+        } 
+        finally {
+            setLoading(false)
         }
     }
 

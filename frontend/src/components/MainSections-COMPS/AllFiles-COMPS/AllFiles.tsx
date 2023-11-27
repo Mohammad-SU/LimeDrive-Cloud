@@ -235,6 +235,7 @@ function AllFiles() {
                             checked={showSelectAll}
                             onClick={handleHeaderCheckboxClick}
                             showMinus={showDeselectAll}
+                            tabIndex={showSelectAll || showDeselectAll ? 0 : -1}
                         />
                         <p className="name-header">
                             Name 

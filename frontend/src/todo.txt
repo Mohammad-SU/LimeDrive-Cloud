@@ -1,6 +1,7 @@
 Priority:
     - Previews
     - Downloading, Renaming
+    - remove unneeded console.logs with vscode file search
     - finish implementing search function
     - finish sorting toolbar logic
     - full page animations with DynamicClip
@@ -23,7 +24,10 @@ Priority:
     - add functionality for deleting older user accounts when new user created and space is getting low
     - react virtualisation for large lists
 
-change directory mentions to folder instead
+make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
+fix :after being off center in move modal breadcrumb
+thumbnails - separate array from files, use find method when rendering, lazy load
+change directory mentions to folder or path instead
 for main sections add general scss to MainPage.scss (such as the title where the breadcrumb is the, the general list/header row scss? and other stuff. so that scss code isnt duplicated too much)
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
@@ -33,8 +37,7 @@ Deleting (future?):
     - move selection code into a custom hook?
 
 Previews:
-    - change preview toolbar button to "open" if folder is selected, and hide this button if multiple items are selected
-    - in preview, add extra buttons such as open in new tab/download, etc, use dropbox/google drive for inspiration
+    - in preview, add extra buttons such as open in new tab/download, connect apps, etc, use dropbox/google drive for inspiration
 
 underline/bold sidebar links if user is in that section
 make it so backend logic handles filtering out of d_ prefix for folders in move operations (to avoid needing to send type)
@@ -49,13 +52,15 @@ remember to put toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
 vertically align text in buttons?
 aria labels
+custom or more up-to-date file viewer?
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
 instead of delaying item selection, make item selection instant and implement below suggestion? Or implement below suggestion without removing selection delay? 
 for folder opening use delay clip animation on entire main-list/list items? Although it may be annoying for users who want to open folders quickly
-
+file selection with arrow keys (multiple with shift)
 cancel button in toast
+file editing
 more detailed errors, such as if folder/file doesnt exist on database cause a backend error and then tell the user that the folder/file doesnt exist
 folder uploading, check each folder and subfolder to make sure their folder names follow the valid format (test by invalidating normal characters), remove if true condition on file selection handlefileselect condition
 instantly close maintoolbar if only one selected item and was double-clicked for opening withing certain remaining amount of milliseconds from select delay and toolbar animation (!showToolbarInstant || isToolbarVisible as render jsx conditions? use useeffect and/or context?)
@@ -93,7 +98,7 @@ prevent file/folder hover styles during click delay?
 create new folder button in move modal
 better backend validation
 research accessibility and improve it on the app
-add folders on sidebar
+add folders on sidebar, separated from/below main links
 divider element in newMenu in sidebar that has margin top and bottom similar to newMenu's top and bottom padding
 different layouts for filelist
 add help section?

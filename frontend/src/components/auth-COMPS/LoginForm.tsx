@@ -21,43 +21,41 @@ function LoginForm() {
     const isPasswordValid = formData.passwordLog.length >= 8
 
     const handleSubmit = async (event: React.FormEvent) => {
-        if (loading) return
         event.preventDefault()
+        if (loading) return
+        if (!isPasswordValid) {
+            setFormError("Invalid login details.")
+            return setIsLoginInvalid(true)
+        }
+
         setFormError(null)
+        setLoading(true)
+        try {
+            const response = await api.post('/login', formData)
 
-        if (isPasswordValid) {
-            setLoading(true)
-            try {
-                const response = await api.post('/login', formData)
-
-                if (response.data.message == "Login successful.") {
-                    setFormError(null)
-                    const { token } = response.data
-                    setToken(token)
-                    navigate("/LimeDrive")
-                }
-            } 
-            catch (error) {
-                console.error(error)
-                if (axios.isAxiosError(error)) {
-                    backendError = error
-                    backendErrorMsg = error?.response?.data.message
-
-                    if (backendErrorMsg === "Invalid login details.") {
-                        setFormError(backendErrorMsg)
-                        setIsLoginInvalid(true)
-                    } else {
-                        setFormError("Error. Please check your connection.")
-                    }
-                }
+            if (response.data.message == "Login successful.") {
+                setFormError(null)
+                const { token } = response.data
+                setToken(token)
+                navigate("/LimeDrive")
             }
-            finally {
-                setLoading(false)
+        } 
+        catch (error) {
+            console.error(error)
+            if (axios.isAxiosError(error)) {
+                backendError = error
+                backendErrorMsg = error?.response?.data.message
+
+                if (backendErrorMsg === "Invalid login details.") {
+                    setFormError(backendErrorMsg)
+                    setIsLoginInvalid(true)
+                } else {
+                    setFormError("Error. Please check your connection.")
+                }
             }
         }
-        else {
-            setFormError("Invalid login details.")
-            setIsLoginInvalid(true)
+        finally {
+            setLoading(false)
         }
     }
 

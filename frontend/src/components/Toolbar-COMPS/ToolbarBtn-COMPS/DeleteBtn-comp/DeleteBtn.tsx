@@ -51,7 +51,6 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                     id: item.id,
                 }))
             });
-            console.log(response.data)
 
             setFolders(existingFolders => {
                 return existingFolders.filter(existingFolder => {

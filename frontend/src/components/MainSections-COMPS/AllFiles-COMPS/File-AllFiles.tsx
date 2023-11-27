@@ -109,7 +109,8 @@ function File({ file, onSelect }: FileProps) {
             {...attributes}
         >
             <Checkbox
-                className={`list-checkbox ${showCheckbox && !isProcessing ? "show-checkbox" : "hide-checkbox"}`} 
+                className={`list-checkbox ${showCheckbox && !isProcessing ? "show-checkbox" : "hide-checkbox"}`}
+                tabIndex={showCheckbox && !isProcessing ? 0 : -1}
                 checked={isSelected}
             />
             <p className="name">

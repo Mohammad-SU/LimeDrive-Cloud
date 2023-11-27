@@ -131,10 +131,18 @@ function Folder({ folder, onSelect }: FolderProps) {
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
 
         if (!isCheckboxClicked) {
-            clearSelectDelayed()
+            clearSelectDelayed();
+    
             const firstSlashIndex = currentPath.indexOf('/');
-            const newPath = currentPath.substring(firstSlashIndex + 1)
-            navigate((newPath + folder.name).replace(/[^\/]+/g, (match) => encodeURIComponent(match))) // encode but excluding slashes
+            const newPath = currentPath.substring(firstSlashIndex + 1) + folder.name;
+    
+            const isCtrlPressed = event.ctrlKey || event.metaKey;
+            const isShiftPressed = event.shiftKey;
+            const windowPath = currentPath == "LimeDrive/" ? "LimeDrive/" + folder.name : newPath
+    
+            isCtrlPressed || isShiftPressed ? 
+                window.open((windowPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match)), '_blank')
+            : navigate((newPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match)));
         }
     }
 
@@ -167,6 +175,7 @@ function Folder({ folder, onSelect }: FolderProps) {
             <Checkbox
                 className={`list-checkbox ${showCheckbox && !isProcessing ? "show-checkbox" : 'hide-checkbox'}`}
                 checked={isSelected}
+                tabIndex={showCheckbox && !isProcessing ? 0 : -1}
             />
             <p className="name">
                 <span className="icon-cont">

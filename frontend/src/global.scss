@@ -108,10 +108,10 @@ body {
 @mixin other-selection-styles {
     &:hover {
         cursor: pointer;
-        opacity: 0.8;
+        color: rgb(0, 195, 0);
     }
     &:active {
-        opacity: 0.9;
+        color: rgba(0, 225, 0);
     }
 }
 
@@ -129,12 +129,12 @@ button {
     color: inherit;
 
     &:disabled {
-        opacity: 0.8;
+        color: rgba(0, 255, 0, 0.8);
         cursor: not-allowed;
     }
 
     &.icon-btn-wrapper {
-        background-color: black !important;
+        background-color: black;
         @include other-selection-styles;
     }
     &.text-btn {
@@ -144,7 +144,6 @@ button {
     
     .icon-btn {
         display: block; // Fix sizing issue
-        background-color: black !important;
     }
 }
 

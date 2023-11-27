@@ -275,16 +275,16 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             <div className={`file ${isDeleted ? 'deleted' : ''}`} key={index}>
                 <AiFillFileText className="file-icon" />
                 <div className="file-info">
-                    <div className="name">{!isDeleted ? file.fileObj.name : "Deleted"}</div>
+                    <div className="name">{file.fileObj.name}</div>
                         <div className="progress-and-location">
                             {!isPrevUploaded && index === currentUploadIndex ? 
                                 <ProgressBar progress={currentFileProgress} />
                                 : !isPrevUploaded && index > currentUploadIndex ? 
-                                    <span>Queued</span>
+                                    "Queued"
                                 : fileErrors.has(file) ? 
-                                    <span>Error. Check connection.</span>
+                                    "Error. Check connection."
                                 : isDeleted ?
-                                    null
+                                    "Deleted"
                                 : <>In <span className="link">
                                         <Link to={(parentPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match))+'#'+file.id} smooth>{parentFolderName}</Link> {/* Based on parent path instead of the queue file's path so that this link updates when the user moves that file*/}
                                     </span></>

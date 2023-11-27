@@ -10,7 +10,7 @@ interface DynamicClipProps {
 
 function DynamicClip({
     numRects,
-    incrementProportion = 0.1,
+    incrementProportion = 0.05,
     animationDuration = 300,
     clipPathId,
     animation,

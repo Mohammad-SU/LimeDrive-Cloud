@@ -1,14 +1,15 @@
 .delete-modal {
+    width: fit-content;
     max-width: 40rem;
     height: fit-content;
     clip-path: url("#deleteModalClip");
+    top: -2rem;
 
     h1 {
         margin-top: 0.2rem;
     }
 
     .main-content {
-        justify-self: center;
         display: flex;
         align-items: center;
         flex-direction: column;
