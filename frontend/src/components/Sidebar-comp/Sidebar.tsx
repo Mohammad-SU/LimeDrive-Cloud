@@ -196,11 +196,11 @@ function Sidebar() {
                 </h1>
                 
                 <div className="input-cont">
-                    <label htmlFor="folder-name-input">Folder name</label>
+                    <label htmlFor="folder-name-input">Name</label>
                     <input
                         type="text"
                         id="folder-name-input"
-                        placeholder="Can contain a-z, A-Z, 0-9, spaces, -, _"
+                        placeholder="Folder name"
                         name="newFolderName"
                         value={formData.newFolderName}
                         onChange={(e) => handleInputChange(e, 255)}
@@ -212,7 +212,7 @@ function Sidebar() {
                     />
                     <div className="error-and-loading">
                         {(!isFolderNameValid && formData.newFolderName.trim() !== '') || (backendErrorMsg == 'Invalid folder name format.') ?
-                                "Name cannot contain: < > \\ / : ? * \" |"
+                                "Cannot contain: < > \\ / : ? * \" |"
                             : isConflictingName ?
                                 "Name conflicts with an existing folder in this path."
                             : backendErrorMsg ?

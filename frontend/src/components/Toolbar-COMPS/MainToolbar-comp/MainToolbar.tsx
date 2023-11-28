@@ -19,7 +19,7 @@ function MainToolbar() {
     useEffect(() => {
         const newShowToolbar = selectedItems.length > 0
         setShowToolbar(newShowToolbar);
-        
+
         !newShowToolbar ? // So that the openBtn doesnt quickly unrender when all items are unselected, so that the openBtn is hidden through the clip animation instead
             null
         : selectedItems.length == 1 && selectedItems[0].type != undefined ?
@@ -42,7 +42,6 @@ function MainToolbar() {
                         <DynamicClip clipPathId="DownloadBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     </button>
 
-
                     {showOpenBtn &&
                         <OpenBtn toolbarRendered={showToolbar}/>
                     }
@@ -52,6 +51,7 @@ function MainToolbar() {
                     <DynamicClip clipPathId="DeleteBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     
                     <div className="toolbar-divider" />
+                    <DynamicClip clipPathId="toolbarDividerClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
 
                     <MoveBtn toolbarRendered={showToolbar}/>
                     <DynamicClip clipPathId="MoveBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>

@@ -45,6 +45,8 @@
             background: lime;
             width: 0.1rem;
             margin: 0 0.2rem;
+
+            clip-path: url(#toolbarDividerClip);
         }
 
         .DownloadBtn {

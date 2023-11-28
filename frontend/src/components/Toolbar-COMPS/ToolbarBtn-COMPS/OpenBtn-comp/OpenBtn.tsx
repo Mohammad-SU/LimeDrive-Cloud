@@ -20,7 +20,7 @@ function OpenBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     const handleToolbarOpenClick = async () => {
         const newSelectedItems = selectedItems.slice();
 
-        if (newSelectedItems.length > 1 || newSelectedItems[0].type == undefined) { // If more than one item selected or if folder selected then return
+        if (newSelectedItems.length == 0 || newSelectedItems.length > 1 || newSelectedItems[0].type == undefined) { // If more than no items or one item selected or if folder selected then return
             return
         }
 
@@ -43,7 +43,7 @@ function OpenBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                 Preview
             </button>
 
-            {isFileViewerVisbile &&
+            {isFileViewerVisbile && selectedItems[0]?.name && // Extra condition in case user presses browser back button
                 <div className="file-viewer">
                     <div className="heading-cont">
                         <button className="icon-btn-wrapper close-btn" type="button" onClick={() => setShowFileViewer(false)}>

@@ -1,13 +1,13 @@
 Priority:
     - Previews
     - Downloading, Renaming
-    - remove unneeded console.logs with vscode file search
     - finish implementing search function
     - finish sorting toolbar logic
     - full page animations with DynamicClip
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
     - implement "space left" on bottom left corner
     - settings page (put backend code in UserController), toast notifications
+    - remove unneeded console.logs with vscode file search
     - Suggested with thumbnails on all files page, and recents page
     - malware check
     - make website title reflect page/folder accurately
