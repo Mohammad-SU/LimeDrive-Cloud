@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\File;
 use App\Models\Folder;
@@ -18,29 +19,37 @@ class UpdateController extends Controller
             'items.*.parent_folder_id' => 'required|int',
         ]);
 
-        $updatedItems = [];
+        try {
+            DB::beginTransaction();
+            
+            $updatedItems = [];
 
-        foreach ($items['items'] as $item) {
-            $id = $item['id'];
-            $new_path = $item['new_path'];
-            $parent_folder_id = $item['parent_folder_id'];
+            foreach ($items['items'] as $item) {
+                $id = $item['id'];
+                $new_path = $item['new_path'];
+                $parent_folder_id = $item['parent_folder_id'];
 
-            if (!isset($item['type'])) {
-                $updItem = Folder::find($id);
-                $this->updateChildPaths($updItem, $new_path, $updatedItems);
-                $updatedItems[] = ['id' => 'd_' . $updItem->id, 'updated_path' => $new_path];
-            } 
-            else {
-                $updItem = File::find($id);
-                $updatedItems[] = ['id' => $updItem->id, 'updated_path' => $new_path];
+                if (!isset($item['type'])) {
+                    $updItem = Folder::find($id);
+                    $this->updateChildPaths($updItem, $new_path, $updatedItems);
+                    $updatedItems[] = ['id' => 'd_' . $updItem->id, 'updated_path' => $new_path];
+                } 
+                else {
+                    $updItem = File::find($id);
+                    $updatedItems[] = ['id' => $updItem->id, 'updated_path' => $new_path];
+                }
+
+                $updItem->app_path = $new_path;
+                $updItem->parent_folder_id = $parent_folder_id;
+                $updItem->save();
             }
 
-            $updItem->app_path = $new_path;
-            $updItem->parent_folder_id = $parent_folder_id;
-            $updItem->save();
+            return response()->json(['message' => 'Item path(s) updated successfully', 'updatedItems' => $updatedItems]);
         }
-
-        return response()->json(['message' => 'Item path(s) updated successfully', 'updatedItems' => $updatedItems]);
+        catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error occurred during path update'], 500);
+        }
     }
 
     private function updateChildPaths($parentFolder, $new_path, &$updatedItems) // Recursive function for updating children items' app_path

@@ -103,6 +103,7 @@ divider element in newMenu in sidebar that has margin top and bottom similar to 
 different layouts for filelist
 add help section?
 stricter security features such as password-protected file/folders/ and encryption, decryption keys?
+remove dark-reader lock meta tag if light mode styles are added?
 
 future update ideas:
     undo btn/features

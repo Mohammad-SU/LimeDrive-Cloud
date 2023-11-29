@@ -20,7 +20,7 @@ function MainToolbar() {
         const newShowToolbar = selectedItems.length > 0
         setShowToolbar(newShowToolbar);
 
-        !newShowToolbar ? // So that the openBtn doesnt quickly unrender when all items are unselected, so that the openBtn is hidden through the clip animation instead
+        !newShowToolbar ? // So that the openBtn doesnt quickly unrender when all items are unselected, so that the openBtn is hidden after the clip animation instead
             null
         : selectedItems.length == 1 && selectedItems[0].type != undefined ?
             setShowOpenBtn(true)
