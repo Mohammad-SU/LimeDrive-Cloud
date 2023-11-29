@@ -53,7 +53,7 @@ remember to put toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
 vertically align text in buttons?
 aria labels
-custom or more up-to-date file viewer?
+more advanced backend delete code with db transaction and b2 cloud deletion error handling
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
@@ -103,8 +103,10 @@ add folders on sidebar, separated from/below main links
 divider element in newMenu in sidebar that has margin top and bottom similar to newMenu's top and bottom padding
 different layouts for filelist
 add help section?
-stricter security features such as password-protected file/folders/ and encryption, decryption keys?
-remove dark-reader lock meta tag if light mode styles are added?
+
 
 future update ideas:
     undo btn/features
+    stricter security features such as password-protected file/folders/ and encryption, decryption keys?
+    remove dark-reader lock meta tag if light mode styles are added?
+    version control for files?
