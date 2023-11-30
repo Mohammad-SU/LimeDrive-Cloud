@@ -22,8 +22,11 @@ Priority:
     - add tooltips with bulb icon (in gap inside toolbar/space after sorting categories?)
     - handle folder name and path name limits with file names
     - fix date when daylight savings time (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
-    - add functionality for deleting older user accounts when new user created and space is getting low
+    - add functionality for deleting older user accounts when new user uploads files and space is getting low (get space left from b2 directly)
     - react virtualisation for large lists
+    - account deleted message with apisecure interceptor
+    - implement rate limiting
+    - implement captcha
 
 make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
 fix :after being off center in move modal breadcrumb
@@ -56,7 +59,7 @@ vertically align text in buttons?
 aria labels
 more advanced backend delete code with db transaction and b2 cloud deletion error handling, and then update frontend toasts/error handling for DeleteBtn
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
-backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
+backend validation for conflicting item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc, update frontend validation for this, websockets?
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
 instead of delaying item selection, make item selection instant and implement below suggestion? Or implement below suggestion without removing selection delay? 
 for folder opening use delay clip animation on entire main-list/list items? Although it may be annoying for users who want to open folders quickly

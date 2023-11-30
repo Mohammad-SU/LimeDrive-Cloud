@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use App\Jobs\RcloneDeleteJob;
 use App\Http\Helpers;
 use App\Models\File;
 use App\Models\Folder;
@@ -44,28 +44,26 @@ class DeleteController extends Controller
                 }
             }
             DB::commit();
-
-            foreach ($deletedFileData as $deletedFileDataItem) {
-                $cloud_path = Helpers::convertAppPath(auth()->id(), $deletedFileDataItem['id'], $deletedFileDataItem['extension']);
-                // Add error handling for this in the future with rollbacked DB transaction if an error occurs here too? (currently not able to reverse all b2 deletions if a single subfile has an error during the exec, unlike DB deletions)
-                $rcloneCommand = env('RCLONE_EXE_PATH') . " delete b2remote:LimeDriveBucket/" . $cloud_path . " --b2-hard-delete";
-                exec($rcloneCommand); // Use rclone because Backblaze hides files instead of deleting them permanently and instantly
-            }
-
-            $deletedFileIdsForResponse = array_map(function ($file) {
-                return $file['id'];
-            }, $deletedFileData);
-
-            return response()->json([
-                'message' => 'Item(s) deleted successfully',
-                'deletedFolderIds' => $deletedFolderIds,
-                'deletedFileIds' => $deletedFileIdsForResponse,
-            ]);
-        } 
+        }
         catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Error occurred during deletion'], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
+
+        foreach ($deletedFileData as $deletedFileDataItem) {
+            $cloudPath = Helpers::convertAppPath(auth()->id(), $deletedFileDataItem['id'], $deletedFileDataItem['extension']);
+            RcloneDeleteJob::dispatch($cloudPath); // Use rclone because backblaze hides files instead of deleting them permanently and instantly, and put in queue since it seems to be slow
+        }
+
+        $deletedFileIds = array_map(function ($file) {
+            return $file['id'];
+        }, $deletedFileData);
+
+        return response()->json([
+            'message' => 'Item(s) deleted successfully',
+            'deletedFolderIds' => $deletedFolderIds,
+            'deletedFileIds' => $deletedFileIds,
+        ]);
     }
 
     private function deleteFolder($folderId, &$deletedFolderIds, &$deletedFileData)
