@@ -49,11 +49,12 @@ when adding delay for open file on double click, remember escape key press timeo
 box shadow for newMenu and other modals?
 fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too) by adding padding bottom?
 toast notification stacking
+fix finalising being set back to false when uploadInfo is collapsed (move finalising code to uploadInfo)
 remember to put toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
 vertically align text in buttons?
 aria labels
-more advanced backend delete code with db transaction and b2 cloud deletion error handling
+more advanced backend delete code with db transaction and b2 cloud deletion error handling, and then update frontend toasts/error handling for DeleteBtn
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 backend validation for duplicate item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)

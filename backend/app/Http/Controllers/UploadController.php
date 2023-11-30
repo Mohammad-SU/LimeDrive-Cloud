@@ -36,7 +36,7 @@ class UploadController extends Controller
                 'date' => now(),
             ]);
 
-            $cloud_path = Helpers::convertAppPath($user_id, $app_path, $uploadedFile->id);
+            $cloud_path = Helpers::convertAppPath($user_id, $uploadedFile->id, $requestFile->getClientOriginalExtension());
             if (!Storage::put($cloud_path, $content)) { // for b2 bucket, e.g. LimeDrive/My folder/image.png ==> <user_id>/My folder/<file_id>
                 throw new \Exception('Failed to upload file to cloud storage.');
             }

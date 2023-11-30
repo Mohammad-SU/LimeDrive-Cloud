@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from "react"
+import { memo, useState, useEffect, useRef } from "react"
 import "./LoadingBar.scss"
 
 interface ProgressBarProps {
@@ -7,47 +7,39 @@ interface ProgressBarProps {
 }
 
 function ProgressBar({ progress, enableFinalising = true }: ProgressBarProps) {
-    const [showFinalising, setShowFinalising] = useState<boolean>(false)
+    const [showFinalising, setShowFinalising] = useState(false)
     const [filled, setFilled] = useState("")
     const [empty, setEmpty] = useState("") 
 
     useEffect(() => {
         if (progress != null) {
-            if (!showFinalising) {
-                const maxSteps = 18
-                const filledSteps = Math.round((progress / 100) * maxSteps)
-                const emptySteps = maxSteps - filledSteps
-            
-                setFilled("#".repeat(filledSteps))
-                setEmpty("-".repeat(emptySteps))
-            }
+            const maxSteps = 18
+            const filledSteps = Math.round((progress / 100) * maxSteps)
+            const emptySteps = maxSteps - filledSteps
+        
+            setFilled("#".repeat(filledSteps))
+            setEmpty("-".repeat(emptySteps))
 
             if (progress >= 100) {
-                const delay = 1000
-                const timer = setTimeout(() => {
+                const timeout = setTimeout(() => {
                     setShowFinalising(true)
-                }, delay)
-        
-                return () => clearTimeout(timer) // Clear the timer when the component unmounts or when progress changes.
-            } 
-            else {
-                setShowFinalising(false)
+                }, 500)
+
+                return () => clearTimeout(timeout);
             }
         }
     }, [progress])
 
     return (
-        progress != null ?
+        progress != null &&
             <span className="LoadingBar">
                 <span className="spinner-before"></span>
                 {showFinalising && enableFinalising ? 
                     <span className="finalising-text">Finalising...</span> 
-                    
                     : <span className="progress-bar">{`[${filled}${empty}]`}</span>
                 }
                 <span className="spinner-after"></span>
             </span>
-        : null
     )
 }
 

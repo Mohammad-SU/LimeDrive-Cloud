@@ -62,6 +62,7 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                     return !response.data.deletedFileIds.some((deletedFileId: number) => deletedFileId === existingFile.id);
                 });
             });
+
             showToast({message: `${textType.charAt(0).toUpperCase() + textType.slice(1)} deleted.`, showSuccessIcon: true})
         } 
         catch (error) {
