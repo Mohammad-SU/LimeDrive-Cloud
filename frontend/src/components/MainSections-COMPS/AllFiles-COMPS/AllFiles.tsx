@@ -143,7 +143,7 @@ function AllFiles() {
             const isBackdropOpen = document.querySelector(".Backdrop");
             const isInputFocused = document.activeElement instanceof HTMLInputElement;
     
-            if (!isBackdropOpen && !isInputFocused) {
+            if (!isBackdropOpen && !isInputFocused && !fileToView) {
                 if (event.key === 'Escape') {
                     event.preventDefault();
                     setSelectedItems([]);

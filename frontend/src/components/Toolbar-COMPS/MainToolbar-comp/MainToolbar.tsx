@@ -43,7 +43,7 @@ function MainToolbar() {
                     </button>
 
                     {showOpenBtn &&
-                        <OpenBtn toolbarRendered={showToolbar}/>
+                        <OpenBtn />
                     }
                     <DynamicClip clipPathId="OpenBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
 
