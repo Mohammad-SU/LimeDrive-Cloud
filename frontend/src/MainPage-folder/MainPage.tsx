@@ -2,6 +2,7 @@ import { memo, useState, useEffect, useRef } from 'react'
 import "./MainPage.scss"
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useUserContext } from '../contexts/UserContext.tsx';
+import FileViewer from '../components/MainSections-COMPS/FileViewer-comp/FileViewer.tsx';
 import useGlobalEnterKey from '../hooks/useGlobalEnterKey.ts'
 import Header from "../components/Header-comp/Header.tsx"
 import Sidebar from "../components/Sidebar-comp/Sidebar.tsx"
@@ -73,6 +74,7 @@ function MainPage() {
                     <Sidebar />
                     <main className="main-content">
                         <Outlet />
+                        <FileViewer />
                     </main>
                 </div>
             </div>

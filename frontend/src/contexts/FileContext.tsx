@@ -20,6 +20,9 @@ interface FileContextType {
     updateFiles: (updates: { [fileId: string]: Partial<FileType> }) => void;
     updateFolders: (updates: { [folderId: string]: Partial<FolderType> }) => void;
 
+    fileToView: FileType | null
+    setFileToView: React.Dispatch<React.SetStateAction<FileType | null>>;
+
     selectedItems: ItemTypes[];
     setSelectedItems: React.Dispatch<React.SetStateAction<ItemTypes[]>>;
     addToSelectedItems: (item: ItemTypes[]) => void;
@@ -51,6 +54,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const [currentPath, setCurrentPath] = useState("LimeDrive/"); // Change whenever user opens a folder, e.g. to LimeDrive/documents. Should be set to LimeDrive/ by default/when user is on a separate page
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
+    const [fileToView, setFileToView] = useState<FileType | null>(null)
     const [selectedItems, setSelectedItems] = useState<ItemTypes[]>([]);
     const [processingItems, setProcessingItems] = useState<ItemTypes[]>([]);
     const [conflictingItems, setConflictingItems] = useState<ItemTypes[]>([]);
@@ -274,6 +278,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             updateFiles,
             updateFolders,
 
+            fileToView,
+            setFileToView,
+
             selectedItems,
             setSelectedItems,
             addToSelectedItems,
@@ -291,7 +298,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             addToProcessingItems,
             removeFromProcessingItems,
         };
-    }, [currentPath, files, folders, selectedItems, conflictingItems, sameFolderConflictingItems, processingItems])
+    }, [currentPath, files, folders, fileToView, selectedItems, conflictingItems, sameFolderConflictingItems, processingItems])
 
     return (
         <FileContext.Provider value={contextValue}>

@@ -107,7 +107,7 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
 
             <Modal 
                 className="move-modal"
-                render={showMoveModal && toolbarRendered}
+                render={showMoveModal && toolbarRendered} // toolbarRendered condition so if items unselected it will also use the animation
                 clipPathId="moveModalClip"
                 numRects={10}
                 onCloseClick={() => setShowMoveModal(false)}

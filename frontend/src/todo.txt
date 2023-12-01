@@ -1,6 +1,6 @@
 Priority:
-    - check why rclone not working on render.com
-    - Previews
+    - fix escape key causing items to deselect even if file viewer is open
+    - Previews, left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)
     - Downloading, Renaming
     - finish implementing search function
     - finish sorting toolbar logic
@@ -28,6 +28,8 @@ Priority:
     - implement rate limiting
     - implement captcha
 
+
+make handleMoveItems also check uploadQueue to avoid possible file conflicts
 make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
 fix :after being off center in move modal breadcrumb
 thumbnails - separate array from files, use find method when rendering, lazy load
@@ -43,6 +45,8 @@ Deleting (future?):
 Previews:
     - in preview, add extra buttons such as open in new tab/download, connect apps, etc, use dropbox/google drive for inspiration
 
+
+replace useDelayedExit hook with custom AnimatePresence type component to remove unneeded code/state? may be issues with onExitCallback type necessities though
 underline/bold sidebar links if user is in that section
 make it so backend logic handles filtering out of d_ prefix for folders in move operations (to avoid needing to send type)
 analyse frontend logic for axios requests and shift to a more backend-focused approach to mitigate race conditions and allow the user to do more things at once instead of preventing them (e.g. for moving items, get new path/new parent folder id's from the database directly instead of sending them from the frontend, do similarly for other axios requests) but still prevent actions on items that are being deleted (showToast cannot do action: item is currently being proccessed for deletion).
@@ -57,6 +61,7 @@ remember to put toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
 vertically align text in buttons?
 aria labels
+tabbing in file viewer content? (remember to remove overriding focus-visible style in FileViewer)
 more advanced backend delete code with db transaction and b2 cloud deletion error handling, and then update frontend toasts/error handling for DeleteBtn
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 backend validation for conflicting item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc, update frontend validation for this, websockets?

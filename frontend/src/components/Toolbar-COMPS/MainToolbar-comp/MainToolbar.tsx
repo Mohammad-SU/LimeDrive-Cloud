@@ -2,7 +2,7 @@ import { memo, useState, useEffect } from 'react'
 import "./MainToolbar.scss"
 import useDelayedExit from '../../../hooks/useDelayedExit'
 import { useFileContext } from '../../../contexts/FileContext'
-import OpenBtn from '../ToolbarBtn-COMPS/OpenBtn-comp/OpenBtn'
+import OpenBtn from '../ToolbarBtn-COMPS/OpenBtn'
 import DeleteBtn from '../ToolbarBtn-COMPS/DeleteBtn-comp/DeleteBtn'
 import MoveBtn from '../ToolbarBtn-COMPS/MoveBtn-comp/MoveBtn'
 import { AiOutlineDownload, AiOutlineStar } from 'react-icons/ai'
@@ -29,7 +29,7 @@ function MainToolbar() {
 
     const { isVisible: isToolbarVisible }  = useDelayedExit({
         shouldRender: showToolbar,
-        delayMs: 300 // Different from clip animation duration due to modals being unrendered after items are unselected
+        delayMs: 300 // Different from clip animation duration due to modals being unrendered after items are unselected (though not 100% sure if it fixes the issue)
     })
 
     return (

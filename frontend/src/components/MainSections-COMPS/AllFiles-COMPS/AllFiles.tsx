@@ -29,7 +29,8 @@ function AllFiles() {
         setConflictingItems,
         setSameFolderConflictingItems,
         handleMoveItems,
-        processingItems 
+        processingItems,
+        fileToView
     } = useFileContext()
 
     const navigate = useNavigate()
@@ -135,12 +136,14 @@ function AllFiles() {
             setShowSelectAll(true)
             setShowDeselectAll(false)
         }
+    }, [selectedItems, sortedFiles, sortedFolders]);
 
+    useEffect(() => {
         const handleKeyShortcuts = (event: KeyboardEvent) => {
-            const isModalOpen = document.querySelector(".Backdrop");
+            const isBackdropOpen = document.querySelector(".Backdrop");
             const isInputFocused = document.activeElement instanceof HTMLInputElement;
-
-            if (!isModalOpen && !isInputFocused) {
+    
+            if (!isBackdropOpen && !isInputFocused) {
                 if (event.key === 'Escape') {
                     event.preventDefault();
                     setSelectedItems([]);
@@ -158,7 +161,7 @@ function AllFiles() {
         return () => {
             window.removeEventListener('keydown', handleKeyShortcuts)
         }
-    }, [selectedItems, sortedFiles, sortedFolders]);
+    }, [])
 
     useEffect(() => {
         setSelectedItems([])

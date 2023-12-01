@@ -13,7 +13,7 @@ function Backdrop({ render, onClick, className }: BackdropProps) {
         <AnimatePresence>
             {render &&
                 <motion.div
-                    className={`Backdrop ${className}`}
+                    className={`Backdrop ${className ? className : ''}`}
                     onClick={onClick}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
