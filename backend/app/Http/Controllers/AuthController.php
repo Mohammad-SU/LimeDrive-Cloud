@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistrationConfirmation;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -59,6 +61,8 @@ class AuthController extends Controller
         Auth::login($user);
 
         $message = 'Registration successful.';
+        // Mail::to($user->email)->send(new RegistrationConfirmation());
+
         return $this->createLoginResponse($request, $user, $message);
     }
     

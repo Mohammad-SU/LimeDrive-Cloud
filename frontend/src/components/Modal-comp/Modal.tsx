@@ -76,7 +76,7 @@ function Modal({
         return () => {
             window.removeEventListener('keydown', handleEscapeKey);
         };
-    }, [onCloseClick]);
+    }, []);
 
     return (
         <>

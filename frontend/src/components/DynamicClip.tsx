@@ -64,8 +64,8 @@ function DynamicClip({
             clearInterval(intervalRef.current);
         };
     }, [animation]);
-
-    useEffect(() => {
+    
+    useEffect(() => { // Leave stop condition in separate useeffect, otherwise interval keeps running
         if ((animation && clipPathValues[0].width >= 1) || (!animation && clipPathValues[0].width <= 0)) {
             clearInterval(intervalRef.current);
             if (clipPathValues[0].width >= 1) {

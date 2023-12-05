@@ -1,5 +1,4 @@
 Priority:
-    - fix escape key causing items to deselect even if file viewer is open
     - Previews, left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)
     - Downloading, Renaming
     - finish implementing search function
@@ -28,7 +27,8 @@ Priority:
     - implement rate limiting
     - implement captcha
 
-
+auto console.error removal for production with build plugin/package
+update backend error messages to not reveal too much info 
 make handleMoveItems also check uploadQueue to avoid possible file conflicts
 make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
 fix :after being off center in move modal breadcrumb
@@ -45,7 +45,9 @@ Deleting (future?):
 Previews:
     - in preview, add extra buttons such as open in new tab/download, connect apps, etc, use dropbox/google drive for inspiration
 
-
+implement registration confirmation email properly with mjml with email verification in it.
+use pre instead of images for ascii
+fix escape key causing items to deselect sometimes even if file viewer is open for some reason (use customhook to remove escape key listeners and add them back based on file viewer being open?)
 replace useDelayedExit hook with custom AnimatePresence type component to remove unneeded code/state? may be issues with onExitCallback type necessities though
 underline/bold sidebar links if user is in that section
 make it so backend logic handles filtering out of d_ prefix for folders in move operations (to avoid needing to send type)
@@ -61,7 +63,7 @@ remember to put toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
 vertically align text in buttons?
 aria labels
-tabbing in file viewer content? (remember to remove overriding focus-visible style in FileViewer)
+advanced tabbing in file viewer content? (remember to remove overriding focus-visible style in FileViewer)
 more advanced backend delete code with db transaction and b2 cloud deletion error handling, and then update frontend toasts/error handling for DeleteBtn
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 backend validation for conflicting item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc, update frontend validation for this, websockets?
@@ -96,7 +98,6 @@ check if file extension column is not needed on database and then remove if so
 add backgrounds/more details for loading pages
 add info and tips readme file that is stored in all user's file list
 add default files/folders for showcasing along with "restore default files" if user's want them back if they deleted them (without resetting user data and tell them that this won't)
-email verification
 allow Google and Facebook to be used for logins? (OAuth)
 remove useState import from all files where it's not used
 change backend env secret file for render.com if changed

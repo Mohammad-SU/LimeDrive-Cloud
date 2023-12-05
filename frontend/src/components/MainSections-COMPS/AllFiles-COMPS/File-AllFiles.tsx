@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react'
+import { memo, useState, useEffect, useRef } from 'react'
 import { DateTime } from 'luxon';
 import { FileType } from '../../../types/index.ts';
 import { useFileContext } from '../../../contexts/FileContext.tsx';
@@ -16,24 +16,51 @@ function File({ file, onSelect }: FileProps) {
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [disableDefaultHover, setDisableDefaultHover] = useState(false)
-    const { selectedItems, conflictingItems, processingItems } = useFileContext()
+    const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [showSelectDelayed, setShowSelectDelayed] = useState(false) // For select-delayed class since (clickTimeoutRef.current != null) doesnt apply the class for some reason
+    const { selectedItems, conflictingItems, processingItems, setFileToView, fileToView } = useFileContext()
 
+    const clearSelectDelayed = () => {
+        if (clickTimeoutRef.current !== null) {
+            clearTimeout(clickTimeoutRef.current)
+        }
+        clickTimeoutRef.current = null
+        setShowSelectDelayed(false)
+    }
     function handleFileClick(event: React.MouseEvent<HTMLDivElement>) {
         if (isProcessing) return
-
+        
         const isCtrlPressed = event.ctrlKey || event.metaKey;
+        const isShiftPressed = event.shiftKey;
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
-        let newIsSelected;
+        let newIsSelected: boolean;
 
         if (isCtrlPressed || isCheckboxClicked) {
             newIsSelected = !isSelected
+            setIsSelected(newIsSelected);
+            onSelect(file, event, newIsSelected);
+        }
+        else if (isShiftPressed) {
+            newIsSelected = true
+            onSelect(file, event, newIsSelected);
         }
         else {
             newIsSelected = true
-        }
+            setShowSelectDelayed(true)
 
-        setIsSelected(newIsSelected);
-        onSelect(file, event, newIsSelected)
+            if (event.detail === 2) { // If double clicked, prevent selection
+                clearSelectDelayed()
+            }
+            else {
+                const timeout = setTimeout(() => {
+                        setIsSelected(newIsSelected);
+                        onSelect(file, event, newIsSelected);
+                        clearSelectDelayed()
+                }, 250);
+    
+                clickTimeoutRef.current = timeout;
+            }
+        }
     }
 
     useEffect(() => { // Ensure correct rendering of selected file
@@ -61,6 +88,7 @@ function File({ file, onSelect }: FileProps) {
         function handleEscapeKey(event: KeyboardEvent) {
             if (event.key === 'Escape') {
                 setIsSelectDragging(false);
+                clearSelectDelayed()
             }
         }
         window.addEventListener('keydown', handleEscapeKey);
@@ -68,6 +96,19 @@ function File({ file, onSelect }: FileProps) {
             window.removeEventListener('keydown', handleEscapeKey);
         };
     }, []);
+
+    const openFile = (event: React.MouseEvent | React.KeyboardEvent) => {
+        event.stopPropagation() // To prevent delayed selection when clicking name to open
+        if (isProcessing || fileToView) {
+            return
+        }
+        const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
+
+        if (!isCheckboxClicked) {
+            clearSelectDelayed();
+            setFileToView(file)
+        }
+    }
 
     const {attributes, listeners, isDragging, setNodeRef} = useDraggable({
         id: file.id,
@@ -98,12 +139,14 @@ function File({ file, onSelect }: FileProps) {
         <div 
             className={`File 
                 ${isSelected ? 'selected' : ''}
+                ${showSelectDelayed ? 'select-delayed' : ''}
                 ${isDragging || isSelectDragging ? 'dragging' : ''}
                 ${isProcessing ? 'processing' : ''}
                 ${disableDefaultHover ? 'disable-default-hover' : ''}
             `}
             id={file.id.toString()}
             onClick={handleFileClick}
+            onDoubleClick={openFile}
             ref={setNodeRef}
             {...listeners} 
             {...attributes}
@@ -125,6 +168,7 @@ function File({ file, onSelect }: FileProps) {
                 </span>
                 <span 
                     className="text-cont" 
+                    onClick={openFile} 
                     tabIndex={0}
                     aria-label="File"
                 >

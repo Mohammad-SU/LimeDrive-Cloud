@@ -30,7 +30,6 @@ function AllFiles() {
         setSameFolderConflictingItems,
         handleMoveItems,
         processingItems,
-        fileToView
     } = useFileContext()
 
     const navigate = useNavigate()
@@ -143,7 +142,7 @@ function AllFiles() {
             const isBackdropOpen = document.querySelector(".Backdrop");
             const isInputFocused = document.activeElement instanceof HTMLInputElement;
     
-            if (!isBackdropOpen && !isInputFocused && !fileToView) {
+            if (!isBackdropOpen && !isInputFocused) {
                 if (event.key === 'Escape') {
                     event.preventDefault();
                     setSelectedItems([]);
@@ -155,9 +154,7 @@ function AllFiles() {
                 }
             }
         };
-      
         window.addEventListener('keydown', handleKeyShortcuts)
-      
         return () => {
             window.removeEventListener('keydown', handleKeyShortcuts)
         }

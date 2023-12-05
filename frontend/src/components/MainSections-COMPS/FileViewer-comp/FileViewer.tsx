@@ -35,29 +35,42 @@ function FileViewer() {
     }, [])
 
     return (
-        fileToView && 
-            <FocusTrap>
-                <div className="FileViewer">
-                    {isToolbarVisible &&
-                        <div className="toolbar">
-                            <button className="icon-btn-wrapper close-btn" onClick={() => setFileToView(null)}>
-                                <AiOutlineClose className="icon-btn" />
-                            </button>
-                            <h1>{fileToViewName}</h1>
-                            <DynamicClip clipPathId='fileViewerToolbarClip' animation={fileToView != null} numRects={1} />
-                        </div>
-                    }
+        
+            <>
+                {isToolbarVisible && 
+                    <FocusTrap>
+                        <div className="FileViewer">
+                            <div className="toolbar">
+                                <button className="icon-btn-wrapper close-btn" onClick={() => setFileToView(null)}>
+                                    <AiOutlineClose className="icon-btn" />
+                                </button>
+                                <h1>{fileToViewName}</h1>
+                                <DynamicClip clipPathId='fileViewerToolbarClip' animation={fileToView != null} numRects={1} />
+                            </div>
 
-                    <div className="file-content" tabIndex={isToolbarVisible ? -1 : 0}> {/* Tab index for focus trap requirment */}
-                        <DocViewer
-                            pluginRenderers={DocViewerRenderers}
-                            documents={[{ uri: 'src/assets/images/ascii/LimeDrive-ascii.png'}]}
-                            config={{ header: { disableHeader: true } }}
-                        ></DocViewer>
-                    </div>
-                    <Backdrop render={fileToView != null} className="file-viewer-backdrop" onClick={() => setFileToView(null)}/>
-                </div>
-            </FocusTrap>
+                            <AnimatePresence>
+                                {fileToView &&
+                                    <motion.div
+                                        key="fileViewerContentKey"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="file-content"
+                                    >
+                                        <DocViewer
+                                            pluginRenderers={DocViewerRenderers}
+                                            documents={[{ uri: 'src/assets/images/ascii/LimeDrive-ascii.png'}]}
+                                            config={{ header: { disableHeader: true } }}
+                                        ></DocViewer>
+                                    </motion.div>
+                                }
+                            </AnimatePresence>
+                        </div>
+                    </FocusTrap>
+                }
+                <Backdrop render={fileToView != null} className="file-viewer-backdrop" onClick={() => setFileToView(null)}/>
+            </>
     )
 }
 

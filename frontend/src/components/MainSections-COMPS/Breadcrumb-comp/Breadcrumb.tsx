@@ -86,11 +86,14 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
 
     useEffect(() => {
         overflowControl();
+    }, [path, btnSegmentRef, refresh]);
+
+    useEffect(() => {
         window.addEventListener("resize", overflowControl);
         return () => {
             window.removeEventListener("resize", overflowControl);
         };
-    }, [path, btnSegmentRef, refresh]);
+    }, []);
 
     useEffect(() => { // For some reason need to force the other useeffect to run again after initial page load otherwise breadcrumb doesnt look correct 
         const refreshTimeout = setTimeout(() => {

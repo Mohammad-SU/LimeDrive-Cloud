@@ -15,6 +15,7 @@ function MainToolbar() {
     const { selectedItems } = useFileContext()
     const [showToolbar, setShowToolbar] = useState(false)
     const [showOpenBtn, setShowOpenBtn] = useState(false)
+    const [showRenameBtn, setShowRenameBtn] = useState(false)
 
     useEffect(() => {
         const newShowToolbar = selectedItems.length > 0
@@ -25,6 +26,12 @@ function MainToolbar() {
         : selectedItems.length == 1 && selectedItems[0].type != undefined ?
             setShowOpenBtn(true)
         : setShowOpenBtn(false)
+
+        !newShowToolbar ? // So that the openBtn doesnt quickly unrender when all items are unselected, so that the openBtn is hidden after the clip animation instead
+            null
+        : selectedItems.length == 1 ?
+            setShowRenameBtn(true)
+        : setShowRenameBtn(false)
     }, [selectedItems]);
 
     const { isVisible: isToolbarVisible }  = useDelayedExit({
@@ -42,9 +49,7 @@ function MainToolbar() {
                         <DynamicClip clipPathId="DownloadBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     </button>
 
-                    {showOpenBtn &&
-                        <OpenBtn />
-                    }
+                    {showOpenBtn && <OpenBtn />}
                     <DynamicClip clipPathId="OpenBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
 
                     <DeleteBtn toolbarRendered={showToolbar}/>
@@ -56,11 +61,14 @@ function MainToolbar() {
                     <MoveBtn toolbarRendered={showToolbar}/>
                     <DynamicClip clipPathId="MoveBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
 
-                    <button className="RenameBtn">
-                        <GoPencil className="tool-icon"/>
-                        Rename
-                        <DynamicClip clipPathId="RenameBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
-                    </button>
+                    {showRenameBtn &&
+                        <button className="RenameBtn">
+                            <GoPencil className="tool-icon"/>
+                            Rename
+                        </button>
+                    }
+                    <DynamicClip clipPathId="RenameBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
+
                     <button className="StarBtn">
                         <AiOutlineStar className="tool-icon"/>
                         Star
@@ -69,7 +77,7 @@ function MainToolbar() {
                 </div>
 
                 <div className="sharing-tools">
-                    <button className="LinkBtn">
+                    <button className="LinkBtn"> {/* For multiple selected items, control access modal and separate copied links with commas*/}
                         <BsLink45Deg className="tool-icon link"/>
                         <DynamicClip clipPathId="LinkBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     </button>
