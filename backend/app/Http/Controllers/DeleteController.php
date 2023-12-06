@@ -51,8 +51,8 @@ class DeleteController extends Controller
         }
 
         foreach ($deletedFileData as $deletedFileDataItem) {
-            $cloudPath = Helpers::convertAppPath(auth()->id(), $deletedFileDataItem['id'], $deletedFileDataItem['extension']);
-            RcloneDeleteJob::dispatch($cloudPath); // Use rclone because backblaze hides files instead of deleting them permanently and instantly, and put in queue since it seems to be slow
+            $cloudPath = Helpers::getCloudPath(auth()->id(), $deletedFileDataItem['id'], $deletedFileDataItem['extension']);
+            RcloneDeleteJob::dispatch($cloudPath); // Use rclone because backblaze hides files for at least a day instead of deleting them permanently and instantly, and put in job queue since it seems to be slow
         }
 
         $deletedFileIds = array_map(function ($file) {

@@ -2,6 +2,7 @@
 import { memo, useState, useEffect } from 'react';
 import "./FileViewer.scss"
 import { useFileContext } from '../../../contexts/FileContext';
+import { useUserContext } from '../../../contexts/UserContext';
 import { AiOutlineClose } from 'react-icons/ai';
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,15 +13,48 @@ import FocusTrap from 'focus-trap-react';
 
 function FileViewer() {
     const { fileToView, setFileToView } = useFileContext();
+    const { apiSecure } = useUserContext();
     const [fileToViewName, setFileToViewName] = useState("") // Here because of animation exit problems
+    const [fileContentUrl, setFileContentUrl] = useState("");
     const { isVisible: isToolbarVisible }  = useDelayedExit({
         shouldRender: fileToView != null,
-        onExitCallback: () => setFileToViewName("")
+        onExitCallback: () => {
+            setFileToViewName("")
+            setFileContentUrl("")
+        }
     })
 
+    const fetchFileContent = async () => {
+        if (!fileToView) return
+        const newFileToView = { ...fileToView }
+        try {
+            setFileToViewName(newFileToView.name)
+            const lastPeriodIndex =  newFileToView.name.lastIndexOf('.');
+            const fileExtension = lastPeriodIndex !== -1 ? newFileToView.name.slice(lastPeriodIndex + 1) : '';
+            
+            const response = await apiSecure.post('/fetchFileContent', {
+                id: newFileToView.id,
+                extension: fileExtension
+            });
+            const binaryData = atob(response.data.fileContent);
+
+            const arrayBuffer = new ArrayBuffer(binaryData.length);
+            const view = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < binaryData.length; i++) {
+                view[i] = binaryData.charCodeAt(i);
+            }
+            const blob = new Blob([arrayBuffer], { type: newFileToView.type });
+            setFileContentUrl(window.URL.createObjectURL(blob));
+        } 
+        catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
-        if (fileToView) setFileToViewName(fileToView.name)
+        fetchFileContent()
     }, [fileToView])
+
     useEffect(() => {
         const handleEscapeKey = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
@@ -59,8 +93,9 @@ function FileViewer() {
                                         className="file-content"
                                     >
                                         <DocViewer
+                                            className="doc-viewer"
                                             pluginRenderers={DocViewerRenderers}
-                                            documents={[{ uri: 'src/assets/images/ascii/LimeDrive-ascii.png'}]}
+                                            documents={[{ uri: fileContentUrl }]}
                                             config={{ header: { disableHeader: true } }}
                                         ></DocViewer>
                                     </motion.div>

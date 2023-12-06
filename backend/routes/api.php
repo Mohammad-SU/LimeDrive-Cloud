@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UpdateController;
+use App\Http\Controllers\FetchFileContentController;
 use App\Http\Controllers\DeleteController;
 
 /*
@@ -27,6 +28,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/createFolder', [UploadController::class, 'createFolder']);
 
     Route::post('/updatePaths', [UpdateController::class, 'updatePaths']);
+
+    Route::post('/fetchFileContent', [FetchFileContentController::class, 'fetchFileContent']);
 
     Route::post('/deleteItems', [DeleteController::class, 'deleteItems']);
 });
