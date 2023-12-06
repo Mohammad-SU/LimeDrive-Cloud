@@ -32,9 +32,11 @@ function FileViewer() {
             const lastPeriodIndex =  newFileToView.name.lastIndexOf('.');
             const fileExtension = lastPeriodIndex !== -1 ? newFileToView.name.slice(lastPeriodIndex + 1) : '';
             
-            const response = await apiSecure.post('/fetchFileContent', {
-                id: newFileToView.id,
-                extension: fileExtension
+            const response = await apiSecure.get('/fetchFileContent', {
+                params: {
+                    id: newFileToView.id,
+                    extension: fileExtension
+                }
             });
             const binaryData = atob(response.data.fileContent);
 

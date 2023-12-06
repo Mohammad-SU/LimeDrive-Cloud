@@ -46,10 +46,12 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
             const textType = newSelectedItems.length == 1 ? (newSelectedItems[0].type == undefined ? 'folder' : 'file') : `${newSelectedItems.length} items`;
             showToast({message: `Deleting ${textType}...`, loading: true});
 
-            const response = await apiSecure.post('/deleteItems', { // folder ID d_ prefix is dealt with on the backend for this route
-                itemIds: newSelectedItems.map(item => ({
-                    id: item.id,
-                }))
+            const response = await apiSecure.delete('/deleteItems', { // folder ID d_ prefix is dealt with on the backend for this route
+                data: {
+                    itemIds: newSelectedItems.map(item => ({
+                        id: item.id,
+                    }))
+                }
             });
 
             setFolders(existingFolders => {

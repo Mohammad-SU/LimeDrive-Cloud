@@ -29,9 +29,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('/updatePaths', [UpdateController::class, 'updatePaths']);
 
-    Route::post('/fetchFileContent', [FetchFileContentController::class, 'fetchFileContent']);
+    Route::get('/fetchFileContent', [FetchFileContentController::class, 'fetchFileContent']);
 
-    Route::post('/deleteItems', [DeleteController::class, 'deleteItems']);
+    Route::delete('/deleteItems', [DeleteController::class, 'deleteItems']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);

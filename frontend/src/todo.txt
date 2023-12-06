@@ -26,6 +26,7 @@ Priority:
     - account deleted message with apisecure interceptor
     - implement rate limiting
     - implement captcha
+    - copy link feature in uploadInfo
 
 auto console.error removal for production with build plugin/package
 update backend error messages to not reveal too much info 
@@ -56,6 +57,7 @@ make it so navigating in url in code (such as when creating folder and jump link
 change margin top of move modal heading (also change heights of folders in there so their borders dont look weird in that case)
 when adding delay for open file on double click, remember escape key press timeout clear code
 box shadow for newMenu and other modals?
+file upload chunking?
 fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too) by adding padding bottom?
 toast notification stacking
 fix finalising being set back to false when uploadInfo is collapsed (move finalising code to uploadInfo)

@@ -133,7 +133,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         }
 
         const remainingFiles = uploadQueue.filter ( // Includes currently uploading file, queued files, and failed files
-            (file, index) => index >= currentUploadIndex && !successfulFiles.includes(file)
+            (file) => !successfulFiles.includes(file)
         )
 
         const updatedUploadQueue = [
@@ -326,7 +326,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                         <p>
                             {successfulUploadNum < uploadListFilesNum && currentlyUploadingFile ?
                                 `${successfulUploadNum} of ${uploadListFilesNum} ${uploadListFilesNum > 1 ? 'uploads' : 'upload'} complete`
-                                : `${successfulUploadNum} ${successfulUploadNum > 1 ? 'uploads' : 'upload'} complete ${fileErrors.size > 0 ? `(${fileErrors.size} failed)` : ''}`
+                                : `${successfulUploadNum} ${successfulUploadNum > 1 || successfulUploadNum == 0 ? 'uploads' : 'upload'} complete ${fileErrors.size > 0 ? `(${fileErrors.size} failed)` : ''}`
                             }
                             
                             {currentlyUploadingFile && collapseUploadList &&

@@ -9,6 +9,8 @@ RUN curl https://rclone.org/install.sh | bash
 
 COPY rclone.conf /root/.config/rclone/rclone.conf
 
+COPY .user.ini /usr/local/etc/php/conf.d/
+
 COPY . .
 
 RUN composer install
