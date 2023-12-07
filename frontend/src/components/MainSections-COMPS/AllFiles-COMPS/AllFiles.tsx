@@ -68,7 +68,9 @@ function AllFiles() {
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
         let newSelectedItems = selectedItems.slice()
 
-        if (isCtrlPressed || isCheckboxClicked) { // Multiple selections with possibly separated file locations, also logic for checkbox clicks
+        if (isShiftPressed) event.preventDefault(); // Prevent text selection when Shift key is pressed
+
+        if (isCtrlPressed || (isCheckboxClicked && !isShiftPressed)) { // Multiple selections with possibly separated file locations, also logic for checkbox clicks
             if (isItemSelected) {
                 newSelectedItems = [...newSelectedItems, item]
             }
@@ -96,7 +98,7 @@ function AllFiles() {
             newSelectedItems = [item]
         }
 
-        if (newSelectedItems.length == 1 || isCtrlPressed) {
+        if (newSelectedItems.length == 1 || isCtrlPressed || (isCheckboxClicked && !isShiftPressed)) {
             setLastClickedItem(item);
         }
 

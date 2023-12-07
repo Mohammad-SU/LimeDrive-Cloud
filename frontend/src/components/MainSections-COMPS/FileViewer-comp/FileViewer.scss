@@ -6,31 +6,88 @@
     top: 0;
     z-index: 999;
 
-    .toolbar {
+    .file-viewer-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        background: black;
-        height: 4rem;
-        width: fit-content;
-        max-width: 35rem;
-        padding: 0 1rem;
-        gap: 1.2rem;
-        border-bottom: 1px solid lime;
-        border-right: 1px solid lime;
-        clip-path: url(#fileViewerToolbarClip);
 
-        h1 {
-            font-size: 1.2rem;
-            margin: 0;
-            margin-top: -0.2rem;
-            margin-right: 0.75rem;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
+        .file-name-cont {
+            display: flex;
+            align-items: center;
+            background: black;
+            height: 4rem;
+            width: fit-content;
+            max-width: 33rem;
+            padding: 0 1rem;
+            gap: 1.2rem;
+            border-bottom: .0625rem solid lime;
+            border-right: .0625rem solid lime;
+            clip-path: url(#fileViewerNameContClip);
+
+            h1 {
+                font-size: 1.2rem;
+                margin: 0;
+                margin-top: -0.2rem;
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+            .close-btn {
+                font-size: 1.8rem;
+                background: transparent;
+            }
         }
-        .close-btn {
-            font-size: 1.8rem;
-            background: transparent;
+
+        .open-with-btn {
+            position: absolute;
+
+            font-size: 1.1rem;
+            height: 3rem;
+            width: 8rem;
+            margin: 0 auto;
+            left: 0;
+            right: 0;
+
+            border: .125rem solid lime;
+            border-radius: 999px;
+            background: black;
+            clip-path: url(#fileViewerOpenWithBtnClip);
+        }
+
+        .file-viewer-toolbar {
+            display: flex;
+            gap: 2rem;
+            font-size: 2rem;
+            height: fit-content;
+            margin-right: 1rem;
+
+            .comment-btn {
+                clip-path: url(#fileViewerCommentBtnClip);
+            }
+            .print-btn {
+                clip-path: url(#fileViewerPrintBtnClip);
+            }
+            .download-btn {
+                clip-path: url(#fileViewerDownloadBtnClip);
+            }
+            .more-btn {
+                clip-path: url(#fileViewerMoreBtnClip);
+            }
+            .share-btn {
+                display: flex;
+                align-items: center;
+                gap: 0.9rem;
+                padding: 0.6rem;
+                padding-right: 0.65rem;
+                font-size: 1.2rem;
+                border: .0625rem solid lime;
+                clip-path: url(#fileViewerShareBtnClip);
+
+                .share-icon {
+                    font-size: 1.4rem;
+                }
+            }
         }
     }
 
@@ -56,18 +113,53 @@
             border: 2px solid lime;
         }
 
-        .doc-viewer {
-            color: black;
-            
-            #txt-renderer {
-                color: lime;
-                background: black;
-                white-space: pre-wrap;
+        .loading-indicator-and-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px dashed lime;
+            width: 40rem;
+            height: 23rem;
+            background: black;
+            box-shadow: 0 0 30px 7px lime;
+
+            h1 {
+                font-size: 1.5rem;
+                text-align: center;
+
+                &.not-supported-text {
+                    font-size: 1.5rem;
+                    margin-bottom: 1.5rem;
+                }
+                &.error-text {
+                    font-size: 1.5rem;
+                    margin-bottom: 1rem;
+                    line-height: 1.5;
+                }
             }
-            #image-renderer {
-                img {
-                    max-height: 100%;
-                    max-width: 100%;
+            .LoadingBar {
+                font-size: 1.3rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        .doc-viewer-cont {
+            box-shadow: 0 0 30px 7px lime;
+
+            .doc-viewer {
+                color: black;
+                
+                #txt-renderer {
+                    color: lime;
+                    background: black;
+                    white-space: pre-wrap;
+                }
+                #image-renderer {
+                    img {
+                        max-height: 100%;
+                        max-width: 100%;
+                    }
                 }
             }
         }
@@ -75,5 +167,5 @@
 }
 
 .file-viewer-backdrop {
-    background: rgba(30, 30, 30, 0.8) !important;
+    background: rgba(0, 0, 0, 1) !important;
 }

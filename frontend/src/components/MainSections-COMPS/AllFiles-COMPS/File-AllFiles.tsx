@@ -35,7 +35,7 @@ function File({ file, onSelect }: FileProps) {
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
         let newIsSelected: boolean;
 
-        if (isCtrlPressed || isCheckboxClicked) {
+        if (isCtrlPressed || (isCheckboxClicked && !isShiftPressed)) {
             newIsSelected = !isSelected
             setIsSelected(newIsSelected);
             onSelect(file, event, newIsSelected);

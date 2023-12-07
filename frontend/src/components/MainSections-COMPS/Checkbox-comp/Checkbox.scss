@@ -11,13 +11,9 @@
     @include btn-selection-styles;
     cursor: pointer;
 
-    &:after { // Expand clickable area
+    &::after { // For expanding clickable area
         content: '';
         position: absolute;
-        top: -1.2rem; 
-        bottom: -1.2rem; 
-        left: -0.7rem; 
-        right: -0.5rem; 
     }
 
     &:hover {

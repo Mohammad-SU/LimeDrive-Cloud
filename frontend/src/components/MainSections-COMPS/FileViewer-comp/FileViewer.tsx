@@ -1,34 +1,60 @@
-// FileViewer.tsx
 import { memo, useState, useEffect } from 'react';
 import "./FileViewer.scss"
+import axios from 'axios';
 import { useFileContext } from '../../../contexts/FileContext';
 import { useUserContext } from '../../../contexts/UserContext';
-import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineClose, AiOutlineComment, AiOutlineDownload, AiOutlinePrinter } from 'react-icons/ai';
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import { motion, AnimatePresence } from 'framer-motion';
 import DynamicClip from '../../DynamicClip';
+import LoadingBar from '../../LoadingBar-COMPS/LoadingBar';
 import Backdrop from '../../Backdrop-comp/Backdrop';
 import useDelayedExit from '../../../hooks/useDelayedExit';
 import FocusTrap from 'focus-trap-react';
+import { BsShare, BsThreeDotsVertical } from 'react-icons/bs';
+import { useToast } from '../../../contexts/ToastContext';
 
 function FileViewer() {
     const { fileToView, setFileToView } = useFileContext();
     const { apiSecure } = useUserContext();
+    const { showToast } = useToast()
     const [fileToViewName, setFileToViewName] = useState("") // Here because of animation exit problems
     const [fileContentUrl, setFileContentUrl] = useState("");
-    const { isVisible: isToolbarVisible }  = useDelayedExit({
+    const [notSupported, setNotSupported] = useState(false);
+    const [backendErrorMsg, setBackendErrorMsg] = useState("");
+    const [loading, setLoading] = useState(false);
+    const supportedFileTypes: string[] = [
+        "image/bmp", "text/csv", "application/vnd.oasis.opendocument.text",
+        "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "image/gif", "text/htm", "text/html", "image/jpg", "image/jpeg",
+        "application/pdf", "image/png", "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "image/tiff", "text/plain", "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "video/mp4"
+    ];
+    const { isVisible: isFileViewerVisible }  = useDelayedExit({
         shouldRender: fileToView != null,
         onExitCallback: () => {
             setFileToViewName("")
+            window.URL.revokeObjectURL(fileContentUrl);
             setFileContentUrl("")
+            setNotSupported(false);
+            setBackendErrorMsg("");
         }
     })
 
     const fetchFileContent = async () => {
         if (!fileToView) return
+        if (fileContentUrl) window.URL.revokeObjectURL(fileContentUrl) // Leave this
         const newFileToView = { ...fileToView }
+        setFileToViewName(newFileToView.name)
+        if (!supportedFileTypes.includes(newFileToView.type)) {
+            setNotSupported(true);
+            return;
+        }
         try {
-            setFileToViewName(newFileToView.name)
+            setLoading(true)
             const lastPeriodIndex =  newFileToView.name.lastIndexOf('.');
             const fileExtension = lastPeriodIndex !== -1 ? newFileToView.name.slice(lastPeriodIndex + 1) : '';
             
@@ -50,9 +76,14 @@ function FileViewer() {
         } 
         catch (error) {
             console.error(error);
+            if (axios.isAxiosError(error)) {
+                setBackendErrorMsg(error.message)
+            }
+        }
+        finally {
+            setLoading(false)
         }
     };
-
     useEffect(() => {
         fetchFileContent()
     }, [fileToView])
@@ -71,35 +102,87 @@ function FileViewer() {
     }, [])
 
     return (
-        
             <>
-                {isToolbarVisible && 
+                {isFileViewerVisible && 
                     <FocusTrap>
                         <div className="FileViewer">
-                            <div className="toolbar">
-                                <button className="icon-btn-wrapper close-btn" onClick={() => setFileToView(null)}>
-                                    <AiOutlineClose className="icon-btn" />
+                            <div className="file-viewer-header">
+                                <div className="file-name-cont">
+                                    <button className="icon-btn-wrapper close-btn" onClick={() => setFileToView(null)}>
+                                        <AiOutlineClose className="icon-btn" />
+                                    </button>
+                                    <h1>{fileToViewName}</h1>
+                                    <DynamicClip clipPathId='fileViewerNameContClip' animation={fileToView != null} numRects={1} />
+                                </div>
+
+                                <button className="open-with-btn" onClick={() => showToast({message: "Open with not yet featured.", showFailIcon: true})}>
+                                    Open with
+                                    <DynamicClip clipPathId='fileViewerOpenWithBtnClip' animation={fileToView != null} numRects={4} />
                                 </button>
-                                <h1>{fileToViewName}</h1>
-                                <DynamicClip clipPathId='fileViewerToolbarClip' animation={fileToView != null} numRects={1} />
+
+                                <div className="file-viewer-toolbar">
+                                    <button className="icon-btn-wrapper comment-btn" onClick={() => showToast({message: "Commenting from preview not yet featured.", showFailIcon: true})}>
+                                        <AiOutlineComment className="icon-btn comment-icon"/>
+                                        <DynamicClip clipPathId='fileViewerCommentBtnClip' animation={fileToView != null} numRects={4} />
+                                    </button>
+                                    <button className="icon-btn-wrapper print-btn" onClick={() => showToast({message: "Printing not yet featured.", showFailIcon: true})}>
+                                        <AiOutlinePrinter className="icon-btn printer-icon"/>
+                                        <DynamicClip clipPathId='fileViewerPrintBtnClip' animation={fileToView != null} numRects={4} />
+                                    </button>
+                                    <button className="icon-btn-wrapper download-btn" onClick={() => showToast({message: "Downloading from preview not yet featured.", showFailIcon: true})}>
+                                        <AiOutlineDownload className="icon-btn download-icon"/>
+                                        <DynamicClip clipPathId='fileViewerDownloadBtnClip' animation={fileToView != null} numRects={4} />
+                                    </button>
+                                    <button className="icon-btn-wrapper more-btn" onClick={() => showToast({message: "More preview tools not yet featured.", showFailIcon: true})}>
+                                        <BsThreeDotsVertical className="icon-btn vertical-dots-icon"/>
+                                        <DynamicClip clipPathId='fileViewerMoreBtnClip' animation={fileToView != null} numRects={4} />
+                                    </button>
+                                    <button className="icon-btn-wrapper share-btn" onClick={() => showToast({message: "Sharing from preview not yet featured.", showFailIcon: true})}>
+                                        <BsShare className="icon-btn share-icon"/>
+                                        Share
+                                        <DynamicClip clipPathId='fileViewerShareBtnClip' animation={fileToView != null} numRects={4} />
+                                    </button>
+                                </div>
                             </div>
 
-                            <AnimatePresence>
+                            <AnimatePresence> {/* DynamicClip not used for content viewer due to slowness of clip animation when file content is loaded */}
                                 {fileToView &&
-                                    <motion.div
-                                        key="fileViewerContentKey"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="file-content"
-                                    >
-                                        <DocViewer
-                                            className="doc-viewer"
-                                            pluginRenderers={DocViewerRenderers}
-                                            documents={[{ uri: fileContentUrl }]}
-                                            config={{ header: { disableHeader: true } }}
-                                        ></DocViewer>
+                                    <motion.div className="file-content" key="fileContentKey">
+                                        {loading || notSupported || backendErrorMsg ?
+                                            <motion.div 
+                                                className="loading-indicator-and-info"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                transition={{ duration: 0.3 }}
+                                                key="fileContentLoadingIndicatorKey"
+                                            >
+                                                {loading ?
+                                                        <><h1>Loading File...</h1>
+                                                        <LoadingBar /></>
+                                                    : notSupported ?
+                                                        <h1 className="not-supported-text">Preview not supported for this file type.</h1>
+                                                    :
+                                                        <h1 className="error-text">Failed to load preview.<br/>Please check your connection.</h1>
+                                                }
+                                            </motion.div>
+                                            :
+                                            <motion.div
+                                                key="docViewerKey"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                transition={{ duration: 0.3 }}
+                                                className="doc-viewer-cont"
+                                            >
+                                                <DocViewer
+                                                    className="doc-viewer"
+                                                    pluginRenderers={DocViewerRenderers}
+                                                    documents={[{ uri: fileContentUrl }]}
+                                                    config={{ header: { disableHeader: true } }}
+                                                ></DocViewer>
+                                            </motion.div>
+                                        }
                                     </motion.div>
                                 }
                             </AnimatePresence>

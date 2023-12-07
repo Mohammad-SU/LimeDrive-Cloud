@@ -37,7 +37,7 @@ function Folder({ folder, onSelect }: FolderProps) {
         const isCheckboxClicked = (event.target instanceof HTMLElement && event.target.hasAttribute('data-checkbox'))
         let newIsSelected: boolean;
 
-        if (isCtrlPressed || isCheckboxClicked) {
+        if (isCtrlPressed || (isCheckboxClicked && !isShiftPressed)) {
             newIsSelected = !isSelected
             setIsSelected(newIsSelected);
             onSelect(folder, event, newIsSelected);

@@ -1,5 +1,5 @@
 Priority:
-    - Previews, left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)
+    - Preview streaming for mp4 and mov?
     - Downloading, Renaming
     - finish implementing search function
     - finish sorting toolbar logic
@@ -39,13 +39,16 @@ for main sections add general scss to MainPage.scss (such as the title where the
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
 
-Deleting (future?):
+Deleting (future):
     - confirmation, and then move to recycle bin? check what dropbox/google drive does
-    - move selection code into a custom hook?
+    - move selection code into a custom hook so other MainSections can use it?
 
 Previews:
-    - in preview, add extra buttons such as open in new tab/download, connect apps, etc, use dropbox/google drive for inspiration
+    - fix toasts not being focus-trapped
+    - fix box shadow not working on motion.div
+    - left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)?
 
+implement keyboard controls for drag and drop and better selection? (fix checkbox space key double click problem)
 implement registration confirmation email properly with mjml with email verification in it.
 use pre instead of images for ascii
 fix escape key causing items to deselect sometimes even if file viewer is open for some reason (use customhook to remove escape key listeners and add them back based on file viewer being open?)
@@ -65,6 +68,7 @@ remember to put toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
 vertically align text in buttons?
 aria labels
+file preview commenting?
 advanced tabbing in file viewer content? (remember to remove overriding focus-visible style in FileViewer)
 more advanced backend delete code with db transaction and b2 cloud deletion error handling, and then update frontend toasts/error handling for DeleteBtn
 make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten

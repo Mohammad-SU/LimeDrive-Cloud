@@ -113,8 +113,7 @@ function AuthPage() { // For some reason useGlobalEnterKey is not needed here if
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {
-                backendError = error
-                if (backendError.message == "Username is taken.") {
+                if (error.message == "Username is taken.") {
                     attemptRegistration()
                 } 
                 else {
