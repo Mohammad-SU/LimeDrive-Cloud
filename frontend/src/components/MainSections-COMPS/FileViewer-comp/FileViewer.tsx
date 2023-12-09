@@ -19,6 +19,7 @@ function FileViewer() {
     const { apiSecure } = useUserContext();
     const { showToast, setToastContainer } = useToast()
     const fileViewerRef = useRef<HTMLDivElement | null>(null);
+    const fileViewerHeaderRef = useRef<HTMLDivElement | null>(null);
     const [fileToViewName, setFileToViewName] = useState("") // Here because of animation exit problems
     const [fileContentUrl, setFileContentUrl] = useState("");
     const [notSupported, setNotSupported] = useState(false);
@@ -95,7 +96,7 @@ function FileViewer() {
         setupFileViewer()
         return () => {
             setTimeout(() => {
-                controller.abort(); // Used here instead of in onExitCallback because for some reason aborting didnt work there
+                controller.abort(); // Used here instead of in onExitCallback and below useeffect because for some reason aborting didnt work in those places
             }, 300);
         }
     }, [fileToView])
@@ -108,7 +109,7 @@ function FileViewer() {
             }
         }
         const handleClickOutside = (event: MouseEvent) => {
-            if (event.target === fileViewerRef.current) { // If FileViewer clicked directly (none of its children clicked)
+            if (event.target === fileViewerRef.current || event.target === fileViewerHeaderRef.current) { // If FileViewer or its header clicked directly (none of its children clicked)
                 setFileToView(null);
             }
         };
@@ -126,7 +127,7 @@ function FileViewer() {
                 {isFileViewerVisible &&
                     <FocusTrap>
                         <div className="FileViewer" ref={fileViewerRef}>
-                            <div className="file-viewer-header">
+                            <div className="file-viewer-header" ref={fileViewerHeaderRef}>
                                 <div className="file-name-cont">
                                     <button className="icon-btn-wrapper close-btn" onClick={() => setFileToView(null)}>
                                         <AiOutlineClose className="icon-btn" />
@@ -168,7 +169,14 @@ function FileViewer() {
 
                             <AnimatePresence> {/* DynamicClip not used for content viewer due to slowness of clip animation when file content is loaded */}
                                 {fileToView &&
-                                    <motion.div className="file-content" key="fileContentKey">
+                                    <motion.div 
+                                        className="file-content"
+                                        initial={{  boxShadow: '0 0 0px 0px lime' }}
+                                        animate={{ boxShadow: '0 0 30px 7px lime'}}
+                                        exit={{ boxShadow: '0 0 0px 0px lime' }} // For some reason changing it to "none" doesn't animate and changing initial boxShadow to 0 looks weird, and didnt work when giving it to child containers. Transition for this didn't work in scss either
+                                        transition={{ duration: 0.3 }}
+                                        key="fileViewerContentKey"
+                                    >
                                         {loading || notSupported || backendErrorMsg ?
                                             <motion.div 
                                                 className="loading-indicator-and-info"
@@ -189,12 +197,12 @@ function FileViewer() {
                                             </motion.div>
                                             :
                                             <motion.div
-                                                key="docViewerKey"
+                                                className="doc-viewer-cont"
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
                                                 transition={{ duration: 0.3 }}
-                                                className="doc-viewer-cont"
+                                                key="docViewerKey"
                                             >
                                                 <DocViewer
                                                     className="doc-viewer"

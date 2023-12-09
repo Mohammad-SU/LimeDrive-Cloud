@@ -1,5 +1,6 @@
 Priority:
     - Preview streaming for mp4 and mov?
+    - fix large/video file not being deleted by rclone
     - Downloading, Renaming
     - finish implementing search function
     - finish sorting toolbar logic
@@ -44,7 +45,6 @@ Deleting (future):
     - move selection code into a custom hook so other MainSections can use it?
 
 Previews:
-    - fix box shadow not working on motion.div
     - fix btn clicks causing content/docviewer to flicker
     - add zoom btn?
     - left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)?
@@ -120,6 +120,7 @@ add folders on sidebar, separated from/below main links
 divider element in newMenu in sidebar that has margin top and bottom similar to newMenu's top and bottom padding
 different layouts for filelist
 add help section?
+increase clickable area around file content in file viewer so user doesnt accidentally close the viewer when trying to click the edge of the file preview
 
 
 future update ideas:

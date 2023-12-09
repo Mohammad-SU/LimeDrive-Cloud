@@ -4,7 +4,6 @@ function useGlobalEnterKey() {
     const handleKeyPress = (event: KeyboardEvent) => {
         if ((event.key === 'Enter' || event.key === ' ') && document.activeElement) {
             const activeElement = document.activeElement as HTMLElement;
-            console.log(activeElement)
 
             if ('click' in activeElement) {
                 activeElement.click();
