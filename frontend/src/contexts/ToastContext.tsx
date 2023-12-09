@@ -1,9 +1,12 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import Toast from '../components/Toast-comp/Toast';
 import DynamicClip from '../components/DynamicClip';
 
 interface ToastContextProps {
     showToast: (options: ToastOptions) => void;
+    toastContainer: HTMLElement | null;
+    setToastContainer: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 }
 
 export interface ToastOptions {
@@ -21,6 +24,7 @@ const ToastContext = createContext<ToastContextProps | undefined>(undefined);
 export function ToastProvider({ children }: { children: ReactNode }) {
     const [toast, setToast] = useState<ToastOptions | null>(null);
     const [isToastVisible, setIsToastVisible] = useState(false);
+    const [toastContainer, setToastContainer] = useState<HTMLElement | null>(document.body);
 
     const showToast = (options: ToastOptions) => {
         setToast({ ...options });
@@ -34,10 +38,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         }, 300);
     };
 
+    const contextValue = useMemo(() => {
+        return {
+            showToast,
+            toastContainer: toastContainer || document.body,
+            setToastContainer,
+        };
+    }, [showToast, toastContainer]);
+
     return (
-        <ToastContext.Provider value={{ showToast }}>
+        <ToastContext.Provider value={contextValue}>
             {children}
-            {toast && <Toast {...toast} onClose={closeToast} />}
+            {toast && toastContainer && createPortal(<Toast {...toast} onClose={closeToast} />, toastContainer)}
             {<DynamicClip clipPathId={'toastClip'} animation={isToastVisible} numRects={1}/>}
         </ToastContext.Provider>
     );

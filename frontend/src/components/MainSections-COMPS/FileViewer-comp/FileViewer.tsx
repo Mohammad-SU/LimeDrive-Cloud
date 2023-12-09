@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import "./FileViewer.scss"
 import axios from 'axios';
 import { useFileContext } from '../../../contexts/FileContext';
@@ -11,18 +11,20 @@ import LoadingBar from '../../LoadingBar-COMPS/LoadingBar';
 import Backdrop from '../../Backdrop-comp/Backdrop';
 import useDelayedExit from '../../../hooks/useDelayedExit';
 import FocusTrap from 'focus-trap-react';
-import { BsShare, BsThreeDotsVertical } from 'react-icons/bs';
+import { BsChevronDown, BsShare, BsThreeDotsVertical } from 'react-icons/bs';
 import { useToast } from '../../../contexts/ToastContext';
 
 function FileViewer() {
     const { fileToView, setFileToView } = useFileContext();
     const { apiSecure } = useUserContext();
-    const { showToast } = useToast()
+    const { showToast, setToastContainer } = useToast()
+    const fileViewerRef = useRef<HTMLDivElement | null>(null);
     const [fileToViewName, setFileToViewName] = useState("") // Here because of animation exit problems
     const [fileContentUrl, setFileContentUrl] = useState("");
     const [notSupported, setNotSupported] = useState(false);
     const [backendErrorMsg, setBackendErrorMsg] = useState("");
     const [loading, setLoading] = useState(false);
+    const controller = new AbortController();
     const supportedFileTypes: string[] = [
         "image/bmp", "text/csv", "application/vnd.oasis.opendocument.text",
         "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -36,19 +38,23 @@ function FileViewer() {
     const { isVisible: isFileViewerVisible }  = useDelayedExit({
         shouldRender: fileToView != null,
         onExitCallback: () => {
+            setToastContainer(document.body)
+            if (fileContentUrl) window.URL.revokeObjectURL(fileContentUrl)
             setFileToViewName("")
-            window.URL.revokeObjectURL(fileContentUrl);
             setFileContentUrl("")
             setNotSupported(false);
             setBackendErrorMsg("");
         }
     })
 
-    const fetchFileContent = async () => {
+    const setupFileViewer = async () => {
         if (!fileToView) return
-        if (fileContentUrl) window.URL.revokeObjectURL(fileContentUrl) // Leave this
         const newFileToView = { ...fileToView }
         setFileToViewName(newFileToView.name)
+        if (fileContentUrl) window.URL.revokeObjectURL(fileContentUrl) // Leave this just in case
+        setTimeout(() => { // Run after FileViewer is rendered
+            setToastContainer(document.querySelector(".FileViewer") as HTMLElement | null);
+        }, 1);
         if (!supportedFileTypes.includes(newFileToView.type)) {
             setNotSupported(true);
             return;
@@ -62,7 +68,8 @@ function FileViewer() {
                 params: {
                     id: newFileToView.id,
                     extension: fileExtension
-                }
+                },
+                signal: controller.signal,
             });
             const binaryData = atob(response.data.fileContent);
 
@@ -85,7 +92,12 @@ function FileViewer() {
         }
     };
     useEffect(() => {
-        fetchFileContent()
+        setupFileViewer()
+        return () => {
+            setTimeout(() => {
+                controller.abort(); // Used here instead of in onExitCallback because for some reason aborting didnt work there
+            }, 300);
+        }
     }, [fileToView])
 
     useEffect(() => {
@@ -95,17 +107,25 @@ function FileViewer() {
                 setFileToView(null)
             }
         }
+        const handleClickOutside = (event: MouseEvent) => {
+            if (event.target === fileViewerRef.current) { // If FileViewer clicked directly (none of its children clicked)
+                setFileToView(null);
+            }
+        };
         window.addEventListener('keydown', handleEscapeKey);
+        window.addEventListener('click', handleClickOutside);
+        
         return () => {
             window.removeEventListener('keydown', handleEscapeKey);
+            window.removeEventListener('click', handleClickOutside);
         }
     }, [])
 
     return (
             <>
-                {isFileViewerVisible && 
+                {isFileViewerVisible &&
                     <FocusTrap>
-                        <div className="FileViewer">
+                        <div className="FileViewer" ref={fileViewerRef}>
                             <div className="file-viewer-header">
                                 <div className="file-name-cont">
                                     <button className="icon-btn-wrapper close-btn" onClick={() => setFileToView(null)}>
@@ -117,6 +137,7 @@ function FileViewer() {
 
                                 <button className="open-with-btn" onClick={() => showToast({message: "Open with not yet featured.", showFailIcon: true})}>
                                     Open with
+                                    <BsChevronDown className='chevron'/>
                                     <DynamicClip clipPathId='fileViewerOpenWithBtnClip' animation={fileToView != null} numRects={4} />
                                 </button>
 
@@ -137,8 +158,8 @@ function FileViewer() {
                                         <BsThreeDotsVertical className="icon-btn vertical-dots-icon"/>
                                         <DynamicClip clipPathId='fileViewerMoreBtnClip' animation={fileToView != null} numRects={4} />
                                     </button>
-                                    <button className="icon-btn-wrapper share-btn" onClick={() => showToast({message: "Sharing from preview not yet featured.", showFailIcon: true})}>
-                                        <BsShare className="icon-btn share-icon"/>
+                                    <button className="share-btn" onClick={() => showToast({message: "Sharing from preview not yet featured.", showFailIcon: true})}>
+                                        <BsShare className="share-icon"/>
                                         Share
                                         <DynamicClip clipPathId='fileViewerShareBtnClip' animation={fileToView != null} numRects={4} />
                                     </button>

@@ -7,15 +7,18 @@
         gap: 0.7rem;
         
         button {
-            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
             padding: 0.5rem 0.9rem;
             padding-bottom: 0.6rem;
             border: 2px solid lime;
             border-radius: 999px;
 
             .chevron {
-                margin-bottom: -0.22rem;
-                margin-left: 0.6rem;
+                font-size: 1.1rem;
+                margin-bottom: -0.25rem;
             }
         }
 
@@ -26,9 +29,11 @@
             clip-path: url(#starredSortClip);
         }
         .type-sort-btn {
+            padding-left: 1rem;
             clip-path: url(#typeSortClip);
         }
         .people-sort-btn {
+            padding-left: 1rem;
             clip-path: url(#peopleSortClip);
         }
     }

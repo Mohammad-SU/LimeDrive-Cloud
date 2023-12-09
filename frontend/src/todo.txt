@@ -28,7 +28,7 @@ Priority:
     - implement captcha
     - copy link feature in uploadInfo
 
-auto console.error removal for production with build plugin/package
+auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually
 update backend error messages to not reveal too much info 
 make handleMoveItems also check uploadQueue to avoid possible file conflicts
 make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
@@ -44,8 +44,9 @@ Deleting (future):
     - move selection code into a custom hook so other MainSections can use it?
 
 Previews:
-    - fix toasts not being focus-trapped
     - fix box shadow not working on motion.div
+    - fix btn clicks causing content/docviewer to flicker
+    - add zoom btn?
     - left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)?
 
 implement keyboard controls for drag and drop and better selection? (fix checkbox space key double click problem)
@@ -71,13 +72,13 @@ aria labels
 file preview commenting?
 advanced tabbing in file viewer content? (remember to remove overriding focus-visible style in FileViewer)
 more advanced backend delete code with db transaction and b2 cloud deletion error handling, and then update frontend toasts/error handling for DeleteBtn
-make it so if there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
+make it so if toast stacking is implemented and there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 backend validation for conflicting item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc, update frontend validation for this, websockets?
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
 instead of delaying item selection, make item selection instant and implement below suggestion? Or implement below suggestion without removing selection delay? 
 for folder opening use delay clip animation on entire main-list/list items? Although it may be annoying for users who want to open folders quickly
 file selection with arrow keys (multiple with shift)
-cancel button in toast
+cancel button in toast for aborting current operation
 file editing
 more detailed errors, such as if folder/file doesnt exist on database cause a backend error and then tell the user that the folder/file doesnt exist
 folder uploading, check each folder and subfolder to make sure their folder names follow the valid format (test by invalidating normal characters), remove if true condition on file selection handlefileselect condition

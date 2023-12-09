@@ -8,6 +8,7 @@
     height: 1rem;
     width: 1rem;
     border: .0625rem solid lime;
+    background: transparent;
     @include btn-selection-styles;
     cursor: pointer;
 
