@@ -12,29 +12,6 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    private function createLoginResponse(Request $request, User $user, $message)
-    {
-        $additionalDetails = [
-            'username' => $user->username,
-            'email' => $user->email,
-        ];
-
-        if (!$request->input('skipTokenCreation')) {
-            $token = $user->createToken('auth_token')->plainTextToken;
-        } 
-        else {
-            $token = null;
-        };
-
-        $response = response()->json([
-            'message' => $message,
-            'user' => $additionalDetails,
-            'token' => $token,
-        ]);
-
-        return $response;
-    }
-
     public function register(Request $request)
     {
         $rules = [
@@ -59,11 +36,10 @@ class AuthController extends Controller
         ]);
     
         Auth::login($user);
-
-        $message = 'Registration successful.';
+        
         // Mail::to($user->email)->send(new RegistrationConfirmation());
 
-        return $this->createLoginResponse($request, $user, $message);
+        return $this->createLoginResponse($request, $user, 'Registration successful.');
     }
     
     public function login(Request $request)
@@ -72,22 +48,39 @@ class AuthController extends Controller
 
         $isEmail = filter_var($credentials['usernameOrEmailLog'], FILTER_VALIDATE_EMAIL);
 
-        $field = $isEmail ? 'email' : 'username';
+        $fieldName = $isEmail ? 'email' : 'username'; // User can input username OR email for login
+        $fieldValue = $credentials['usernameOrEmailLog'];
 
-        $newCredentials = [
-            $field => $credentials['usernameOrEmailLog'],
-        ];
-
-        $user = User::where($field, $newCredentials[$field])->first();
+        $user = User::where($fieldName, $fieldValue)->first();
 
         if ($user && Hash::check($credentials['passwordLog'], $user->password_hash)) {
             Auth::login($user);
-
-            $message = 'Login successful.';
-            return $this->createLoginResponse($request, $user, $message);
-        } 
-        else {
+            return $this->createLoginResponse($request, $user, 'Login successful.');
+        } else {
             return response()->json(['message' => 'Invalid login details.'], 400);
         };
+    }
+
+    private function createLoginResponse(Request $request, User $user, $message)
+    {
+        $additionalDetails = [
+            'username' => $user->username,
+            'email' => $user->email,
+        ];
+
+        if (!$request->input('skipTokenCreation')) {
+            $token = $user->createToken('auth_token')->plainTextToken;
+        } 
+        else {
+            $token = null;
+        };
+
+        $response = response()->json([
+            'message' => $message,
+            'user' => $additionalDetails,
+            'token' => $token,
+        ]);
+
+        return $response;
     }
 }

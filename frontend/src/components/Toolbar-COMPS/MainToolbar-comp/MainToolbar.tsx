@@ -46,8 +46,8 @@ function MainToolbar() {
                     <button className="DownloadBtn">
                         <AiOutlineDownload className="tool-icon"/>
                         Download
-                        <DynamicClip clipPathId="DownloadBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     </button>
+                    <DynamicClip clipPathId="DownloadBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
 
                     {showOpenBtn && <OpenBtn />}
                     <DynamicClip clipPathId="OpenBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>

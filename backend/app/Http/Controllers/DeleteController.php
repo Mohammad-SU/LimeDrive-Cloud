@@ -34,7 +34,7 @@ class DeleteController extends Controller
                     $deletedFolderIds[] = 'd_' . $dbId; // Add back 'd_' prefix for the response
                 } 
                 else {
-                    $file = File::find($id);
+                    $file = File::findOrFail($id);
                     $extension = pathinfo($file->name, PATHINFO_EXTENSION);
                     $file->delete();
                     $deletedFileData[] = [
@@ -68,8 +68,7 @@ class DeleteController extends Controller
 
     private function deleteFolder($folderId, &$deletedFolderIds, &$deletedFileData)
     {
-        $folder = Folder::find($folderId);
-        if (!$folder) return;
+        $folder = Folder::findOrFail($folderId);
 
         $subfiles = File::where('parent_folder_id', $folderId)->get();
         foreach ($subfiles as $subfile) {

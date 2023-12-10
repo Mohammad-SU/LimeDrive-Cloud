@@ -27,7 +27,7 @@ Priority:
     - account deleted message with apisecure interceptor
     - implement rate limiting
     - implement captcha
-    - copy link feature in uploadInfo
+    - copy link feature in uploadInfo (shareable links where any person can view the file from it, separate from entire file sharing across accounts)
 
 auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually
 update backend error messages to not reveal too much info 
@@ -40,15 +40,17 @@ for main sections add general scss to MainPage.scss (such as the title where the
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
 
-Deleting (future):
-    - confirmation, and then move to recycle bin? check what dropbox/google drive does
-    - move selection code into a custom hook so other MainSections can use it?
-
 Previews:
     - fix btn clicks causing content/docviewer to flicker
     - add zoom btn?
     - left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)?
 
+Deleting (future):
+    - confirmation, and then move to recycle bin? check what dropbox/google drive does
+    - move selection code into a custom hook so other MainSections can use it?
+
+inform user that backend/finalisng might take a while if a file is large
+deal with slow Storage put in backend for large files/speed it up somehow
 implement keyboard controls for drag and drop and better selection? (fix checkbox space key double click problem)
 implement registration confirmation email properly with mjml with email verification in it.
 use pre instead of images for ascii
@@ -121,7 +123,6 @@ divider element in newMenu in sidebar that has margin top and bottom similar to 
 different layouts for filelist
 add help section?
 increase clickable area around file content in file viewer so user doesnt accidentally close the viewer when trying to click the edge of the file preview
-
 
 future update ideas:
     undo btn/features

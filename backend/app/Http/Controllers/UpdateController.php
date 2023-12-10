@@ -30,12 +30,12 @@ class UpdateController extends Controller
                 $parent_folder_id = $item['parent_folder_id'];
 
                 if (!isset($item['type'])) {
-                    $updItem = Folder::find($id);
+                    $updItem = Folder::findOrFail($id);
                     $this->updateChildPaths($updItem, $new_path, $updatedItems);
                     $updatedItems[] = ['id' => 'd_' . $updItem->id, 'updated_path' => $new_path];
                 } 
                 else {
-                    $updItem = File::find($id);
+                    $updItem = File::findOrFail($id);
                     $updatedItems[] = ['id' => $updItem->id, 'updated_path' => $new_path];
                 }
 

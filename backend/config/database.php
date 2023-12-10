@@ -60,6 +60,7 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => __DIR__ . '/../public/cacert.pem',
+                PDO::ATTR_TIMEOUT => 600, // each unit is a second
             ]) : [],
         ],
 
