@@ -41,8 +41,7 @@ set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
 
 Previews:
-    - fix btn clicks causing content/docviewer to flicker
-    - add zoom btn?
+    - add zoom btn? (make it so large images/videos are zoomed out by default instead of allowing them to overflow scroll, unless the user zooms in after?)
     - left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)?
 
 Deleting (future):

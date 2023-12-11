@@ -14,6 +14,15 @@ import FocusTrap from 'focus-trap-react';
 import { BsChevronDown, BsShare, BsThreeDotsVertical } from 'react-icons/bs';
 import { useToast } from '../../../contexts/ToastContext';
 
+const MemoizedDocViewer = memo(({ fileContentUrl }: { fileContentUrl: string }) => ( // Memoized to stop it from flickering and making network requests whenever rerendered unnecessarily
+    <DocViewer
+        className="doc-viewer"
+        pluginRenderers={DocViewerRenderers}
+        documents={[{ uri: fileContentUrl }]}
+        config={{ header: { disableHeader: true } }}
+    ></DocViewer>
+));
+
 function FileViewer() {
     const { fileToView, setFileToView } = useFileContext();
     const { apiSecure } = useUserContext();
@@ -172,7 +181,7 @@ function FileViewer() {
                                         transition={{ duration: 0.3 }}
                                         key="fileViewerContentKey"
                                     >
-                                        {loading || notSupported || backendErrorMsg ?
+                                        {loading || notSupported || backendErrorMsg || !fileContentUrl ?
                                             <motion.div 
                                                 className="loading-indicator-and-info"
                                                 initial={{ opacity: 0 }}
@@ -182,15 +191,15 @@ function FileViewer() {
                                                 key="fileContentLoadingIndicatorKey"
                                             >
                                                 {loading ?
-                                                        <><h1>Loading File...</h1>
-                                                        <LoadingBar /></>
-                                                    : notSupported ?
-                                                        <h1 className="not-supported-text">Preview not supported for this file type.</h1>
-                                                    :
-                                                        <h1 className="error-text">Failed to load preview.<br/>Please check your connection.</h1>
+                                                    <><h1>Loading File...</h1>
+                                                    <LoadingBar /></>
+                                                 : notSupported ?
+                                                    <h1 className="not-supported-text">Preview not supported for this file type.</h1>
+                                                 :
+                                                    <h1 className="error-text">Failed to load preview.<br/>Please check your connection.</h1>
                                                 }
                                             </motion.div>
-                                            :
+                                         :
                                             <motion.div
                                                 className="doc-viewer-cont"
                                                 initial={{ opacity: 0 }}
@@ -199,12 +208,7 @@ function FileViewer() {
                                                 transition={{ duration: 0.3 }}
                                                 key="docViewerKey"
                                             >
-                                                <DocViewer
-                                                    className="doc-viewer"
-                                                    pluginRenderers={DocViewerRenderers}
-                                                    documents={[{ uri: fileContentUrl }]}
-                                                    config={{ header: { disableHeader: true } }}
-                                                ></DocViewer>
+                                                <MemoizedDocViewer fileContentUrl={fileContentUrl} />
                                             </motion.div>
                                         }
                                     </motion.div>

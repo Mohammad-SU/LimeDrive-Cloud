@@ -71,7 +71,7 @@ function Sidebar() {
             const response = await apiSecure.post('/createFolder', {
                 name: formData.newFolderName.trim(),
                 app_path: app_path,
-                parent_folder_id: parent_folder_id
+                parent_folder_id: parseInt(parent_folder_id)
             });
 
             addFolders(response.data)
