@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { useFileContext } from '../../../contexts/FileContext'
-import { AiOutlineDownload } from "react-icons/ai"
+import { BsEye } from "react-icons/bs"
 
 function OpenBtn() {
     const { selectedItems, setFileToView } = useFileContext()
@@ -14,9 +14,9 @@ function OpenBtn() {
     }
 
     return (
-        <button className="DownloadBtn">
-            <AiOutlineDownload className="tool-icon"/>
-            Download
+        <button className="OpenBtn" onClick={handleToolbarOpenClick}>
+            <BsEye className="tool-icon eye"/>
+            Preview
         </button>
     )
 }

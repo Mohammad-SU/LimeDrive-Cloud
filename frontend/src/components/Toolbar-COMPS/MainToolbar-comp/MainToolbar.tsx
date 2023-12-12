@@ -2,10 +2,11 @@ import { memo, useState, useEffect } from 'react'
 import "./MainToolbar.scss"
 import useDelayedExit from '../../../hooks/useDelayedExit'
 import { useFileContext } from '../../../contexts/FileContext'
+import DownloadBtn from '../ToolbarBtn-COMPS/DownloadBtn'
 import OpenBtn from '../ToolbarBtn-COMPS/OpenBtn'
 import DeleteBtn from '../ToolbarBtn-COMPS/DeleteBtn-comp/DeleteBtn'
 import MoveBtn from '../ToolbarBtn-COMPS/MoveBtn-comp/MoveBtn'
-import { AiOutlineDownload, AiOutlineStar } from 'react-icons/ai'
+import { AiOutlineStar } from 'react-icons/ai'
 import { BsLink45Deg, BsShare } from 'react-icons/bs'
 import { GoPencil } from 'react-icons/go'
 import DynamicClip from '../../DynamicClip'
@@ -43,10 +44,7 @@ function MainToolbar() {
         isToolbarVisible &&
             <div className="MainToolbar">
                 <div className="main-tools">
-                    <button className="DownloadBtn">
-                        <AiOutlineDownload className="tool-icon"/>
-                        Download
-                    </button>
+                    <DownloadBtn />
                     <DynamicClip clipPathId="DownloadBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
 
                     {showOpenBtn && <OpenBtn />}

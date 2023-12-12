@@ -4,24 +4,15 @@ import axios from 'axios';
 import { useFileContext } from '../../../contexts/FileContext';
 import { useUserContext } from '../../../contexts/UserContext';
 import { AiOutlineClose, AiOutlineComment, AiOutlineDownload, AiOutlinePrinter } from 'react-icons/ai';
-import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import { motion, AnimatePresence } from 'framer-motion';
 import DynamicClip from '../../DynamicClip';
 import LoadingBar from '../../LoadingBar-COMPS/LoadingBar';
 import Backdrop from '../../Backdrop-comp/Backdrop';
 import useDelayedExit from '../../../hooks/useDelayedExit';
 import FocusTrap from 'focus-trap-react';
+import ContentViewer from './ContentViewer';
 import { BsChevronDown, BsShare, BsThreeDotsVertical } from 'react-icons/bs';
 import { useToast } from '../../../contexts/ToastContext';
-
-const MemoizedDocViewer = memo(({ fileContentUrl }: { fileContentUrl: string }) => ( // Memoized to stop it from flickering and making network requests whenever rerendered unnecessarily
-    <DocViewer
-        className="doc-viewer"
-        pluginRenderers={DocViewerRenderers}
-        documents={[{ uri: fileContentUrl }]}
-        config={{ header: { disableHeader: true } }}
-    ></DocViewer>
-));
 
 function FileViewer() {
     const { fileToView, setFileToView } = useFileContext();
@@ -41,9 +32,9 @@ function FileViewer() {
         "image/gif", "text/htm", "text/html", "image/jpg", "image/jpeg",
         "application/pdf", "image/png", "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "image/tiff", "text/plain", "application/vnd.ms-excel",
+        "image/tiff", "image/x-icon", "text/plain", "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "video/mp4"
+        "video/mp4", "video/webm", "video/quicktime", "video/mpeg", "video/ogg",
     ];
     const { isVisible: isFileViewerVisible }  = useDelayedExit({
         shouldRender: fileToView != null,
@@ -100,7 +91,7 @@ function FileViewer() {
         setupFileViewer()
         return () => {
             setTimeout(() => {
-                controller.abort(); // Used here instead of in onExitCallback and below useeffect because for some reason aborting didnt work in those places
+                controller.abort(); // Used here instead of in onExitCallback and below useeffect because for some reason aborting didnt work in those places, timeout is there to match animation
             }, 300);
         }
     }, [fileToView])
@@ -201,14 +192,14 @@ function FileViewer() {
                                             </motion.div>
                                          :
                                             <motion.div
-                                                className="doc-viewer-cont"
+                                                className="ContentViewer-cont"
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
                                                 transition={{ duration: 0.3 }}
                                                 key="docViewerKey"
                                             >
-                                                <MemoizedDocViewer fileContentUrl={fileContentUrl} />
+                                                <ContentViewer fileContentUrl={fileContentUrl} fileType={fileToView.type}/>
                                             </motion.div>
                                         }
                                     </motion.div>

@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Helpers;
 use App\Models\File;
 
-class GetFileDataController extends Controller
+class GetItemDataController extends Controller
 {
     public function getFileContent(Request $request)
     {
+        $request->validate(['id' => 'required|int']);
+
         try {
             $fileData = $this->findFileData($request);
             return response()->json(['fileContent' => base64_encode($fileData['content'])]);
@@ -20,25 +22,29 @@ class GetFileDataController extends Controller
         }
     }
 
-    public function getFileDownload(Request $request)
+    public function getItemDownload(Request $request)
     {
-        try {
-            $fileData = $this->findFileData($request);
-            $headers = [
-                'Content-Type' => $fileData['file']->type,
-                'Content-Disposition' => 'attachment; filename="' . $fileData['file']->name . '"',
-            ];
-            return response($fileData['content'], 200, $headers);
-        } 
-        catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        // $request->validate([
+        //     'items' => 'required|array',
+        //     'items.id' => 'required',
+        // ]);
+
+        // try {
+        //     $fileData = $this->findFileData($request);
+        //     $headers = [
+        //         'Content-Type' => $fileData['file']->type,
+        //         'Content-Disposition' => 'attachment; filename="' . $fileData['file']->name . '"',
+        //     ];
+        //     return response($fileData['content'], 200, $headers);
+        // } 
+        // catch (\Exception $e) {
+        //     return response()->json(['error' => $e->getMessage()], 500);
+        // }
     }
 
     private function findFileData(Request $request)
     {
-        $fileData = $request->validate(['id' => 'required|int']);
-        $file = File::findOrFail($fileData['id']);
+        $file = File::findOrFail($request['id']);
         $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
         $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
         $content = Storage::disk('s3')->get($cloudPath);

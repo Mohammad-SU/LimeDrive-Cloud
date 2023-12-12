@@ -158,7 +158,14 @@
             }
         }
 
-        .doc-viewer-cont {
+        .ContentViewer-cont {  
+            .x-icon-img {
+                display: block; // Remove extra space
+                background: 
+                repeating-conic-gradient(rgb(54, 54, 54) 0% 25%, rgb(26, 26, 26) 0% 50%) 
+                  50% / 20px 20px;
+            }
+
             .doc-viewer {
                 color: black;
                 
@@ -171,6 +178,9 @@
                     img {
                         max-height: 100%;
                         max-width: 100%;
+                        background: 
+                        repeating-conic-gradient(rgb(255, 255, 255) 0% 25%, rgb(35, 35, 35) 0% 50%) 
+                          50% / 20px 20px;
                     }
                 }
             }
