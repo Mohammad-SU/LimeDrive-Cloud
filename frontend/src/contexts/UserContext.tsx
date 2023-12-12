@@ -59,13 +59,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             setUser({ id: null, username: null, email: null });
             setFiles([])
             setFolders([])
+            setTokenInCookie(null);
             setTimeout(() => {
-                setTokenInCookie(null);
                 if (window.location.pathname !== "/auth") {
                     window.location.href = "/auth";
                 }
                 setInvalidToken(false)
-            }, 5000);
+            }, 3000);
         }
         return Promise.reject(error);
     };
@@ -157,7 +157,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return (
         <UserContext.Provider value={contextValue}>
             {!loadUser && !backendError && !invalidToken ? children
-                : invalidToken ? <LoadingPage message="Invalid/expired session. Redirecting in a few seconds..." loading={invalidToken}/>
+                : invalidToken ? <LoadingPage message="Invalid/expired session. Please login again." loading={invalidToken}/>
                 : loadUser && token && !backendError ? <LoadingPage message="Initializing LimeDrive..." loading={loadUser}/>
                 : backendError?.response?.status == 500 ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
                 : null

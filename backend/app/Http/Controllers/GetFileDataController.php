@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Helpers;
 use App\Models\File;
 
-class FileDataController extends Controller
+class GetFileDataController extends Controller
 {
     public function getFileContent(Request $request)
     {

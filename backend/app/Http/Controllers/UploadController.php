@@ -20,6 +20,7 @@ class UploadController extends Controller
         $user_id = auth()->id();
         $requestFile = $request->file('file');
         $extension = $requestFile->getClientOriginalExtension();
+        $fileName = $requestFile->getClientOriginalName();
     
         try {
             DB::beginTransaction();
@@ -27,7 +28,7 @@ class UploadController extends Controller
             $uploadedFile = File::create([
                 'user_id' => $user_id,
                 'parent_folder_id' => intval($request->input('parent_folder_id')),
-                'name' => $requestFile->getClientOriginalName(),
+                'name' => $fileName,
                 'app_path' => $fileData['app_path'],
                 'type' => $requestFile->getClientMimeType(),
                 'extension' => $extension,
@@ -35,8 +36,7 @@ class UploadController extends Controller
                 'date' => now(),
             ]);
 
-            $cloud_path = Helpers::getCloudPath($user_id, $uploadedFile->id, $extension);
-            if (!Storage::put($cloud_path, file_get_contents($requestFile->getRealPath()))) { // for b2 bucket
+            if (!Storage::putFileAs($user_id, $requestFile, $uploadedFile->id . '.' . $extension)) { // for b2 bucket
                 throw new \Exception('Failed to upload file to cloud storage.');
             }
     
