@@ -36,7 +36,7 @@ class UploadController extends Controller
                 'date' => now(),
             ]);
 
-            if (!Storage::putFileAs($user_id, $requestFile, $uploadedFile->id . '.' . $extension)) { // for b2 bucket
+            if (!Storage::putFileAs($user_id, $requestFile, $uploadedFile->id . '.' . $extension)) {
                 throw new \Exception('Failed to upload file to cloud storage.');
             }
     

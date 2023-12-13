@@ -24,7 +24,7 @@ Priority:
     - add tooltips with bulb icon (in gap inside toolbar/space after sorting categories?)
     - handle folder name and path name limits with file names
     - fix date when daylight savings time (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
-    - add functionality for deleting older user accounts when new user uploads files and space is getting low (get space left from b2 directly)
+    - add functionality for deleting older user accounts when new user uploads files and space is getting low (get space left from r2 directly)
     - react virtualisation for large lists
     - account deleted message with apisecure interceptor
     - implement rate limiting
@@ -50,6 +50,7 @@ Deleting (future):
     - confirmation, and then move to recycle bin? check what dropbox/google drive does
     - move selection code into a custom hook so other MainSections can use it?
 
+slightly more detailed error messages (e.g. not found error/unknown error instead of asking user to check connection if it's not their connection that's causing the problem)?
 inform user that backend/finalisng might take a while if a file is large
 deal with slow Storage put in backend for large files/speed it up somehow
 implement keyboard controls for drag and drop and better selection? (fix checkbox space key double click problem)
@@ -73,7 +74,7 @@ vertically align text in buttons?
 aria labels
 file preview commenting?
 advanced tabbing in file viewer content? (remember to remove overriding focus-visible style in FileViewer)
-more advanced backend delete code with db transaction and b2 cloud deletion error handling, and then update frontend toasts/error handling for DeleteBtn
+more advanced backend delete code with db transaction and r2 cloud deletion error handling? and then update frontend toasts/error handling for DeleteBtn
 make it so if toast stacking is implemented and there is a loading toast and it is overwritten, then the loading toast should be queued to come back after it is overwritten
 backend validation for conflicting item name checking when moving and uploading, if folder is going to be child of itself when moving (check parent_folder_id for duplicate item names and child of itself), etc, update frontend validation for this, websockets?
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)

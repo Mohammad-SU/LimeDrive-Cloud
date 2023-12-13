@@ -8,7 +8,7 @@ class UserController extends Controller
     public function getUserData(Request $request)
     {
         $user = $request->user();
-
+        
         return response()->json([
             'user' => [
                 'username' => $user->username,
