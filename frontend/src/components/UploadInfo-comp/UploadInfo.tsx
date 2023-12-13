@@ -358,7 +358,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                     <DynamicClip
                         clipPathId={"uploadInfoClip"}
                         animation={showUploadInfo}
-                        numRects={12}
+                        numRects={collapseUploadList ? 1 : Math.min(uploadListFilesNum, 6)}
                     />
                 </div>
             }

@@ -8,7 +8,6 @@ use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UpdateController;
 use App\Http\Controllers\GetItemDataController;
 use App\Http\Controllers\DeleteController;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,8 +18,7 @@ use App\Http\Controllers\DeleteController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'throttle:100,1']], function () {
     Route::get('/user', [UserController::class, 'getUserData']);
     Route::post('/logout', [UserController::class, 'logout']);
 
@@ -35,5 +33,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/deleteItems', [DeleteController::class, 'deleteItems']);
 });
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::group(['middleware' => ['throttle:100,1']], function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+});

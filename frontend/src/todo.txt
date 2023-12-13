@@ -1,7 +1,9 @@
 Priority:
-    - Add more types
-    - fix large/video file not being deleted by rclone
+    - Add more file types?
     - Downloading, Renaming
+    - get nginx to work
+    - cloudflare r2 caching?
+    - cloudflare r2 get storage use/class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
     - finish implementing search function
     - finish sorting toolbar logic
     - full page animations with DynamicClip

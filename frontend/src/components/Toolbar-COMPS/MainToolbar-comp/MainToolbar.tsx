@@ -45,46 +45,34 @@ function MainToolbar() {
             <div className="MainToolbar">
                 <div className="main-tools">
                     <DownloadBtn />
-                    <DynamicClip clipPathId="DownloadBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
-
                     {showOpenBtn && <OpenBtn />}
-                    <DynamicClip clipPathId="OpenBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
-
                     <DeleteBtn toolbarRendered={showToolbar}/>
-                    <DynamicClip clipPathId="DeleteBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     
                     <div className="toolbar-divider" />
-                    <DynamicClip clipPathId="toolbarDividerClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
 
                     <MoveBtn toolbarRendered={showToolbar}/>
-                    <DynamicClip clipPathId="MoveBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
-
                     {showRenameBtn &&
                         <button className="RenameBtn">
                             <GoPencil className="tool-icon"/>
                             Rename
                         </button>
                     }
-                    <DynamicClip clipPathId="RenameBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
-
                     <button className="StarBtn">
                         <AiOutlineStar className="tool-icon"/>
                         Star
-                        <DynamicClip clipPathId="StarBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     </button>
                 </div>
 
                 <div className="sharing-tools">
                     <button className="LinkBtn"> {/* For multiple selected items, control access modal and separate copied links with commas*/}
                         <BsLink45Deg className="tool-icon link"/>
-                        <DynamicClip clipPathId="LinkBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     </button>
                     <button className="ShareBtn">
                         <BsShare className="tool-icon share"/>
                         Share
-                        <DynamicClip clipPathId="ShareBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
                     </button>
                 </div>
+                <DynamicClip clipPathId="MainToolbarBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
             </div>
     )
 }

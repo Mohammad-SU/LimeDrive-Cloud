@@ -1,6 +1,6 @@
 import { memo, useState, useEffect, useRef } from 'react';
 import "./Breadcrumb.scss"
-import useClickOutside from '../../../hooks/useClickOutside';
+import useUnfocusPopup from '../../../hooks/useUnfocusPopup';
 import useDelayedExit from '../../../hooks/useDelayedExit';
 import DynamicClip from '../../DynamicClip';
 import { BsThreeDots } from 'react-icons/bs';
@@ -26,7 +26,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
     const [isOverflowControlReady, setIsOverflowControlReady] = useState(false);
     const [refresh, setRefresh] = useState(false);
 
-    useClickOutside(dropdownRef, () => {
+    useUnfocusPopup(dropdownRef, () => {
         setShowDropdown(false);
     });
     const { isVisible: isDropdownVisible } = useDelayedExit({
@@ -90,16 +90,13 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
 
     useEffect(() => {
         window.addEventListener("resize", overflowControl);
+        const refreshTimeout = setTimeout(() => { // For some reason need to force the other useeffect to run again after initial page load otherwise breadcrumb doesnt look correct
+            setRefresh(true)
+        }, 1);
         return () => {
             window.removeEventListener("resize", overflowControl);
+            clearTimeout(refreshTimeout)
         };
-    }, []);
-
-    useEffect(() => { // For some reason need to force the other useeffect to run again after initial page load otherwise breadcrumb doesnt look correct 
-        const refreshTimeout = setTimeout(() => {
-            setRefresh(true);
-        }, 1);
-        return () => clearTimeout(refreshTimeout);
     }, []);
 
     return (

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-function useClickOutside(ref: React.RefObject<HTMLElement>, callback: () => void) {
-    function handleClickOutside(event: MouseEvent) {
+function useUnfocusPopup(ref: React.RefObject<HTMLElement>, callback: () => void) {
+    function handleMousedownOutside(event: MouseEvent) {
         if (ref.current && !ref.current.contains(event.target as HTMLElement)) {
             callback();
         }
@@ -14,14 +14,14 @@ function useClickOutside(ref: React.RefObject<HTMLElement>, callback: () => void
     }
 
     useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mousedown', handleMousedownOutside);
         document.addEventListener('keydown', handleEscapeKey);
 
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('mousedown', handleMousedownOutside);
             document.removeEventListener('keydown', handleEscapeKey);
         };
     }, []);
 }
 
-export default useClickOutside;
+export default useUnfocusPopup;

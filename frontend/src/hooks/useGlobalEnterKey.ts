@@ -16,7 +16,6 @@ function useGlobalEnterKey() {
 
     useEffect(() => {
         document.body.addEventListener('keydown', handleKeyPress);
-
         return () => {
             document.body.removeEventListener('keydown', handleKeyPress);
         };

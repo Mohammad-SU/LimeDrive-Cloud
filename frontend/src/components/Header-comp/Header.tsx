@@ -4,7 +4,7 @@ import "./Header.scss";
 import { useFileContext } from '../../contexts/FileContext';
 import { useUserContext } from '../../contexts/UserContext';
 import { useNavigate, Link } from 'react-router-dom'; 
-import useClickOutside from '../../hooks/useClickOutside';
+import useUnfocusPopup from '../../hooks/useUnfocusPopup';
 import useDelayedExit from '../../hooks/useDelayedExit';
 import LimeDriveAscii_header from '../../assets/images/ascii/LimeDrive-ascii-header.png';
 import { GiOrange } from "react-icons/gi";
@@ -19,7 +19,7 @@ function Header() {
     const { isVisible: isDropdownVisible } = useDelayedExit({
         shouldRender: showDropdown,
     });
-    useClickOutside(dropdownRef, () => {
+    useUnfocusPopup(dropdownRef, () => {
         setShowDropdown(false);
     });
 

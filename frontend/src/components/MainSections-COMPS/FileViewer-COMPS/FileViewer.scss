@@ -77,17 +77,8 @@
                 height: fit-content;
             }
 
-            .comment-btn {
-                clip-path: url(#fileViewerCommentBtnClip);
-            }
-            .print-btn {
-                clip-path: url(#fileViewerPrintBtnClip);
-            }
-            .download-btn {
-                clip-path: url(#fileViewerDownloadBtnClip);
-            }
-            .more-btn {
-                clip-path: url(#fileViewerMoreBtnClip);
+            .icon-btn {
+                clip-path: url(#FileViewerToolbarIconBtnClip);
             }
             .share-btn {
                 display: flex;
@@ -160,7 +151,7 @@
 
         .ContentViewer-cont {  
             .x-icon-img {
-                display: block; // Remove extra space
+                display: block; // For removing extra space
                 background: 
                 repeating-conic-gradient(rgb(54, 54, 54) 0% 25%, rgb(26, 26, 26) 0% 50%) 
                   50% / 20px 20px;
@@ -179,7 +170,7 @@
                         max-height: 100%;
                         max-width: 100%;
                         background: 
-                        repeating-conic-gradient(rgb(255, 255, 255) 0% 25%, rgb(35, 35, 35) 0% 50%) 
+                        repeating-conic-gradient(rgb(54, 54, 54) 0% 25%, rgb(26, 26, 26) 0% 50%) 
                           50% / 20px 20px;
                     }
                 }

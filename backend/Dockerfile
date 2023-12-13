@@ -5,9 +5,6 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y git unzip supervisor nginx
 RUN docker-php-ext-install pdo pdo_mysql
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN curl https://rclone.org/install.sh | bash
-
-COPY rclone.conf /root/.config/rclone/rclone.conf
 
 COPY .user.ini /usr/local/etc/php/conf.d/
 

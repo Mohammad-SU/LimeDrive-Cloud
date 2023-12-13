@@ -140,20 +140,17 @@ function FileViewer() {
                                 <div className="file-viewer-toolbar">
                                     <button className="icon-btn-wrapper comment-btn" onClick={() => showToast({message: "Commenting from preview not yet featured.", showFailIcon: true})}>
                                         <AiOutlineComment className="icon-btn comment-icon"/>
-                                        <DynamicClip clipPathId='fileViewerCommentBtnClip' animation={fileToView != null} numRects={4} />
                                     </button>
                                     <button className="icon-btn-wrapper print-btn" onClick={() => showToast({message: "Printing not yet featured.", showFailIcon: true})}>
                                         <AiOutlinePrinter className="icon-btn printer-icon"/>
-                                        <DynamicClip clipPathId='fileViewerPrintBtnClip' animation={fileToView != null} numRects={4} />
                                     </button>
                                     <button className="icon-btn-wrapper download-btn" onClick={() => showToast({message: "Downloading from preview not yet featured.", showFailIcon: true})}>
                                         <AiOutlineDownload className="icon-btn download-icon"/>
-                                        <DynamicClip clipPathId='fileViewerDownloadBtnClip' animation={fileToView != null} numRects={4} />
                                     </button>
                                     <button className="icon-btn-wrapper more-btn" onClick={() => showToast({message: "More preview tools not yet featured.", showFailIcon: true})}>
                                         <BsThreeDotsVertical className="icon-btn vertical-dots-icon"/>
-                                        <DynamicClip clipPathId='fileViewerMoreBtnClip' animation={fileToView != null} numRects={4} />
                                     </button>
+                                    <DynamicClip clipPathId='FileViewerToolbarIconBtnClip' animation={fileToView != null} numRects={4} />
                                     <button className="share-btn" onClick={() => showToast({message: "Sharing from preview not yet featured.", showFailIcon: true})}>
                                         <BsShare className="share-icon"/>
                                         Share

@@ -12,7 +12,7 @@ import { useToast } from '../../contexts/ToastContext.tsx';
 import { useFormLogic } from "../../hooks/useFormLogic.ts";
 import useDelayedExit from '../../hooks/useDelayedExit.ts';
 import DynamicClip from '../DynamicClip.tsx';
-import useClickOutside from '../../hooks/useClickOutside.ts';
+import useUnfocusPopup from '../../hooks/useUnfocusPopup.ts';
 import Modal from '../Modal-comp/Modal.tsx';
 import UploadInfo from '../UploadInfo-comp/UploadInfo'
 
@@ -28,7 +28,7 @@ function Sidebar() {
     const { isVisible: isNewMenuVisible } = useDelayedExit({
         shouldRender: showNewMenu,
     });
-    useClickOutside(newMenuRef, () => {
+    useUnfocusPopup(newMenuRef, () => {
         setShowNewMenu(false);
     });
 

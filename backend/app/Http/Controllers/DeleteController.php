@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use App\Jobs\RcloneDeleteJob;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Helpers;
 use App\Models\File;
 use App\Models\Folder;
@@ -52,7 +52,7 @@ class DeleteController extends Controller
 
         foreach ($deletedFileData as $deletedFileDataItem) {
             $cloudPath = Helpers::getCloudPath(auth()->id(), $deletedFileDataItem['id'], $deletedFileDataItem['extension']);
-            RcloneDeleteJob::dispatch($cloudPath); // Use rclone because backblaze hides files for at least a day instead of deleting them permanently and instantly, and put in job queue since it seems to be slow
+            Storage::delete($cloudPath);
         }
 
         $deletedFileIds = array_map(function ($file) {
