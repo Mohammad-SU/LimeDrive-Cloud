@@ -14,8 +14,12 @@ class GetItemDataController extends Controller
         $request->validate(['id' => 'required|int']);
 
         try {
-            $fileData = $this->findFileData($request);
-            return response()->json(['fileContent' => base64_encode($fileData['content'])]);
+            $file = File::findOrFail($request['id']);
+            $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
+            $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
+            $content = Storage::disk('s3')->get($cloudPath);
+            
+            return response()->json(['fileContent' => base64_encode($content)]);
         } 
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -40,21 +44,5 @@ class GetItemDataController extends Controller
         // catch (\Exception $e) {
         //     return response()->json(['error' => $e->getMessage()], 500);
         // }
-    }
-
-    private function findFileData(Request $request)
-    {
-        $file = File::findOrFail($request['id']);
-        $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
-        $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
-        $content = Storage::disk('s3')->get($cloudPath);
-        if ($content === false) {
-            throw new \Exception('File not found.');
-        }
-
-        return [
-            'file' => $file,
-            'content' => $content,
-        ];
     }
 }
