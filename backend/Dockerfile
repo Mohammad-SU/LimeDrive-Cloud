@@ -13,6 +13,7 @@ COPY . .
 RUN composer install --optimize-autoloader --no-dev
 
 RUN php artisan config:cache
+RUN php artisan event:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
 
@@ -21,4 +22,4 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80
 
-CMD ["/usr/bin/supervisord", "-n"]
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
