@@ -19,6 +19,6 @@ RUN php artisan view:cache
 COPY nginx.conf /etc/nginx/sites-available/default
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-EXPOSE 10000
+EXPOSE 80
 
 CMD ["/usr/bin/supervisord", "-n"]
