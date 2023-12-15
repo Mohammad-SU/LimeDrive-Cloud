@@ -62,20 +62,12 @@ function FileViewer() {
         }
         try {
             setLoading(true)
-            
             const response = await apiSecure.get('/getFileContent', {
                 params: {id: newFileToView.id},
                 signal: controller.signal,
             });
-            const binaryData = atob(response.data.fileContent);
-
-            const arrayBuffer = new ArrayBuffer(binaryData.length);
-            const view = new Uint8Array(arrayBuffer);
-            for (let i = 0; i < binaryData.length; i++) {
-                view[i] = binaryData.charCodeAt(i);
-            }
-            const blob = new Blob([arrayBuffer], { type: newFileToView.type });
-            setFileContentUrl(window.URL.createObjectURL(blob));
+            console.log(response.data.fileUrl)
+            setFileContentUrl(response.data.fileUrl);
         } 
         catch (error) {
             console.error(error);
@@ -91,7 +83,7 @@ function FileViewer() {
         setupFileViewer()
         return () => {
             setTimeout(() => {
-                controller.abort(); // Used here instead of in onExitCallback and below useeffect because for some reason aborting didnt work in those places, timeout is there to match animation
+                controller.abort(); // Used here instead of in onExitCallback or in below useeffect because for some reason aborting didnt work in those places, timeout is here to match the animation
             }, 300);
         }
     }, [fileToView])

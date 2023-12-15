@@ -17,9 +17,11 @@ class GetItemDataController extends Controller
             $file = File::findOrFail($request['id']);
             $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
             $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
-            $content = Storage::disk('s3')->get($cloudPath);
             
-            return response()->json(['fileContent' => base64_encode($content)]);
+            $fileUrl = Storage::temporaryUrl(
+                $cloudPath, now()->addMinutes(5)
+            );
+            return response()->json(['fileUrl' => $fileUrl]);
         } 
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
