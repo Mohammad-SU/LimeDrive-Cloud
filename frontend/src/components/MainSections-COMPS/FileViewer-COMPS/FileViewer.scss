@@ -104,7 +104,7 @@
         max-width: 55rem;
         max-height: 34rem;
         margin: auto;
-        top: 0;
+        top: 1.3rem;
         bottom: 0;
         left: 0;
         right: 0;
@@ -149,12 +149,17 @@
             }
         }
 
-        .ContentViewer-cont {  
-            .x-icon-img {
+        .ContentViewer-cont {
+            > .preview-element {
                 display: block; // For removing extra space
+                max-width: 100%;
+                max-height: auto;
+            }
+
+            .img-preview {
                 background: 
                 repeating-conic-gradient(rgb(54, 54, 54) 0% 25%, rgb(26, 26, 26) 0% 50%) 
-                  50% / 20px 20px;
+                    50% / 20px 20px;
             }
 
             .doc-viewer {
@@ -164,6 +169,8 @@
                     color: lime;
                     background: black;
                     white-space: pre-wrap;
+                    width: 99rem;
+                    height: 100%;
                 }
                 #image-renderer {
                     img {

@@ -32,9 +32,9 @@ function FileViewer() {
         "image/gif", "text/htm", "text/html", "image/jpg", "image/jpeg",
         "application/pdf", "image/png", "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "image/tiff", "image/x-icon", "text/plain", "application/vnd.ms-excel",
+        "image/x-icon", "text/plain", "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "video/mp4", "video/webm", "video/quicktime", "video/mpeg", "video/ogg",
+        "video/mp4", "video/webm", "video/mpeg", "video/ogg",
     ];
     const { isVisible: isFileViewerVisible }  = useDelayedExit({
         shouldRender: fileToView != null,
@@ -65,9 +65,18 @@ function FileViewer() {
             const response = await apiSecure.get('/getFileContent', {
                 params: {id: newFileToView.id},
                 signal: controller.signal,
+                responseType: newFileToView.type.startsWith('video/') ? 'json' : 'arraybuffer',
             });
-            console.log(response.data.fileUrl)
-            setFileContentUrl(response.data.fileUrl);
+
+            let url
+            if (newFileToView.type.startsWith("video/")) {
+                url = response.data.fileUrl
+            } 
+            else {
+                const fileContent = new Blob([response.data], { type: newFileToView.type })
+                url = URL.createObjectURL(fileContent)
+            }
+            setFileContentUrl(url);
         } 
         catch (error) {
             console.error(error);
@@ -76,7 +85,13 @@ function FileViewer() {
             }
         }
         finally {
-            setLoading(false)
+            if (newFileToView.type.startsWith("video")) {
+                setTimeout(() => {
+                    setLoading(false)
+                }, 5000);
+            } else {
+                setLoading(false)
+            }
         }
     };
     useEffect(() => {
@@ -171,7 +186,7 @@ function FileViewer() {
                                                 key="fileContentLoadingIndicatorKey"
                                             >
                                                 {loading ?
-                                                    <><h1>Loading File...</h1>
+                                                    <><h1>Loading Content...</h1>
                                                     <LoadingBar /></>
                                                  : notSupported ?
                                                     <h1 className="not-supported-text">Preview not supported for this file type.</h1>

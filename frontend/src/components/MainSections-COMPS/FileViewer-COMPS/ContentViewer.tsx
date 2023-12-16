@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useRef } from 'react'
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 
 interface ContentViewerProps {
@@ -7,16 +7,24 @@ interface ContentViewerProps {
   }
 
 function ContentViewer({ fileContentUrl, fileType }: ContentViewerProps) {
-    const supportedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/mpeg', 'video/ogg'];
+    const videoRef = useRef<HTMLVideoElement | null>(null);
 
     return (
-        supportedVideoTypes.includes(fileType) ?
-            <video controls className="video-player">
+        fileType.startsWith("video/") ? // For some reason trying to use CloudFlare presigned url causes CORS error with DocViewer
+            <video controls className="video-player preview-element">
                 <source src={fileContentUrl} type={fileType}/>
             </video>
-         : fileType == "image/x-icon" ? 
-                <img src={fileContentUrl} alt="Icon" className="x-icon-img"/>
-         : 
+         : fileType.startsWith("image/") ? // DocViewer doesn't seem to work with some or all large files (multiple MB+)
+            <img src={fileContentUrl} className="img-preview preview-element"/>
+         : fileType == "application/pdf" ?        
+            <iframe
+                title="PDF Viewer"
+                width="870"
+                height="530"
+                className="preview-element"
+                src={fileContentUrl}
+            />
+        :
             <DocViewer
                 className="doc-viewer"
                 pluginRenderers={DocViewerRenderers}

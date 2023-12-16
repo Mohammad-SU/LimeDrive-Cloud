@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Http\Helpers;
 use App\Models\File;
 
@@ -17,11 +18,28 @@ class GetItemDataController extends Controller
             $file = File::findOrFail($request['id']);
             $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
             $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
-            
-            $fileUrl = Storage::temporaryUrl(
-                $cloudPath, now()->addMinutes(5)
-            );
-            return response()->json(['fileUrl' => $fileUrl]);
+
+            if (Str::startsWith($file->type, 'video/')) {
+                $fileUrl = Storage::temporaryUrl(
+                    $cloudPath,
+                    now()->addMinutes(10),
+                );
+    
+                return response()->json(['fileUrl' => $fileUrl]);
+            } 
+            else {
+                $content = Storage::readStream($cloudPath);
+                return response()->stream(
+                    function () use ($content) {
+                        fpassthru($content);
+                    },
+                    200,
+                    [
+                        'Content-Type' => $file->type,
+                        'Content-Disposition' => 'inline; filename="' . $file->name . '"',
+                    ]
+                );
+            }
         } 
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

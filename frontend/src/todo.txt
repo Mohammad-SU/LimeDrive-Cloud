@@ -1,5 +1,5 @@
-    - Add more file types?
-    - test all file type previews or at least main ones
+    - Test main/common file type previews/try to add preview support for as many as you can
+    - Deal with temporary url expiry/inform user/etc
     - Downloading, Renaming
     - cloudflare r2 caching?
     - cloudflare r2 get storage used and class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
@@ -42,6 +42,7 @@ set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
 
 Previews:
+    - support file previews for PDFs/other normally supported file types that are large in size by streaming/chunking (show what is available to the user while loading the rest of the file)?
     - add zoom btn? (make it so large images/videos are zoomed out by default instead of allowing them to overflow scroll, unless the user zooms in after?)
     - left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)?
 
