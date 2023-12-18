@@ -7,24 +7,24 @@ interface ContentViewerProps {
   }
 
 function ContentViewer({ fileContentUrl, fileType }: ContentViewerProps) {
-    const videoRef = useRef<HTMLVideoElement | null>(null);
-
     return (
         fileType.startsWith("video/") ? // For some reason trying to use CloudFlare presigned url causes CORS error with DocViewer
             <video controls className="video-player preview-element">
                 <source src={fileContentUrl} type={fileType}/>
             </video>
-         : fileType.startsWith("image/") ? // DocViewer doesn't seem to work with some or all large files (multiple MB+)
+         : fileType.startsWith("image/") ?
             <img src={fileContentUrl} className="img-preview preview-element"/>
-         : fileType == "application/pdf" ?        
+         : fileType == "application/pdf" ? // DocViewer doesn't seem to work with some or all large files (multiple MB+)   
             <iframe
                 title="PDF Viewer"
                 width="870"
                 height="530"
-                className="preview-element"
+                className="iframe-preview"
                 src={fileContentUrl}
             />
-        :
+        : fileType == "audio/ogg" || fileType == "audio/mpeg" ?
+            <audio src={fileContentUrl} controls className="audio-preview"/>
+        :            
             <DocViewer
                 className="doc-viewer"
                 pluginRenderers={DocViewerRenderers}

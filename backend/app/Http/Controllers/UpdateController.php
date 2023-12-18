@@ -44,6 +44,7 @@ class UpdateController extends Controller
                 $updItem->save();
             }
 
+            DB::commit();
             return response()->json(['message' => 'Item path(s) updated successfully', 'updatedItems' => $updatedItems]);
         }
         catch (\Exception $e) {

@@ -28,13 +28,9 @@ function FileViewer() {
     const controller = new AbortController();
     const supportedFileTypes: string[] = [
         "image/bmp", "text/csv", "application/vnd.oasis.opendocument.text",
-        "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "image/gif", "text/htm", "text/html", "image/jpg", "image/jpeg",
-        "application/pdf", "image/png", "application/vnd.ms-powerpoint",
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "image/x-icon", "text/plain", "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "video/mp4", "video/webm", "video/mpeg", "video/ogg",
+        "application/pdf", "image/png", "image/x-icon", "text/plain",
+        "video/mp4", "video/webm", "audio/ogg", "audio/mpeg"
     ];
     const { isVisible: isFileViewerVisible }  = useDelayedExit({
         shouldRender: fileToView != null,
@@ -76,6 +72,7 @@ function FileViewer() {
                 const fileContent = new Blob([response.data], { type: newFileToView.type })
                 url = URL.createObjectURL(fileContent)
             }
+            console.log(url)
             setFileContentUrl(url);
         } 
         catch (error) {

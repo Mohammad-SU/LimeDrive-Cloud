@@ -101,7 +101,7 @@
         position: fixed;
         width: fit-content;
         height: fit-content;
-        max-width: 55rem;
+        max-width: 90rem;
         max-height: 34rem;
         margin: auto;
         top: 1.3rem;
@@ -152,8 +152,20 @@
         .ContentViewer-cont {
             > .preview-element {
                 display: block; // For removing extra space
-                max-width: 100%;
-                max-height: auto;
+                width: 100%;
+                max-height: 34rem;
+            }
+
+            > .iframe-preview {
+                display: block;
+            }
+
+            > .audio-preview {
+                display: block;
+                &::-webkit-media-controls-enclosure {
+                    background: black;
+                    border-radius: 0;
+                }
             }
 
             .img-preview {
