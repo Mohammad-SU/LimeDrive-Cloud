@@ -1,5 +1,4 @@
-    - Test main/common file type previews/try to add preview support for as many as you can
-    - fix odt file type checking/setting in backend and/or frontend and try to support it in preview?
+    - fix odt file type checking/setting in backend and/or frontend
     - fix text/csv (make it show as text using fetch and put content inside div, also do this with text/plain itself), decrease width of text div
     - fix text/html (use iframe with sandbox)
     - test htm file
@@ -35,6 +34,7 @@
     - implement captcha
     - copy link feature in uploadInfo (shareable links where any person can view the file from it, separate from entire file sharing across accounts)
 
+get paths using parent folder id instead of app_path?
 custom audio/video players for preview?
 auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually
 update backend error messages to not reveal too much info 
@@ -48,7 +48,7 @@ set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
 
 Previews:
-    - support file previews for PDFs/other normally supported file types that are large in size by streaming/chunking (show what is available to the user while loading the rest of the file)?
+    - improve file views for PDFs/other normally supported file types that are large in size by streaming/chunking (show what is available to the user while loading the rest of the file, e.g. load large image line by line as it loads)?
     - add zoom btn? (make it so large images/videos are showed to be zoomed out by default instead of allowing them to overflow scroll, unless the user zooms in after?)
     - left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)?
 

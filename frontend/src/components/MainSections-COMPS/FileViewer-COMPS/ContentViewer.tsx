@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react'
+import { memo } from 'react'
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 
 interface ContentViewerProps {
@@ -12,20 +12,25 @@ function ContentViewer({ fileContentUrl, fileType }: ContentViewerProps) {
             <video controls className="video-player preview-element">
                 <source src={fileContentUrl} type={fileType}/>
             </video>
+
          : fileType.startsWith("image/") ?
             <img src={fileContentUrl} className="img-preview preview-element"/>
-         : fileType == "application/pdf" ? // DocViewer doesn't seem to work with some or all large files (multiple MB+)   
+
+         : fileType == "application/pdf" || fileType.startsWith("text/htm") ? // starts with because files can be htm and html
             <iframe
-                title="PDF Viewer"
-                width="870"
-                height="530"
+                title="PDF viewer"
+                width="900"
+                height="540"
                 className="iframe-preview"
                 src={fileContentUrl}
+                sandbox={fileType.startsWith("text/htm") ? "allow-popups-to-escape-sandbox allow-popups" : undefined}
             />
-        : fileType == "audio/ogg" || fileType == "audio/mpeg" ?
+
+         : fileType == "audio/ogg" || fileType == "audio/mpeg" ?
             <audio src={fileContentUrl} controls className="audio-preview"/>
-        :            
-            <DocViewer
+            
+         :            
+            <DocViewer // React DocViewer package doesn't seem to work very well with some file types
                 className="doc-viewer"
                 pluginRenderers={DocViewerRenderers}
                 documents={[{ uri: fileContentUrl }]}

@@ -27,10 +27,10 @@ function FileViewer() {
     const [loading, setLoading] = useState(false);
     const controller = new AbortController();
     const supportedFileTypes: string[] = [
-        "image/bmp", "text/csv", "application/vnd.oasis.opendocument.text",
-        "image/gif", "text/htm", "text/html", "image/jpg", "image/jpeg",
-        "application/pdf", "image/png", "image/x-icon", "text/plain",
-        "video/mp4", "video/webm", "audio/ogg", "audio/mpeg"
+        "image/jpg", "image/jpeg", "image/bmp", "image/gif", 
+        "image/png", "image/x-icon", "application/pdf", 
+        "video/mp4", "video/webm", "audio/ogg", "audio/mpeg", 
+        "text/plain", "text/htm", "text/html",
     ];
     const { isVisible: isFileViewerVisible }  = useDelayedExit({
         shouldRender: fileToView != null,
@@ -142,20 +142,20 @@ function FileViewer() {
                                 </button>
 
                                 <div className="file-viewer-toolbar">
-                                    <button className="icon-btn-wrapper comment-btn" onClick={() => showToast({message: "Commenting from preview not yet featured.", showFailIcon: true})}>
+                                    <button className="icon-btn-wrapper comment-btn" onClick={() => showToast({message: "Commenting from viewer not yet featured.", showFailIcon: true})}>
                                         <AiOutlineComment className="icon-btn comment-icon"/>
                                     </button>
                                     <button className="icon-btn-wrapper print-btn" onClick={() => showToast({message: "Printing not yet featured.", showFailIcon: true})}>
                                         <AiOutlinePrinter className="icon-btn printer-icon"/>
                                     </button>
-                                    <button className="icon-btn-wrapper download-btn" onClick={() => showToast({message: "Downloading from preview not yet featured.", showFailIcon: true})}>
+                                    <button className="icon-btn-wrapper download-btn" onClick={() => showToast({message: "Downloading from viewer not yet featured.", showFailIcon: true})}>
                                         <AiOutlineDownload className="icon-btn download-icon"/>
                                     </button>
-                                    <button className="icon-btn-wrapper more-btn" onClick={() => showToast({message: "More preview tools not yet featured.", showFailIcon: true})}>
+                                    <button className="icon-btn-wrapper more-btn" onClick={() => showToast({message: "More viewer tools not yet featured.", showFailIcon: true})}>
                                         <BsThreeDotsVertical className="icon-btn vertical-dots-icon"/>
                                     </button>
                                     <DynamicClip clipPathId='FileViewerToolbarIconBtnClip' animation={fileToView != null} numRects={4} />
-                                    <button className="share-btn" onClick={() => showToast({message: "Sharing from preview not yet featured.", showFailIcon: true})}>
+                                    <button className="share-btn" onClick={() => showToast({message: "Sharing from viewer not yet featured.", showFailIcon: true})}>
                                         <BsShare className="share-icon"/>
                                         Share
                                         <DynamicClip clipPathId='fileViewerShareBtnClip' animation={fileToView != null} numRects={4} />

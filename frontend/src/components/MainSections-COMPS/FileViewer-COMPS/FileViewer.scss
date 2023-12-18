@@ -181,17 +181,8 @@
                     color: lime;
                     background: black;
                     white-space: pre-wrap;
-                    width: 99rem;
+                    width: 50rem;
                     height: 100%;
-                }
-                #image-renderer {
-                    img {
-                        max-height: 100%;
-                        max-width: 100%;
-                        background: 
-                        repeating-conic-gradient(rgb(54, 54, 54) 0% 25%, rgb(26, 26, 26) 0% 50%) 
-                          50% / 20px 20px;
-                    }
                 }
             }
         }
