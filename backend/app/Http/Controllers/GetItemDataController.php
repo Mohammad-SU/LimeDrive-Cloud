@@ -24,14 +24,14 @@ class GetItemDataController extends Controller
                     $cloudPath,
                     $expirationTime,
                 );
-    
                 return response()->json(['fileUrl' => $fileUrl, 'expirationTime' => $expirationTime]);
             } 
             else {
-                $content = Storage::readStream($cloudPath);
+                $contentStream = Storage::readStream($cloudPath);
                 return response()->stream(
-                    function () use ($content) {
-                        fpassthru($content);
+                    function () use ($contentStream) {
+                        fpassthru($contentStream);
+                        fclose($contentStream);
                     },
                     200,
                     [
@@ -42,27 +42,36 @@ class GetItemDataController extends Controller
             }
         } 
         catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => "Failed to get content or URL."], 500);
         }
     }
 
     public function getItemDownload(Request $request)
     {
-        // $request->validate([
-        //     'items' => 'required|array',
-        //     'items.id' => 'required',
-        // ]);
-
-        // try {
-        //     $fileData = $this->findFileData($request);
-        //     $headers = [
-        //         'Content-Type' => $fileData['file']->type,
-        //         'Content-Disposition' => 'attachment; filename="' . $fileData['file']->name . '"',
-        //     ];
-        //     return response($fileData['content'], 200, $headers);
-        // } 
-        // catch (\Exception $e) {
-        //     return response()->json(['error' => $e->getMessage()], 500);
-        // }
+        try {
+            $request->validate([
+                'itemIds' => 'required|array',
+                'itemIds.*' => 'required',
+            ]);
+            $file = File::findOrFail($request['itemIds'][0]);
+            $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
+            $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
+            
+            return response()->streamDownload(
+                function () use ($cloudPath) {
+                    $contentStream = Storage::readStream($cloudPath);
+                    fpassthru($contentStream);
+                    fclose($contentStream);
+                }, 
+                $file->name, 
+                [
+                    'Content-Type' => $file->type,
+                    'Content-Disposition' => 'attachment',
+                ]
+            );
+        } 
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

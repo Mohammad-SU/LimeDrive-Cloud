@@ -28,7 +28,7 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:100,1']], function () {
     Route::post('/updatePaths', [UpdateController::class, 'updatePaths']);
 
     Route::get('/getFileContent', [GetItemDataController::class, 'getFileContent']);
-    Route::get('/getFileDownload', [GetItemDataController::class, 'getItemDownload']);
+    Route::get('/getItemDownload', [GetItemDataController::class, 'getItemDownload']);
 
     Route::delete('/deleteItems', [DeleteController::class, 'deleteItems']);
 });

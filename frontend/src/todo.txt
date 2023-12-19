@@ -24,9 +24,12 @@
     - add functionality for deleting older user accounts when new user uploads files and space is getting low (get space left from r2 directly)
     - react virtualisation for large lists
     - account deleted message with apisecure interceptor
-    - implement rate limiting
     - implement captcha
     - copy link feature in uploadInfo (shareable links where any person can view the file from it, separate from entire file sharing across accounts)
+
+Downloads:
+    - check yt tutorial to see how to allow file downloads
+    - try presigned url method by changing header/content dispostion in r2 bucket
 
 get paths using parent folder id instead of app_path?
 custom audio/video players for preview?
@@ -67,6 +70,7 @@ change margin top of move modal heading (also change heights of folders in there
 when adding delay for open file on double click, remember escape key press timeout clear code
 box shadow for newMenu and other modals?
 file upload chunking?
+if using presigned urls for downloads then add better way for file downloads than presigned url due to security reasons?
 fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too) by adding padding bottom?
 toast notification stacking
 fix finalising being set back to false when uploadInfo is collapsed (move finalising code to uploadInfo)
