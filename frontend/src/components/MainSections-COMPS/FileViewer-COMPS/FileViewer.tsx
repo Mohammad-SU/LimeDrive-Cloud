@@ -13,6 +13,7 @@ import FocusTrap from 'focus-trap-react';
 import ContentViewer from './ContentViewer';
 import { BsChevronDown, BsShare, BsThreeDotsVertical } from 'react-icons/bs';
 import { useToast } from '../../../contexts/ToastContext';
+import { set } from 'lodash';
 
 function FileViewer() {
     const { fileToView, setFileToView } = useFileContext();
@@ -23,6 +24,8 @@ function FileViewer() {
     const [fileToViewName, setFileToViewName] = useState("") // Here because of animation exit problems
     const [fileContentUrl, setFileContentUrl] = useState("");
     const [notSupported, setNotSupported] = useState(false);
+    const [textTooLarge, setTextTooLarge] = useState(false);
+    const [fileTextContent, setFileTextContent] = useState("");
     const [urlExpired, setUrlExpired] = useState(false);
     const [backendErrorMsg, setBackendErrorMsg] = useState("");
     const [loading, setLoading] = useState(false);
@@ -42,6 +45,8 @@ function FileViewer() {
             setFileToViewName("")
             setFileContentUrl("")
             setNotSupported(false);
+            setTextTooLarge(false);
+            setFileTextContent("")
             setBackendErrorMsg("");
             setUrlExpired(false)
             clearTimeout(urlExpirationTimeout)
@@ -60,32 +65,35 @@ function FileViewer() {
             setNotSupported(true);
             return;
         }
+        else if (newFileToView.type == "text/plain" && newFileToView.size > 20 * 1024 * 1024) {
+            setTextTooLarge(true);
+            return;
+        }
+
         try {
             setLoading(true)
             const response = await apiSecure.get('/getFileContent', {
                 params: {id: newFileToView.id},
                 signal: controller.signal,
-                responseType: newFileToView.type.startsWith('video/') ? 'json' : 'arraybuffer',
             });
 
-            let url
-            if (newFileToView.type.startsWith("video/")) {
-                url = response.data.fileUrl
+            if (newFileToView.type == "text/plain") {
+                setFileTextContent(response.data)
+            } else {
+                setFileContentUrl(response.data.fileUrl);
+            }
+
+            if (newFileToView.type.startsWith("video/")) { // User may notice problems when viewing a video type file after its url expires, but other supported file types don't seem to have issues after url expiration
                 const currentTime = Math.floor(Date.now() / 1000);
                 const timeRemaining = response.data.expirationTime - currentTime;
-
+    
                 const expirationTimeout = setTimeout(() => {
                     window.URL.revokeObjectURL(fileContentUrl)
                     setUrlExpired(true)
                 }, timeRemaining * 1000);
-
+    
                 setUrlExpirationTimeout(expirationTimeout);
-            } 
-            else {
-                const fileContent = new Blob([response.data], { type: newFileToView.type })
-                url = URL.createObjectURL(fileContent)
             }
-            setFileContentUrl(url);
         }
         catch (error) {
             console.error(error);
@@ -179,7 +187,7 @@ function FileViewer() {
                                         transition={{ duration: 0.3 }}
                                         key="fileViewerContentKey"
                                     >
-                                        {loading || notSupported || backendErrorMsg || urlExpired || !fileContentUrl ?
+                                        {loading || notSupported || urlExpired || textTooLarge || !fileContentUrl && !fileTextContent || backendErrorMsg ?
                                             <motion.div 
                                                 className="loading-indicator-and-info"
                                                 initial={{ opacity: 0 }}
@@ -195,6 +203,8 @@ function FileViewer() {
                                                     <h1 className="not-supported-text">Preview not supported for this file type.</h1>
                                                  : urlExpired ?
                                                     <h1 className="error-text">Content source expired.<br/>Reopen this file to view it again.</h1>
+                                                 : textTooLarge ?
+                                                    <h1 className="error-text">Cannot preview "text/plain" files<br/>that are larger than 20MB.</h1>
                                                  :
                                                     <h1 className="error-text">Failed to load content.<br/>Please check your connection.</h1>
                                                 }
@@ -208,7 +218,7 @@ function FileViewer() {
                                                 transition={{ duration: 0.3 }}
                                                 key="docViewerKey"
                                             >
-                                                <ContentViewer fileContentUrl={fileContentUrl} fileType={fileToView.type}/>
+                                                <ContentViewer fileContentUrl={fileContentUrl} fileType={fileToView.type} fileTextContent={fileTextContent}/>
                                             </motion.div>
                                         }
                                     </motion.div>

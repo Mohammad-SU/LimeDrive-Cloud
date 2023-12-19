@@ -17,16 +17,8 @@ class GetItemDataController extends Controller
             $file = File::findOrFail($request['id']);
             $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
             $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
-            $expirationTime = now()->addMinutes(15)->timestamp;
 
-            if (Str::startsWith($file->type, 'video/')) {
-                $fileUrl = Storage::temporaryUrl(
-                    $cloudPath,
-                    $expirationTime,
-                );
-                return response()->json(['fileUrl' => $fileUrl, 'expirationTime' => $expirationTime]);
-            } 
-            else {
+            if (Str::startsWith($file->type, 'text/plain')) {
                 $contentStream = Storage::readStream($cloudPath);
                 return response()->stream(
                     function () use ($contentStream) {
@@ -39,6 +31,14 @@ class GetItemDataController extends Controller
                         'Content-Disposition' => 'inline; filename="' . $file->name . '"',
                     ]
                 );
+            } 
+            else {
+                $expirationTime = now()->addMinutes(15)->timestamp; // Most supported file types for previews on frontend don't have problems after url is expired (video types do, but the user is informed if the url has expired)
+                $fileUrl = Storage::temporaryUrl(
+                    $cloudPath,
+                    $expirationTime,
+                );
+                return response()->json(['fileUrl' => $fileUrl, 'expirationTime' => $expirationTime]);
             }
         } 
         catch (\Exception $e) {
@@ -56,20 +56,17 @@ class GetItemDataController extends Controller
             $file = File::findOrFail($request['itemIds'][0]);
             $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
             $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
-            
-            return response()->streamDownload(
-                function () use ($cloudPath) {
-                    $contentStream = Storage::readStream($cloudPath);
-                    fpassthru($contentStream);
-                    fclose($contentStream);
-                }, 
-                $file->name, 
+
+            $fileUrl = Storage::temporaryUrl(
+                $cloudPath,
+                now()->addMinutes(15), // Download still continues even after url is expired
                 [
-                    'Content-Type' => $file->type,
-                    'Content-Disposition' => 'attachment',
+                    'ResponseContentType' => $file->type,
+                    'ResponseContentDisposition' => 'attachment; filename="' . $file->name . '"',
                 ]
             );
-        } 
+            return response()->json(['fileUrl' => $fileUrl]);
+        }
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

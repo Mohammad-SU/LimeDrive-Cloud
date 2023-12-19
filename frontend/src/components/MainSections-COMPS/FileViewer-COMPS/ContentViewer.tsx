@@ -1,20 +1,20 @@
 import { memo } from 'react'
-import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 
 interface ContentViewerProps {
     fileContentUrl: string;
     fileType: string;
-  }
+    fileTextContent: string;
+}
 
-function ContentViewer({ fileContentUrl, fileType }: ContentViewerProps) {
+function ContentViewer({ fileContentUrl, fileType, fileTextContent}: ContentViewerProps) { // React DocViewer package doesn't seem to work very well with some file types
     return (
-        fileType.startsWith("video/") ? // For some reason trying to use CloudFlare presigned url causes CORS error with DocViewer
-            <video controls className="video-player preview-element">
+        fileType.startsWith("video/") ?
+            <video controls className="video-preview">
                 <source src={fileContentUrl} type={fileType}/>
             </video>
 
          : fileType.startsWith("image/") ?
-            <img src={fileContentUrl} className="img-preview preview-element"/>
+            <img src={fileContentUrl} className="img-preview"/>
 
          : fileType == "application/pdf" || fileType.startsWith("text/htm") ? // starts with because files can be htm and html
             <iframe
@@ -28,14 +28,11 @@ function ContentViewer({ fileContentUrl, fileType }: ContentViewerProps) {
 
          : fileType == "audio/ogg" || fileType == "audio/mpeg" ?
             <audio src={fileContentUrl} controls className="audio-preview"/>
-            
-         :            
-            <DocViewer // React DocViewer package doesn't seem to work very well with some file types
-                className="doc-viewer"
-                pluginRenderers={DocViewerRenderers}
-                documents={[{ uri: fileContentUrl }]}
-                config={{ header: { disableHeader: true } }}
-            />
+
+         : fileType == "text/plain" ?
+            <div className="text-preview">{fileTextContent}</div>
+
+         : <p>Error.</p>
     );
 }
 

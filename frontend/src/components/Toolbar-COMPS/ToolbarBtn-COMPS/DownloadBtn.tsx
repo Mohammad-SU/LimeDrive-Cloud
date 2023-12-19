@@ -18,11 +18,9 @@ function DownloadBtn() {
 
             const response = await apiSecure.get('/getItemDownload', {
                 params: {itemIds: selectedItems.map(item => item.id)},
-                responseType: 'blob',
             });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
-            link.href = url;
+            link.href = response.data.fileUrl;
             link.setAttribute('download', selectedItems[0].name);
             document.body.appendChild(link);
             link.click();

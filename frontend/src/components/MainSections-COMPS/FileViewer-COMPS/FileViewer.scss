@@ -150,10 +150,16 @@
         }
 
         .ContentViewer-cont {
-            > .preview-element {
+            > .video-preview, .img-preview {
                 display: block; // For removing extra space
                 width: 100%;
                 max-height: 34rem;
+
+                &.img-preview {
+                    background: 
+                    repeating-conic-gradient(rgb(54, 54, 54) 0% 25%, rgb(26, 26, 26) 0% 50%) 
+                        50% / 20px 20px;
+                }
             }
 
             > .iframe-preview {
@@ -168,22 +174,13 @@
                 }
             }
 
-            .img-preview {
-                background: 
-                repeating-conic-gradient(rgb(54, 54, 54) 0% 25%, rgb(26, 26, 26) 0% 50%) 
-                    50% / 20px 20px;
-            }
-
-            .doc-viewer {
-                color: black;
-                
-                #txt-renderer {
-                    color: lime;
-                    background: black;
-                    white-space: pre-wrap;
-                    width: 50rem;
-                    height: 100%;
-                }
+            .text-preview {
+                padding: 2rem;
+                color: lime;
+                background: black;
+                white-space: pre-wrap;
+                width: 50rem;
+                height: 100%;
             }
         }
     }
