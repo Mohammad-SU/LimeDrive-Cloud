@@ -5,24 +5,28 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
-use App\Http\Helpers;
 use App\Models\File;
 use App\Models\Folder;
 
 class UploadController extends Controller
 {
     public function uploadFile(Request $request)
-    {
-        $fileData = $request->validate([
-            'app_path' => 'required|string',
-            'file' => 'required|file',
-        ]);
-        $user_id = auth()->id();
-        $requestFile = $request->file('file');
-        $extension = $requestFile->getClientOriginalExtension();
-        $fileName = $requestFile->getClientOriginalName();
-    
+    {    
         try {
+            $fileData = $request->validate([
+                'app_path' => 'required|string',
+                'file' => 'required|file',
+            ]);
+            
+            $user_id = auth()->id();
+            $requestFile = $request->file('file');
+            $fileName = $requestFile->getClientOriginalName();
+            $extension = $requestFile->getClientOriginalExtension();
+            $type = $requestFile->getClientMimeType();
+            if ($extension == "odt" && $type == "application/octet-stream") { // For some reason on the frontend the type for odt files were empty
+                $type = "application/vnd.oasis.opendocument.text";
+            }
+
             DB::beginTransaction();
 
             $uploadedFile = File::create([
@@ -30,7 +34,7 @@ class UploadController extends Controller
                 'parent_folder_id' => intval($request->input('parent_folder_id')),
                 'name' => $fileName,
                 'app_path' => $fileData['app_path'],
-                'type' => $requestFile->getClientMimeType(),
+                'type' => $type,
                 'extension' => $extension,
                 'size' => $requestFile->getSize(),
                 'date' => now(),

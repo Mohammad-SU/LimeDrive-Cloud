@@ -23,8 +23,10 @@ function FileViewer() {
     const [fileToViewName, setFileToViewName] = useState("") // Here because of animation exit problems
     const [fileContentUrl, setFileContentUrl] = useState("");
     const [notSupported, setNotSupported] = useState(false);
+    const [urlExpired, setUrlExpired] = useState(false);
     const [backendErrorMsg, setBackendErrorMsg] = useState("");
     const [loading, setLoading] = useState(false);
+    const [urlExpirationTimeout, setUrlExpirationTimeout] = useState<NodeJS.Timeout | undefined>(undefined);
     const controller = new AbortController();
     const supportedFileTypes: string[] = [
         "image/jpg", "image/jpeg", "image/bmp", "image/gif", 
@@ -41,6 +43,8 @@ function FileViewer() {
             setFileContentUrl("")
             setNotSupported(false);
             setBackendErrorMsg("");
+            setUrlExpired(false)
+            clearTimeout(urlExpirationTimeout)
         }
     })
 
@@ -67,14 +71,22 @@ function FileViewer() {
             let url
             if (newFileToView.type.startsWith("video/")) {
                 url = response.data.fileUrl
+                const currentTime = Math.floor(Date.now() / 1000);
+                const timeRemaining = response.data.expirationTime - currentTime;
+
+                const expirationTimeout = setTimeout(() => {
+                    window.URL.revokeObjectURL(fileContentUrl)
+                    setUrlExpired(true)
+                }, timeRemaining * 1000);
+
+                setUrlExpirationTimeout(expirationTimeout);
             } 
             else {
                 const fileContent = new Blob([response.data], { type: newFileToView.type })
                 url = URL.createObjectURL(fileContent)
             }
-            console.log(url)
             setFileContentUrl(url);
-        } 
+        }
         catch (error) {
             console.error(error);
             if (axios.isAxiosError(error)) {
@@ -82,13 +94,7 @@ function FileViewer() {
             }
         }
         finally {
-            if (newFileToView.type.startsWith("video")) {
-                setTimeout(() => {
-                    setLoading(false)
-                }, 5000);
-            } else {
-                setLoading(false)
-            }
+            setLoading(false)
         }
     };
     useEffect(() => {
@@ -173,7 +179,7 @@ function FileViewer() {
                                         transition={{ duration: 0.3 }}
                                         key="fileViewerContentKey"
                                     >
-                                        {loading || notSupported || backendErrorMsg || !fileContentUrl ?
+                                        {loading || notSupported || backendErrorMsg || urlExpired || !fileContentUrl ?
                                             <motion.div 
                                                 className="loading-indicator-and-info"
                                                 initial={{ opacity: 0 }}
@@ -187,8 +193,10 @@ function FileViewer() {
                                                     <LoadingBar /></>
                                                  : notSupported ?
                                                     <h1 className="not-supported-text">Preview not supported for this file type.</h1>
+                                                 : urlExpired ?
+                                                    <h1 className="error-text">Content source expired.<br/>Reopen this file to view it again.</h1>
                                                  :
-                                                    <h1 className="error-text">Failed to load preview.<br/>Please check your connection.</h1>
+                                                    <h1 className="error-text">Failed to load content.<br/>Please check your connection.</h1>
                                                 }
                                             </motion.div>
                                          :

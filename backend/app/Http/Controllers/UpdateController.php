@@ -11,18 +11,17 @@ class UpdateController extends Controller
 {
     public function updatePaths(Request $request)
     {
-        $items = $request->validate([
-            'items' => 'required|array',
-            'items.*.id' => 'required|int',
-            'items.*.new_path' => 'required|string',
-            'items.*.type' => 'nullable',
-            'items.*.parent_folder_id' => 'required|int',
-        ]);
-
         try {
-            DB::beginTransaction();
-
+            $items = $request->validate([
+                'items' => 'required|array',
+                'items.*.id' => 'required|int',
+                'items.*.new_path' => 'required|string',
+                'items.*.type' => 'nullable',
+                'items.*.parent_folder_id' => 'required|int',
+            ]);
             $updatedItems = [];
+
+            DB::beginTransaction();
 
             foreach ($items['items'] as $item) {
                 $id = $item['id'];

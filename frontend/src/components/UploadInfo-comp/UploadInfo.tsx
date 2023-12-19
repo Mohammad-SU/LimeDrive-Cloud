@@ -178,7 +178,6 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                 },
                 cancelToken: source.token,
             })
-
             addFiles(response.data)
             const updatedQueueFile = { fileObj: file.fileObj, id: response.data.id, app_path: response.data.app_path };
             setUploadQueue((prevQueue) => // Update the corresponing file's id in uploadQueue

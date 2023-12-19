@@ -1,9 +1,3 @@
-    - fix odt file type checking/setting in backend and/or frontend
-    - fix text/csv (make it show as text using fetch and put content inside div, also do this with text/plain itself), decrease width of text div
-    - fix text/html (use iframe with sandbox)
-    - test htm file
-    - add application/json support similar to text/plain with text fetch and put text in div
-    - Deal with temporary url expiry/inform user/etc
     - Downloading, Renaming
     - cloudflare r2 caching?
     - cloudflare r2 get storage used and class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
@@ -13,8 +7,8 @@
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
     - implement "space left" on bottom left corner
     - settings page (put backend code in UserController), toast notifications
-    - remove unneeded console.logs with vscode file search
-    - Suggested with thumbnails on all files page, and recents page
+    - remove any unneeded console.logs with vscode file search
+    - Suggested files with thumbnails on all files page, and recents page
     - malware check
     - make website title reflect page/folder accurately
     - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
@@ -36,12 +30,11 @@
 
 get paths using parent folder id instead of app_path?
 custom audio/video players for preview?
-auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually
-update backend error messages to not reveal too much info 
-make handleMoveItems also check uploadQueue to avoid possible file conflicts
+auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually otherwise
+make backend code for uploadQueue check for conflict and tell user in uploadQueue that there was this error, do this similarly for handleMoveItems and its backend code
 make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
 fix :after being off center in move modal breadcrumb
-thumbnails - separate array from files, use find method when rendering, lazy load
+thumbnails - separate array from files? use find method when rendering, lazy load
 change directory mentions to folder or path instead
 for main sections add general scss to MainPage.scss (such as the title where the breadcrumb is the, the general list/header row scss? and other stuff. so that scss code isnt duplicated too much)
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
@@ -56,9 +49,12 @@ Deleting (future):
     - confirmation, and then move to recycle bin? check what dropbox/google drive does
     - move selection code into a custom hook so other MainSections can use it?
 
+add application/json support and other code file support (text fetch from url and put text in div? or use react package for code rendering?)
+refresh video presigned url after timeout and put user back to time instead of telling them to reopen the file viewer
 slightly more detailed error messages (e.g. not found error/unknown error instead of asking user to check connection if it's not their connection that's causing the problem)?
 inform user that backend/finalisng might take a while if a file is large
 deal with slow Storage put in backend for large files/speed it up somehow
+test htm file for file viewer
 implement keyboard controls for drag and drop and better selection? (fix checkbox space key double click problem)
 implement registration confirmation email properly with mjml with email verification in it.
 use pre instead of images for ascii

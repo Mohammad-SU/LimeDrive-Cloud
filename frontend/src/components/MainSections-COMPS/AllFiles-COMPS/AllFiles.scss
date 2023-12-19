@@ -155,14 +155,23 @@
                 padding-right: 1rem;
                 margin: 0;
                 flex: 1;
-                text-overflow: ellipsis;
-                overflow: hidden;
+
+                &:not(.name) {
+                    display: -webkit-box;
+                    word-break: break-word;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
 
                 &.name {
                     display: flex;
                     align-items: center;
                     gap: 0.7rem;
                     flex: 3;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
 
                     .icon-cont {
                         flex-shrink: 0;
@@ -283,14 +292,14 @@
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.400);
 
             &.second-stack {
-                margin-top: -3.8rem;
+                margin-top: -3.85rem;
                 margin-left: 0.475rem;
                 z-index: -1;
                 background: black;
                 border: 2px dashed lime;
             }
             &.third-stack {
-                margin-top: -3rem;
+                margin-top: -3.05rem;
                 margin-left: 1.15rem;
                 z-index: -2;
                 background: black;

@@ -70,8 +70,7 @@ class AuthController extends Controller
 
         if (!$request->input('skipTokenCreation')) {
             $token = $user->createToken('auth_token')->plainTextToken;
-        } 
-        else {
+        } else {
             $token = null;
         };
 

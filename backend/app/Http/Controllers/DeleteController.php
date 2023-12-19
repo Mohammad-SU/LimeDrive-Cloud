@@ -18,12 +18,12 @@ class DeleteController extends Controller
             'itemIds' => 'required|array',
             'itemIds.*.id' => 'required'
         ]);
-
         $deletedFolderIds = [];
         $deletedFileData  = [];
 
         try {
             DB::beginTransaction();
+
             foreach ($itemIds['itemIds'] as $itemId) {
                 $id = $itemId['id'];
                 $isFolderId = Str::startsWith($id, 'd_');
@@ -43,6 +43,7 @@ class DeleteController extends Controller
                     ];
                 }
             }
+            
             DB::commit();
         }
         catch (\Exception $e) {

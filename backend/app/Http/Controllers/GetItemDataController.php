@@ -12,20 +12,20 @@ class GetItemDataController extends Controller
 {
     public function getFileContent(Request $request)
     {
-        $request->validate(['id' => 'required|int']);
-
         try {
+            $request->validate(['id' => 'required|int']);
             $file = File::findOrFail($request['id']);
             $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
             $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
+            $expirationTime = now()->addMinutes(15)->timestamp;
 
             if (Str::startsWith($file->type, 'video/')) {
                 $fileUrl = Storage::temporaryUrl(
                     $cloudPath,
-                    now()->addMinutes(10),
+                    $expirationTime,
                 );
     
-                return response()->json(['fileUrl' => $fileUrl]);
+                return response()->json(['fileUrl' => $fileUrl, 'expirationTime' => $expirationTime]);
             } 
             else {
                 $content = Storage::readStream($cloudPath);

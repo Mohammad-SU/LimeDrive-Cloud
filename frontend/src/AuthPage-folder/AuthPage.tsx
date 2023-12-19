@@ -103,8 +103,8 @@ function AuthPage() { // For some reason useGlobalEnterKey is not needed here if
                 passwordReg: randomPassword,
                 skipTokenCreation: true,
             })
-            startCooldown()
             if (response.data.message == 'Registration successful.') {
+                startCooldown()
                 setLoading(false)
                 setGeneratedUsername(randomUsername)
                 setGeneratedPassword(randomPassword)
