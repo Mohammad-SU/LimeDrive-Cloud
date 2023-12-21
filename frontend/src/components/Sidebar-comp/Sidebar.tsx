@@ -1,7 +1,7 @@
 import { memo, useState, useRef} from 'react'
 import "./Sidebar.scss"
 import axios from 'axios';
-import { NavLink, useNavigate } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import { AiOutlinePicture, AiOutlinePlus, AiFillFolderAdd, AiFillFolder, AiFillFile } from 'react-icons/ai'
 import { TfiFiles } from 'react-icons/tfi'
 import { SlTrash } from 'react-icons/sl'
@@ -18,9 +18,8 @@ import UploadInfo from '../UploadInfo-comp/UploadInfo'
 
 function Sidebar() {
     const { apiSecure } = useUserContext()
-    const { currentPath, folders, addFolders } = useFileContext()
+    const { currentPath, folders, addFolders, setScrollTargetId } = useFileContext()
     const { showToast } = useToast()
-    const navigate = useNavigate()
     const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
 
     const newMenuRef = useRef<HTMLUListElement | null>(null)
@@ -42,7 +41,7 @@ function Sidebar() {
         setBackendErrorMsg(null);
     })
     const isFolderNameValid = /^[^<>\\/:?*"|]{1,255}$/.test(formData.newFolderName.trim());
-    const isConflictingName = folders.some((folder) => folder.app_path == currentPath + folder.name && folder.name == formData.newFolderName.trim());
+    const isConflictingName = folders.some((folder) => folder.app_path === currentPath + folder.name && folder.name === formData.newFolderName.trim());
     const [creationCooldown, setCreationCooldown] = useState<boolean>(false)
 
     const handleModalOpen = () => {
@@ -53,7 +52,7 @@ function Sidebar() {
         setShowNewMenu(false)
     }
     const handleCreateFolder = async () => {
-        if (formData.newFolderName.trim() == '' || !isFolderNameValid || isConflictingName || creationCooldown) {
+        if (formData.newFolderName.trim() === '' || !isFolderNameValid || isConflictingName || creationCooldown) {
             return;
         }
 
@@ -62,7 +61,7 @@ function Sidebar() {
             setTimeout(() => {
                 setCreationCooldown(false);
             }, 350);
-
+            const newCurrentPath = currentPath
             const parentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
             const app_path = currentPath + formData.newFolderName.trim()
             const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
@@ -76,16 +75,9 @@ function Sidebar() {
 
             addFolders(response.data)
             showToast({message: "Folder created.", showSuccessIcon: true})
-
-            setTimeout(() => { // Wait for folder with it's id to be properly rendered to the DOM
-                if (currentPath == parentFolder?.app_path + "/" || parent_folder_id === "0" && currentPath == "LimeDrive/") { // Jump to folder if user is still in same path
-                    navigate(currentPath.slice(0, -1)+"#d_"+response.data.id)
-                    const element = document.getElementById(`d_${response.data.id}`);
-                    if (element) {
-                        element.scrollIntoView({ behavior: "smooth" });
-                    }
-                }
-            }, 1);
+            if (newCurrentPath == currentPath) {
+                setScrollTargetId("d_"+response.data.id)
+            }
         } 
         catch (error) {
             console.error(error);
@@ -211,7 +203,7 @@ function Sidebar() {
                         aria-label="Input for new folder name"
                     />
                     <div className="error-and-loading">
-                        {(!isFolderNameValid && formData.newFolderName.trim() !== '') || (backendErrorMsg == 'Invalid folder name format.') ?
+                        {(!isFolderNameValid && formData.newFolderName.trim() !== '') || (backendErrorMsg === 'Invalid folder name format.') ?
                                 "Cannot contain: < > \\ / : ? * \" |"
                             : isConflictingName ?
                                 "Name conflicts with an existing folder in this path."
@@ -229,7 +221,7 @@ function Sidebar() {
                     <button 
                         className='modal-primary-btn'
                         type="submit"
-                        disabled={formData.newFolderName.trim() == '' || !isFolderNameValid || isConflictingName || creationCooldown}
+                        disabled={formData.newFolderName.trim() === '' || !isFolderNameValid || isConflictingName || creationCooldown}
                     >
                         Create
                     </button>

@@ -16,7 +16,7 @@ function ContentViewer({ fileContentUrl, fileType, fileTextContent}: ContentView
          : fileType.startsWith("image/") ?
             <img src={fileContentUrl} className="img-preview"/>
 
-         : fileType == "application/pdf" || fileType.startsWith("text/htm") ? // starts with because files can be htm and html
+         : fileType === "application/pdf" || fileType.startsWith("text/htm") ? // starts with because files can be htm and html
             <iframe
                 title="PDF viewer"
                 width="900"
@@ -26,10 +26,10 @@ function ContentViewer({ fileContentUrl, fileType, fileTextContent}: ContentView
                 sandbox={fileType.startsWith("text/htm") ? "allow-popups-to-escape-sandbox allow-popups" : undefined}
             />
 
-         : fileType == "audio/ogg" || fileType == "audio/mpeg" ?
+         : fileType === "audio/ogg" || fileType === "audio/mpeg" ?
             <audio src={fileContentUrl} controls className="audio-preview"/>
 
-         : fileType == "text/plain" ?
+         : fileType === "text/plain" ?
             <div className="text-preview">{fileTextContent}</div>
 
          : <p>Error.</p>

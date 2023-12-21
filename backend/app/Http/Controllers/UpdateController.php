@@ -12,7 +12,7 @@ class UpdateController extends Controller
     public function updatePaths(Request $request)
     {
         try {
-            $items = $request->validate([
+            $request->validate([
                 'items' => 'required|array',
                 'items.*.id' => 'required|int',
                 'items.*.new_path' => 'required|string',
@@ -23,7 +23,7 @@ class UpdateController extends Controller
 
             DB::beginTransaction();
 
-            foreach ($items['items'] as $item) {
+            foreach ($request['items'] as $item) {
                 $id = $item['id'];
                 $new_path = $item['new_path'];
                 $parent_folder_id = $item['parent_folder_id'];
@@ -54,19 +54,13 @@ class UpdateController extends Controller
 
     private function updateChildPaths($parentFolder, $new_path, &$updatedItems) // Recursive function for updating children items' app_path
     {
-        $parent_folder_id = $parentFolder->id;
-        
-        $subfiles = File::where('parent_folder_id', $parent_folder_id)->get();
-
-        foreach ($subfiles as $subfile) { // parent_folder_id fields dont need to be changed for child files/folders
+        foreach ($parentFolder->subfiles as $subfile) { // parent_folder_id fields dont need to be changed for subfiles/subfolders
             $subfile->app_path = $new_path . '/' . $subfile->name;
             $subfile->save();
             $updatedItems[] = ['id' => $subfile->id, 'updated_path' => $subfile->app_path];
         }
-
-        $subfolders = Folder::where('parent_folder_id', $parent_folder_id)->get();
         
-        foreach ($subfolders as $subfolder) {
+        foreach ($parentFolder->subfolders as $subfolder) {
             $subfolder->app_path = $new_path . '/' . $subfolder->name;
             $subfolder->save();
             $updatedItems[] = ['id' => 'd_' . $subfolder->id, 'updated_path' => $subfolder->app_path];

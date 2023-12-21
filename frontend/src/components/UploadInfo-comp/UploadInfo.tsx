@@ -26,7 +26,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         delayMs: 300,
     });
 
-    const { currentPath, files, folders, addFiles, addFolders } = useFileContext()
+    const { currentPath, files, folders, addFiles, addFolders, setScrollTargetId } = useFileContext()
     
     const [fileErrors, setFileErrors] = useState(new Map());
     const [currentlyUploadingFile, setCurrentlyUploadingFile] = useState<QueueFile | null>(null);
@@ -49,7 +49,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         const newCurrentPath = currentPath
         let newFiles: QueueFile[]
 
-        if (fileInputRef?.current?.webkitdirectory == false || true) { // For file selection dialog (remove "true" condition after folder uploading is implemented)
+        if (fileInputRef?.current?.webkitdirectory === false || true) { // For file selection dialog (remove "true" condition after folder uploading is implemented)
             const samePathFiles = [ // Includes app's files and queue files (which includes failed files in the queue) but not successfull files that have not yet been added to prevUploadedFiles
                 ...files.filter((file) => file.app_path === newCurrentPath + file.name),
                 ...uploadQueue.filter((queuefile) => !successfulFiles.includes(queuefile) && queuefile.app_path === newCurrentPath + queuefile.fileObj.name), // Incase a file is uploading to the same path but hasnt been fully uploaded yet so that it will still be included in the conflict check
@@ -113,7 +113,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             //         formData.newFolderName = ''
         
             //         setTimeout(() => { // Wait for folder with it's id to be properly rendered to the DOM
-            //             if (currentPath == parentFolder?.app_path + "/" || parent_folder_id === "0" && currentPath == "LimeDrive/") { // Jump to folder if user is still in same path
+            //             if (currentPath === parentFolder?.app_path + "/" || parent_folder_id === "0" && currentPath === "LimeDrive/") { // Jump to folder if user is still in same path
             //                 navigate(currentPath.slice(0, -1)+"#d_"+response.data.id)
             //                 const element = document.getElementById(`d_${response.data.id}`);
             //                 if (element) {
@@ -242,7 +242,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     }
     
     const onCancelClick = (fileToRemove: QueueFile) => {
-        if (fileToRemove == currentlyUploadingFile && currentFileProgress === 100) {
+        if (fileToRemove === currentlyUploadingFile && currentFileProgress === 100) {
             return
         }
 
@@ -285,7 +285,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                                 : isDeleted ?
                                     "Deleted"
                                 : <>In <span className="link">
-                                        <Link to={(parentPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match))+'#'+file.id} smooth>{parentFolderName}</Link> {/* Based on parent path instead of the queue file's path so that this link updates when the user moves that file*/}
+                                        <Link to={(parentPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match))} onClick={() => setScrollTargetId(file.id)}>{parentFolderName}</Link> {/* Based on parent path instead of the queue file's path so that this link updates when the user moves that file*/}
                                     </span></>
                             }
                         </div>
@@ -325,7 +325,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                         <p>
                             {successfulUploadNum < uploadListFilesNum && currentlyUploadingFile ?
                                 `${successfulUploadNum} of ${uploadListFilesNum} ${uploadListFilesNum > 1 ? 'uploads' : 'upload'} complete`
-                                : `${successfulUploadNum} ${successfulUploadNum > 1 || successfulUploadNum == 0 ? 'uploads' : 'upload'} complete ${fileErrors.size > 0 ? `(${fileErrors.size} failed)` : ''}`
+                                : `${successfulUploadNum} ${successfulUploadNum > 1 || successfulUploadNum === 0 ? 'uploads' : 'upload'} complete ${fileErrors.size > 0 ? `(${fileErrors.size} failed)` : ''}`
                             }
                             
                             {currentlyUploadingFile && collapseUploadList &&

@@ -159,7 +159,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             {!loadUser && !backendError && !invalidToken ? children
                 : invalidToken ? <LoadingPage message="Invalid/expired session. Please login again." loading={invalidToken}/>
                 : loadUser && token && !backendError ? <LoadingPage message="Initializing LimeDrive..." loading={loadUser}/>
-                : backendError?.response?.status == 500 ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
+                : backendError?.response?.status === 500 ? <LoadingPage message="Error. Please check your connection and refresh the page." loading={loadUser}/>
                 : null
             }
         </UserContext.Provider>

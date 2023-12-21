@@ -16,15 +16,15 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     const [modalContentType, setModalContentType] = useState('0 items')
 
     const handleToolbarDeleteClick = () => {
-        if (selectedItems.length == 0) return
+        if (selectedItems.length === 0) return
         setShowDeleteModal(true)
         setModalHeadingType(
-            selectedItems.length == 1 && selectedItems[0].type == undefined ? "Folder"
-            : selectedItems.length == 1 ? "File"
+            selectedItems.length === 1 && selectedItems[0].type === undefined ? "Folder"
+            : selectedItems.length === 1 ? "File"
             : `${selectedItems.length} Items`
         )
         setModalContentType(
-            selectedItems.length == 1 ?
+            selectedItems.length === 1 ?
                 `"${selectedItems[0].name}"`
             : `${selectedItems.length} items`
         )
@@ -33,7 +33,7 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     const handleModalDeleteClick = async () => {
         const newSelectedItems = selectedItems.slice();
 
-        if (newSelectedItems.length == 0) {
+        if (newSelectedItems.length === 0) {
             return showToast({message: `Cannot delete: no selected items.`, showFailIcon: true});
         } else if (newSelectedItems.some(selectedItem => processingItems.some(processingItem => processingItem.id === selectedItem.id))) {
             return showToast({message: `Cannot delete: one or more selected items are currently being processed.`, showFailIcon: true});
@@ -43,7 +43,7 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
             addToProcessingItems(newSelectedItems)
             removeFromSelectedItems(newSelectedItems)
             setShowDeleteModal(false);
-            const textType = newSelectedItems.length == 1 ? (newSelectedItems[0].type == undefined ? 'folder' : 'file') : `${newSelectedItems.length} items`;
+            const textType = newSelectedItems.length === 1 ? (newSelectedItems[0].type === undefined ? 'folder' : 'file') : `${newSelectedItems.length} items`;
             showToast({message: `Deleting ${textType}...`, loading: true});
 
             const response = await apiSecure.delete('/deleteItems', { // folder ID d_ prefix is dealt with on the backend for this route
@@ -92,7 +92,7 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                 clipPathId="deleteModalClip"
                 numRects={10}
                 onCloseClick={() => setShowDeleteModal(false)}
-                closeBtnTabIndex={selectedItems.length == 0 ? 0 : -1}
+                closeBtnTabIndex={selectedItems.length === 0 ? 0 : -1}
                 onExit={() => {setModalHeadingType("0 Items"), setModalContentType("0 items")}}
             >
                 <h1>
@@ -114,7 +114,7 @@ function DeleteBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                     <button 
                         className='modal-primary-btn'
                         onClick={handleModalDeleteClick}
-                        disabled={selectedItems.length == 0}
+                        disabled={selectedItems.length === 0}
                     >
                         Delete
                     </button>

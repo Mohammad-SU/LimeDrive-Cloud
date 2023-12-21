@@ -36,7 +36,7 @@ function AllFiles() {
     const location = useLocation()
     const path = decodeURIComponent(location.pathname).slice(1) + "/"
     useEffect(() => {
-        folders.some(folder => folder.app_path === path.slice(0, -1)) || path == "LimeDrive/" ? // if the URL path doesn't match a real folder path then navigate to root
+        folders.some(folder => folder.app_path === path.slice(0, -1)) || path === "LimeDrive/" ? // if the URL path doesn't match a real folder path then navigate to root
             setCurrentPath(path)
             : navigate("/LimeDrive")
         setConflictingItems([]);
@@ -98,7 +98,7 @@ function AllFiles() {
             newSelectedItems = [item]
         }
 
-        if (newSelectedItems.length == 1 || isCtrlPressed || (isCheckboxClicked && !isShiftPressed)) {
+        if (newSelectedItems.length === 1 || isCtrlPressed || (isCheckboxClicked && !isShiftPressed)) {
             setLastClickedItem(item);
         }
 
@@ -125,7 +125,7 @@ function AllFiles() {
     };
 
     useEffect(() => { // Make sure header-row checkbox looks correct based on items and handle some keyboard shortcuts
-        if (selectedItems.length == 0) {
+        if (selectedItems.length === 0) {
             setShowSelectAll(false)
             setShowDeselectAll(false)
         }
@@ -133,7 +133,7 @@ function AllFiles() {
             setShowSelectAll(false)
             setShowDeselectAll(true)
         }
-        else if (selectedItems.length == (sortedFiles.length + sortedFolders.length)) { 
+        else if (selectedItems.length === (sortedFiles.length + sortedFolders.length)) { 
             setShowSelectAll(true)
             setShowDeselectAll(false)
         }
@@ -220,7 +220,7 @@ function AllFiles() {
             onSelect={handleItemSelection}
         />
     })
-    const emptyFolder = sortedFiles.length + sortedFolders.length == 0
+    const emptyFolder = sortedFiles.length + sortedFolders.length === 0
 
     return (
             <div className={`AllFiles ${emptyFolder ? 'empty-folder' : ''}`}>

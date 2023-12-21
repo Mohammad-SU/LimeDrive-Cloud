@@ -162,7 +162,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                             setPath(linkToPath.substring(1) + "/");
                         }
                     },
-                    tabIndex: isLastCustomSegment || visibleSegments.length == 1 ? -1 : 0
+                    tabIndex: isLastCustomSegment || visibleSegments.length === 1 ? -1 : 0
                 };
 
                 return (

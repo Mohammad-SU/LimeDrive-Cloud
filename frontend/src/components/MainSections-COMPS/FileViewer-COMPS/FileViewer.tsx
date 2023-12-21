@@ -65,7 +65,7 @@ function FileViewer() {
             setNotSupported(true);
             return;
         }
-        else if (newFileToView.type == "text/plain" && newFileToView.size > 20 * 1024 * 1024) {
+        else if (newFileToView.type === "text/plain" && newFileToView.size > 20 * 1024 * 1024) {
             setTextTooLarge(true);
             return;
         }
@@ -77,7 +77,7 @@ function FileViewer() {
                 signal: controller.signal,
             });
 
-            if (newFileToView.type == "text/plain") {
+            if (newFileToView.type === "text/plain") {
                 setFileTextContent(response.data)
             } else {
                 setFileContentUrl(response.data.fileUrl);
@@ -204,7 +204,7 @@ function FileViewer() {
                                                  : urlExpired ?
                                                     <h1 className="error-text">Content source expired.<br/>Reopen this file to view it again.</h1>
                                                  : textTooLarge ?
-                                                    <h1 className="error-text">Cannot preview "text/plain" files<br/>that are larger than 20MB.</h1>
+                                                    <h1 className="error-text">Cannot preview "text/plain"<br/>that are larger than 20MB.</h1>
                                                  :
                                                     <h1 className="error-text">Failed to load content.<br/>Please check your connection.</h1>
                                                 }

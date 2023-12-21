@@ -20,9 +20,9 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     const [targetFolder, setTargetFolder] = useState<FolderType | undefined>(undefined)
 
     const handleToolbarMoveClick = () => {
-        if (selectedItems.length == 0) return
+        if (selectedItems.length === 0) return
 
-        if (folders.length == 0) {
+        if (folders.length === 0) {
             showToast({message: `No folders available to move items to.`, showFailIcon: true});
         } else {
             setShowMoveModal(true)
@@ -79,15 +79,15 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
     }
 
     const handleModalMoveClick = () => {
-        if ((!targetFolder && moveListPath != "LimeDrive/") || selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name) || selectedItems.length == 0) { // In case user removes disabled attribute from modal move btn
+        if ((!targetFolder && moveListPath != "LimeDrive/") || selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name) || selectedItems.length === 0) { // In case user removes disabled attribute from modal move btn
             return
         }
-        else if (selectedItems.length == 1 && moveListPath.startsWith(selectedItems[0].app_path)) {
+        else if (selectedItems.length === 1 && moveListPath.startsWith(selectedItems[0].app_path)) {
             return showToast({message: `Cannot move folder inside itself.`, showFailIcon: true});
         }
 
         let newTargetFolder = { ...targetFolder } as FolderType | undefined;
-        if (moveListPath == "LimeDrive/") { // If user wants to move items to root
+        if (moveListPath === "LimeDrive/") { // If user wants to move items to root
             newTargetFolder = {
                 id: 'd_0',
                 name: 'LimeDrive',
@@ -121,7 +121,7 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                         <div 
                             className={`folder
                                 ${selectedItems.some(selectedItem => selectedItem.id === folder.id) ? 'selected-for-moving' : ''}
-                                ${folder.id == targetFolder?.id ? 'move-selected' : ''}
+                                ${folder.id === targetFolder?.id ? 'move-selected' : ''}
                             `}
                             key={index} 
                             onClick={() => handleFolderClick(folder)}
@@ -150,7 +150,7 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
                         disabled={
                             (!targetFolder && moveListPath != "LimeDrive/") ||                             
                             selectedItems.some(selectedItem => selectedItem.app_path === moveListPath + selectedItem.name) ||
-                            selectedItems.length == 0
+                            selectedItems.length === 0
                         }
                     >
                         Move

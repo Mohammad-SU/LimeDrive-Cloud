@@ -18,7 +18,7 @@ function AuthPage() { // For some reason useGlobalEnterKey is not needed here if
     const { api, token, isLoginInvalid, setIsLoginInvalid } = useUserContext()
 
     useEffect(() => {
-        if (token && location.pathname == "/auth") {
+        if (token && location.pathname === "/auth") {
             navigate('/LimeDrive');
         }
     }, [token]);
@@ -103,7 +103,7 @@ function AuthPage() { // For some reason useGlobalEnterKey is not needed here if
                 passwordReg: randomPassword,
                 skipTokenCreation: true,
             })
-            if (response.data.message == 'Registration successful.') {
+            if (response.data.message === 'Registration successful.') {
                 startCooldown()
                 setLoading(false)
                 setGeneratedUsername(randomUsername)
@@ -113,7 +113,7 @@ function AuthPage() { // For some reason useGlobalEnterKey is not needed here if
         } 
         catch (error) {
             if (axios.isAxiosError(error)) {
-                if (error.message == "Username is taken.") {
+                if (error.message === "Username is taken.") {
                     attemptRegistration()
                 } 
                 else {

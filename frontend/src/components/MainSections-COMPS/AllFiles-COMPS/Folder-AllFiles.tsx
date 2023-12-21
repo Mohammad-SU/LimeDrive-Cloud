@@ -99,7 +99,7 @@ function Folder({ folder, onSelect }: FolderProps) {
             setDisableDefaultHover(true)
         },
         onDragOver(event) {
-            event.active.id == event.over?.id ?
+            event.active.id === event.over?.id ?
                 setSameDragAndDropId(true) 
                 : setSameDragAndDropId(false)
         },
@@ -138,7 +138,7 @@ function Folder({ folder, onSelect }: FolderProps) {
     
             const isCtrlPressed = event.ctrlKey || event.metaKey;
             const isShiftPressed = event.shiftKey;
-            const windowPath = currentPath == "LimeDrive/" ? "LimeDrive/" + folder.name : newPath // Check using currentPath incase user also has a custom folder named "LimeDrive" for whatever reason
+            const windowPath = currentPath === "LimeDrive/" ? "LimeDrive/" + folder.name : newPath // Check using currentPath incase user also has a custom folder named "LimeDrive" for whatever reason
     
             isCtrlPressed || isShiftPressed ? 
                 window.open((windowPath).replace(/[^\/]+/g, (match) => encodeURIComponent(match)), '_blank')

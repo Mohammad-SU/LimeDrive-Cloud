@@ -67,12 +67,11 @@ class DeleteController extends Controller
         ]);
     }
 
-    private function deleteFolder($folderId, &$deletedFolderIds, &$deletedFileData)
+    private function deleteFolder($parentFolderId, &$deletedFolderIds, &$deletedFileData)
     {
-        $folder = Folder::findOrFail($folderId);
+        $parentFolder = Folder::findOrFail($parentFolderId);
 
-        $subfiles = File::where('parent_folder_id', $folderId)->get();
-        foreach ($subfiles as $subfile) {
+        foreach ($parentFolder->subfiles as $subfile) {
             $extension = pathinfo($subfile->name, PATHINFO_EXTENSION);
             $id = $subfile->id;
             $subfile->delete();
@@ -82,12 +81,11 @@ class DeleteController extends Controller
             ];
         }
 
-        $subfolders = Folder::where('parent_folder_id', $folderId)->get();
-        foreach ($subfolders as $subfolder) {
+        foreach ($parentFolder->subfolders as $subfolder) {
             $this->deleteFolder($subfolder->id, $deletedFolderIds, $deletedFileData);
         }
 
-        $deletedFolderIds[] = 'd_' . $folderId; // Add back 'd_' prefix for the response
-        $folder->delete();
+        $deletedFolderIds[] = 'd_' . $parentFolderId; // Add back 'd_' prefix for the response
+        $parentFolder->delete();
     }
 }

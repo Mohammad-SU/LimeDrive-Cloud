@@ -23,7 +23,7 @@ class UploadController extends Controller
             $fileName = $requestFile->getClientOriginalName();
             $extension = $requestFile->getClientOriginalExtension();
             $type = $requestFile->getClientMimeType();
-            if ($extension == "odt" && $type == "application/octet-stream") { // For some reason on the frontend the type for odt files were empty
+            if ($extension === "odt" && $type === "application/octet-stream") { // For some reason on the frontend the type for odt files were empty
                 $type = "application/vnd.oasis.opendocument.text";
             }
 

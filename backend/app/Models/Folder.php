@@ -25,4 +25,22 @@ class Folder extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function subfiles()
+    {
+        return $this->hasMany(File::class, 'parent_folder_id', 'id');
+    }
+
+    public function subfolders()
+    {
+        return $this->hasMany(Folder::class, 'parent_folder_id', 'id');
+    }
+
+    public function subitems()
+    {
+        $files = $this->hasMany(File::class, 'parent_folder_id', 'id');
+        $folders = $this->hasMany(Folder::class, 'parent_folder_id', 'id');
+    
+        return $files->union($folders);
+    }
 }

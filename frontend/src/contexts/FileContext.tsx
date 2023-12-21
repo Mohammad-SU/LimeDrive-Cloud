@@ -1,4 +1,4 @@
-import { useMemo, createContext, useContext, useState } from 'react'
+import { useMemo, createContext, useContext, useState, useEffect, useRef } from 'react'
 import { FileType } from '../types'
 import { FolderType } from '../types'
 import { ItemTypes } from '../types'
@@ -8,6 +8,9 @@ import axios, { AxiosInstance } from 'axios'
 interface FileContextType {
     currentPath: string
     setCurrentPath: React.Dispatch<React.SetStateAction<string>>
+
+    scrollTargetId: string | number | null;
+    setScrollTargetId: React.Dispatch<React.SetStateAction<string | number | null>>;
 
     files: FileType[]
     folders: FolderType[]
@@ -52,6 +55,11 @@ export function useFileContext() {
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
     const [currentPath, setCurrentPath] = useState("LimeDrive/"); // Change whenever user opens a folder, e.g. to LimeDrive/documents. Should be set to LimeDrive/ by default/when user is on a separate page
+    const [scrollTargetId, setScrollTargetId] = useState<string | number | null>(null)
+    const [lastScrollTarget, setLastScrollTarget] = useState<HTMLElement | null>(null)
+    const scrollTargetMainTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+    const scrollTargetRemoveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+
     const [files, setFiles] = useState<FileType[]>([])
     const [folders, setFolders] = useState<FolderType[]>([])
     const [fileToView, setFileToView] = useState<FileType | null>(null)
@@ -60,6 +68,26 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     const [conflictingItems, setConflictingItems] = useState<ItemTypes[]>([]);
     const [sameFolderConflictingItems, setSameFolderConflictingItems] = useState<FolderType[]>([])
     const { showToast } = useToast()
+
+    useEffect(() => {
+        if (!scrollTargetId) return;
+        lastScrollTarget?.classList.remove('targeted');
+        clearTimeout(scrollTargetMainTimeoutRef.current); // Prevent conflicts in case previous timeout hasn't finished
+        clearTimeout(scrollTargetRemoveTimeoutRef.current);
+
+        scrollTargetMainTimeoutRef.current = setTimeout(() => { // Wait for rendering/loading of target in case of delays
+            const currentTarget = document.getElementById(scrollTargetId.toString());
+            if (!currentTarget) return;
+            currentTarget.scrollIntoView({ behavior: "smooth" });
+            currentTarget.classList.add('targeted'); // Leave this instead of adding hash to url for CSS :target class
+            
+            scrollTargetRemoveTimeoutRef.current = setTimeout(() => {
+                currentTarget.classList.remove('targeted');
+            }, 5000);
+            setLastScrollTarget(currentTarget)
+            setScrollTargetId(null) // Reset it so that useEffect can run again if user wants to target the same element again
+        }, 50);
+    }, [scrollTargetId]);
 
     const addFiles = (newFiles: FileType[]) => { // Filter out new files that already exist in the current state
         setFiles((prevFiles) => {
@@ -191,7 +219,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
                 setSameFolderConflictingItems([]);
             }, 8000);
             setConflictingItemsTimeout(timeoutId);
-            if (newConflictingItems.length == itemsToMove.length) { // Different toast message not needed for sameFolderConflictingItems as MoveBtn.tsx handles that
+            if (newConflictingItems.length === itemsToMove.length) { // Different toast message not needed for sameFolderConflictingItems as MoveBtn.tsx handles that
                 return showToast({message: `Cannot move any items: please rename or deselect items with the same name between both directories.`, showFailIcon: true});
             }
         }
@@ -217,9 +245,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             addToProcessingItems(newItemsToMove)
             removeFromSelectedItems(newItemsToMove)
 
-            newItemsToMove.length == 1 && newConflictingItems.length == 0 ?
+            newItemsToMove.length === 1 && newConflictingItems.length === 0 ?
                 showToast({message: "Moving 1 item...", loading: true})
-            : newItemsToMove.length > 1 && newConflictingItems.length == 0 ?
+            : newItemsToMove.length > 1 && newConflictingItems.length === 0 ?
                 showToast({message: `Moving ${newItemsToMove.length} items...`, loading: true})
             : showToast({message: `Moving ${newItemsToMove.length} of ${itemsToMove.length} items (conflicts/errors were detected)...`, loading: true})
 
@@ -245,9 +273,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
                 updateFolders(foldersToUpdate);
             }
 
-            newItemsToMove.length == 1 && newConflictingItems.length == 0 ?
+            newItemsToMove.length === 1 && newConflictingItems.length === 0 ?
                 showToast({message: "1 item successfully moved.", showSuccessIcon: true})
-            : newItemsToMove.length > 1 && newConflictingItems.length == 0 ?
+            : newItemsToMove.length > 1 && newConflictingItems.length === 0 ?
                 showToast({message: `${newItemsToMove.length} items successfully moved.`, showSuccessIcon: true})
             : showToast({message: `${newItemsToMove.length} out of ${itemsToMove.length} items were successfully moved (conflicts/errors were detected)`, showSuccessIcon: true})
         } 
@@ -266,6 +294,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         return {
             currentPath,
             setCurrentPath,
+
+            scrollTargetId,
+            setScrollTargetId,
 
             files,
             folders,
@@ -298,7 +329,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             addToProcessingItems,
             removeFromProcessingItems,
         };
-    }, [currentPath, files, folders, fileToView, selectedItems, conflictingItems, sameFolderConflictingItems, processingItems])
+    }, [currentPath, scrollTargetId, files, folders, fileToView, selectedItems, conflictingItems, sameFolderConflictingItems, processingItems])
 
     return (
         <FileContext.Provider value={contextValue}>

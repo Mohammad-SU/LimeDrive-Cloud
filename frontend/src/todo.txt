@@ -13,8 +13,9 @@
     - make website title reflect page/folder accurately
     - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
     - favicon
+    - change all px in scss to rem/em whatever else
     - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
-    - test thoroughly
+    - test thoroughly in production
     - Add to portfolio
     - Starring
     - Sharing
@@ -52,6 +53,7 @@ Deleting (future):
     - confirmation, and then move to recycle bin? check what dropbox/google drive does
     - move selection code into a custom hook so other MainSections can use it?
 
+for the extra delay in loading large/high resolution image previews/other similar files, use lower resolution thumbnail initially, and then use higher resolution actual content later? (dont implement extra loading state though for ContentViewer.tsx)
 add application/json support and other code file support (text fetch from url and put text in div? or use react package for code rendering?)
 refresh video presigned url after timeout and put user back to time instead of telling them to reopen the file viewer
 slightly more detailed error messages (e.g. not found error/unknown error instead of asking user to check connection if it's not their connection that's causing the problem)?

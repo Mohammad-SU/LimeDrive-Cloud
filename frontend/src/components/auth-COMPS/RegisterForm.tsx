@@ -53,7 +53,7 @@ function RegisterForm() {
         try {
             const response = await api.post('/register', formData)
 
-            if (response.data.message == "Registration successful.") {
+            if (response.data.message === "Registration successful.") {
                 setFormError(null)
                 const { token } = response.data;
                 setToken(token);

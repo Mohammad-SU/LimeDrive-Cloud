@@ -33,7 +33,7 @@ function LoginForm() {
         try {
             const response = await api.post('/login', formData)
 
-            if (response.data.message == "Login successful.") {
+            if (response.data.message === "Login successful.") {
                 setFormError(null)
                 const { token } = response.data
                 setToken(token)

@@ -44,7 +44,7 @@
         }
 
         .folder {
-            @include btn-selection-styles;
+            @include btn-selection-styles-transparent;
             position: relative;
             flex-shrink: 0;
             overflow: hidden;
@@ -53,7 +53,7 @@
             gap: 0.7rem;
             padding: 1.028rem 0;
             padding-right: 2rem;
-            border-bottom: 1px solid lime;
+            border-bottom: .0625rem solid rgba(0, 255, 0, 0.500);
 
             &.selected-for-moving {
                 &::after {

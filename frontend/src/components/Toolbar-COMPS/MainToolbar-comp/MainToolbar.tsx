@@ -24,13 +24,13 @@ function MainToolbar() {
 
         !newShowToolbar ? // So that the openBtn doesnt quickly unrender when all items are unselected, so that the openBtn is hidden after the clip animation instead
             null
-        : selectedItems.length == 1 && selectedItems[0].type != undefined ?
+        : selectedItems.length === 1 && selectedItems[0].type != undefined ?
             setShowOpenBtn(true)
         : setShowOpenBtn(false)
 
         !newShowToolbar ? // So that the openBtn doesnt quickly unrender when all items are unselected, so that the openBtn is hidden after the clip animation instead
             null
-        : selectedItems.length == 1 ?
+        : selectedItems.length === 1 ?
             setShowRenameBtn(true)
         : setShowRenameBtn(false)
     }, [selectedItems]);
