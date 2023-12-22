@@ -38,8 +38,8 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
         setVisibleSegments(pathSegments)
         setShowDropdown(false)
         setTimeout(() => { // Delayed to make sure segmentWidths are accurately updated
-            let totalWidth = 0;
-            const maxWidth = breadcrumbRef.current!.getBoundingClientRect().width
+            let totalWidth = 0; // For keeping the would-be total width of all text segments including the '/' dividers, regardless if the segments are hidden or visible
+            const maxWidth = breadcrumbRef.current!.getBoundingClientRect().width // Max width the actual text segments can be, including the '/' dividers
                 - (btnSegmentRef?.current?.getBoundingClientRect()?.width || 0)
                 - 20
             const segmentWidths = segmentRefs.current!.map(ref => {
@@ -89,12 +89,17 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
     }, [path, btnSegmentRef, refresh]);
 
     useEffect(() => {
-        window.addEventListener("resize", overflowControl);
+        const resizeObserver = new ResizeObserver(() => {
+            setRefresh(current => !current) // For some reason calling overflowControl() here instead caused path prop to be inaccurate
+        });
+        if (breadcrumbRef.current) {
+            resizeObserver.observe(breadcrumbRef.current);
+        }
         const refreshTimeout = setTimeout(() => { // For some reason needed to force the other useeffect to run again after initial page load otherwise breadcrumb didn't look correct if overflowing initially
             setRefresh(true)
         }, 1);
         return () => {
-            window.removeEventListener("resize", overflowControl);
+            resizeObserver.disconnect();
             clearTimeout(refreshTimeout)
         };
     }, []);

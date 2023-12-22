@@ -72,7 +72,7 @@ function MainToolbar() {
                         Share
                     </button>
                 </div>
-                <DynamicClip clipPathId="MainToolbarBtnClip" animation={showToolbar} animationDuration={200} numRects={4} incrementProportion={0.1}/>
+                <DynamicClip clipPathId="MainToolbarBtnClip" animation={showToolbar} animationDuration={200} numRects={4}/>
             </div>
     )
 }

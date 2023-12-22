@@ -9,6 +9,7 @@ use App\Http\Helpers;
 use App\Models\File;
 use App\Models\Folder;
 use ZipArchive;
+use Illuminate\Support\Facades\Log;
 
 class GetItemDataController extends Controller
 {
@@ -59,8 +60,7 @@ class GetItemDataController extends Controller
             
             if (count($itemIds) === 1 && !Str::startsWith($itemIds[0], 'd_')) { // If user only wants to download one file
                 $file = File::findOrFail($itemIds[0]);
-            $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
-                $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
+                $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, pathinfo($file->name, PATHINFO_EXTENSION));
     
                 $fileUrl = Storage::temporaryUrl(
                     $cloudPath,
@@ -86,36 +86,53 @@ class GetItemDataController extends Controller
                 throw new \Exception('All selected items are not in the same folder.');
             }
 
+            $zip = new \ZipArchive;
             $zipFileName = 
                 $parentFolderIds[0] === 0 ? "LimeDrive.zip" // If all these items are in the root
-                : (count($items) === 1 ? $items[0]->name // If user wants to download single folder, then zipFileName should also be that folder's name
-                : (Folder::where('parent_folder_id', $parentFolderIds[0])->firstOrFail()->name)); // Otherwise it should be the parent folder's name of the multiple selected items
+                : (count($items) === 1 ? $items[0]->name . ".zip" // If user wants to download single folder, then zipFileName should also be that folder's name with .zip
+                : (Folder::where('parent_folder_id', $parentFolderIds[0])->firstOrFail()->name) . ".zip"); // Otherwise it should have the parent folder's name of the multiple selected items
+            $zipFileStoreName = uniqid(auth()->id()."_", false) . "_" . $zipFileName; // Prevent possible conflicts
+            $localPath = storage_path("app/{$zipFileStoreName}");
 
-            return response()->streamDownload(
-                function () use ($items) {
-                    $zip = new ZipArchive;
-                    $zipFileName = tempnam(sys_get_temp_dir(), 'LimeDrive');
-                    $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-
-                    foreach ($items as $item) {
-                        if ($item instanceof File) {
-                            $cloudPath = Helpers::getCloudPath(auth()->id(), $item->id, pathinfo($item->name, PATHINFO_EXTENSION));
-                            $zip->addFromString($item->name, Storage::get($cloudPath));
-                        } 
-                        elseif ($item instanceof Folder) {
-                            $this->addFolderToZip($zip, $item, $item->name);
-                        }
+            if ($zip->open(storage_path("app/{$zipFileStoreName}"), ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+                foreach ($items as $item) {
+                    if ($item instanceof File) {
+                        $content = Storage::get(Helpers::getCloudPath(auth()->id(), $item->id, pathinfo($item->name, PATHINFO_EXTENSION)));
+                        $zip->addFromString($item->name, $content);
+                    } 
+                    elseif ($item instanceof Folder) {
+                        $this->addFolderToZip($zip, $item, $item->name);
                     }
-        
-                    $zip->close();
-                    readfile($zipFileName);
-                    unlink($zipFileName);
-                },
-                $zipFileName
-            );
+                }
+
+                $zip->close();
+                Storage::putFileAs('', new \Illuminate\Http\File($localPath), $zipFileStoreName);
+                unlink($localPath);
+
+                $expirationTime = now()->addSeconds(20);
+                $zipFileUrl = Storage::temporaryUrl(
+                    $zipFileStoreName,
+                    $expirationTime,
+                    [
+                        'ResponseContentType' => 'application/zip',
+                        'ResponseContentDisposition' => 'attachment; filename="' . $zipFileName . '"',
+                    ]
+                );
+
+                return response()->json(['downloadUrl' => $zipFileUrl]);
+            }
+            throw New \Exception("Failed to create zip file.");
         }
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+        finally {
+            if (isset($zipFileStoreName) && Storage::exists($zipFileStoreName)) { // Delete the ZIP file from bucket after url expires, is in finally block to ensure it runs even if exception is thrown
+                dispatch(function () use ($zipFileStoreName) {
+                    sleep(25); // Delay deletion to ensure the user has enough time to download the file
+                    Storage::delete($zipFileStoreName);
+                });
+            }
         }
     }
     private function addFolderToZip(ZipArchive $zip, Folder $parentFolder, $currentPath)
@@ -126,8 +143,8 @@ class GetItemDataController extends Controller
         }
 
         foreach ($parentFolder->subfiles as $subfile) {
-            $cloudPath = Helpers::getCloudPath(auth()->id(), $subfile->id, pathinfo($subfile->name, PATHINFO_EXTENSION));
-            $zip->addFromString($currentPath.'/'.$subfile->name, Storage::get($cloudPath));
+            $content = Storage::get(Helpers::getCloudPath(auth()->id(), $subfile->id, pathinfo($subfile->name, PATHINFO_EXTENSION)));
+            $zip->addFromString($currentPath.'/'.$subfile->name, $content);
         }
 
         foreach ($parentFolder->subfolders as $subfolder) {

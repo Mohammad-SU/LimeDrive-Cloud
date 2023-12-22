@@ -36,9 +36,12 @@ function AllFiles() {
     const location = useLocation()
     const path = decodeURIComponent(location.pathname).slice(1) + "/"
     useEffect(() => {
-        folders.some(folder => folder.app_path === path.slice(0, -1)) || path === "LimeDrive/" ? // if the URL path doesn't match a real folder path then navigate to root
+        if (folders.some(folder => folder.app_path === path.slice(0, -1)) || path === "LimeDrive/") {
             setCurrentPath(path)
-            : navigate("/LimeDrive")
+        } else { // if the URL path doesn't match a real folder path then navigate to root
+            navigate("/LimeDrive")
+            setCurrentPath("LimeDrive/")
+        }
         setConflictingItems([]);
         setSameFolderConflictingItems([])
     }, [path]);
