@@ -3,8 +3,7 @@ import { useFileContext } from '../../../contexts/FileContext'
 import { AiOutlineDownload } from "react-icons/ai"
 import { useToast } from '../../../contexts/ToastContext'
 import { useUserContext } from '../../../contexts/UserContext'
-import { FileType } from '../../../types'
-import _debounce from 'lodash/debounce';
+import _throttle from 'lodash/throttle';
 
 function DownloadBtn() {
     const { showToast } = useToast()
@@ -16,7 +15,7 @@ function DownloadBtn() {
         const isSingleFile = selectedItems.length === 1 && !selectedItems[0].id.toString().startsWith("d_")
         showToast({message: "Getting download...", loading: true})
 
-        try {            
+        try {
             const response = await apiSecure.get('/getItemDownload', {
                 params: {itemIds: selectedItems.map(item => item.id)},
                 responseType: isSingleFile ? "json" : "arraybuffer"
@@ -27,7 +26,7 @@ function DownloadBtn() {
                 const blob = new Blob([response.data], { type: 'application/zip' });
                 const objectUrl = window.URL.createObjectURL(blob);
 
-                const link = document.createElement('a');
+                const link = document.createElement('a'); // Using window.location.href for some reason caused issue
                 link.download = 'zipfile.zip';
                 link.href = objectUrl;
                 document.body.appendChild(link);
@@ -37,7 +36,7 @@ function DownloadBtn() {
                 window.URL.revokeObjectURL(objectUrl);
             }
             showToast({message: "Download retrieved.", showSuccessIcon: true})
-        } 
+        }
         catch (error) {
             console.error(error);
             showToast({message: "Failed to download. Please check your connection.", showFailIcon: true})
@@ -45,7 +44,7 @@ function DownloadBtn() {
     };
 
     return (
-        <button className="DownloadBtn" onClick={fetchFileDownload}>
+        <button className="DownloadBtn" onClick={_throttle(fetchFileDownload, 200)}>
             <AiOutlineDownload className="tool-icon"/>
             Download
         </button>

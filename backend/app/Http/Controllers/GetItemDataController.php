@@ -90,25 +90,29 @@ class GetItemDataController extends Controller
                 $parentFolderIds[0] === 0 ? "LimeDrive.zip" // If all these items are in the root
                 : (count($items) === 1 ? $items[0]->name // If user wants to download single folder, then zipFileName should also be that folder's name
                 : (Folder::where('parent_folder_id', $parentFolderIds[0])->firstOrFail()->name)); // Otherwise it should be the parent folder's name of the multiple selected items
-            
-            $zip = new ZipArchive;
-            $zipPath = storage_path("app/{$zipFileName}");
 
-            if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
-                foreach ($items as $item) {
-                    if ($item instanceof File) {
-                        $fileExtension = pathinfo($item->name, PATHINFO_EXTENSION);
-                        $cloudPath = Helpers::getCloudPath(auth()->id(), $item->id, $fileExtension);
-                        $zip->addFromString($item->name, Storage::get($cloudPath));
-                    } 
-                    elseif ($item instanceof Folder) {
-                        $this->addFolderToZip($zip, $item, $item->name);
+            return response()->streamDownload(
+                function () use ($items) {
+                    $zip = new ZipArchive;
+                    $zipFileName = tempnam(sys_get_temp_dir(), 'LimeDrive');
+                    $zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+                    foreach ($items as $item) {
+                        if ($item instanceof File) {
+                            $cloudPath = Helpers::getCloudPath(auth()->id(), $item->id, pathinfo($item->name, PATHINFO_EXTENSION));
+                            $zip->addFromString($item->name, Storage::get($cloudPath));
+                        } 
+                        elseif ($item instanceof Folder) {
+                            $this->addFolderToZip($zip, $item, $item->name);
+                        }
                     }
-                }
-
-                $zip->close();
-                return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(); // Deletes the zip file after it's downloaded
-            }
+        
+                    $zip->close();
+                    readfile($zipFileName);
+                    unlink($zipFileName);
+                },
+                $zipFileName
+            );
         }
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -122,8 +126,7 @@ class GetItemDataController extends Controller
         }
 
         foreach ($parentFolder->subfiles as $subfile) {
-            $extension = pathinfo($subfile->name, PATHINFO_EXTENSION);
-            $cloudPath = Helpers::getCloudPath(auth()->id(), $subfile->id, $extension);
+            $cloudPath = Helpers::getCloudPath(auth()->id(), $subfile->id, pathinfo($subfile->name, PATHINFO_EXTENSION));
             $zip->addFromString($currentPath.'/'.$subfile->name, Storage::get($cloudPath));
         }
 

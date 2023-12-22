@@ -32,6 +32,7 @@ Downloads:
     - check yt tutorial to see how to allow file downloads
     - try presigned url method by changing header/content dispostion in r2 bucket
 
+frontend and backend rate limting with denial (deny requests for downloads and other things for a few seconds if spammed fast enough)
 get paths using parent folder id instead of app_path?
 custom audio/video players for preview?
 auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually otherwise
