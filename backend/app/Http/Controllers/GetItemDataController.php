@@ -90,7 +90,7 @@ class GetItemDataController extends Controller
             $zipFileName = 
                 $parentFolderIds[0] === 0 ? "LimeDrive.zip" // If all these items are in the root
                 : (count($items) === 1 ? $items[0]->name . ".zip" // If user wants to download single folder, then zipFileName should also be that folder's name with .zip
-                : (Folder::where('parent_folder_id', $parentFolderIds[0])->firstOrFail()->name) . ".zip"); // Otherwise it should have the parent folder's name of the multiple selected items
+                : (Folder::findOrFail($parentFolderIds[0])->name) . ".zip"); // Otherwise it should have the parent folder's name of the multiple selected items
             $zipFileStoreName = uniqid(auth()->id()."_", false) . "_" . $zipFileName; // Prevent possible conflicts
             $localPath = storage_path("app/{$zipFileStoreName}");
 

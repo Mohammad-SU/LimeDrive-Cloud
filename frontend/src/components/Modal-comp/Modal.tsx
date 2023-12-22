@@ -49,7 +49,7 @@ function Modal({
 
     const [newRender, setNewRender] = useState(false)
     useEffect(() => { // Handle multiple render issues
-        render ? 
+        render ?
             setNewRender(true)
             : setNewRender(false)
     }, [render])
