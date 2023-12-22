@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY .user.ini /usr/local/etc/php/conf.d/
 
-RUN apt-get update && apt-get install -y git unzip supervisor
+RUN apt-get update && apt-get install -y git unzip supervisor libzip-dev
 RUN docker-php-ext-install pdo pdo_mysql zip
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
