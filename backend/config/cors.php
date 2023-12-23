@@ -31,7 +31,7 @@ return [
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+    'exposed_headers' => ["zip-file-name"],
 
     'max_age' => 0,
 

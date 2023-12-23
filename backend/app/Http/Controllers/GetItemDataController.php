@@ -91,48 +91,38 @@ class GetItemDataController extends Controller
                 $parentFolderIds[0] === 0 ? "LimeDrive.zip" // If all these items are in the root
                 : (count($items) === 1 ? $items[0]->name . ".zip" // If user wants to download single folder, then zipFileName should also be that folder's name with .zip
                 : (Folder::findOrFail($parentFolderIds[0])->name) . ".zip"); // Otherwise it should have the parent folder's name of the multiple selected items
-            $zipFileStoreName = uniqid(auth()->id()."_", false) . "_" . $zipFileName; // Prevent possible conflicts
-            $localPath = storage_path("app/{$zipFileStoreName}");
+            $zipFileTempName = uniqid(auth()->id()."_", false) . "_" . $zipFileName; // Prevent conflicts
+            $localPath = storage_path("app/{$zipFileTempName}");
 
-            if ($zip->open(storage_path("app/{$zipFileStoreName}"), ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
-                foreach ($items as $item) {
-                    if ($item instanceof File) {
-                        $content = Storage::get(Helpers::getCloudPath(auth()->id(), $item->id, pathinfo($item->name, PATHINFO_EXTENSION)));
-                        $zip->addFromString($item->name, $content);
-                    } 
-                    elseif ($item instanceof Folder) {
-                        $this->addFolderToZip($zip, $item, $item->name);
-                    }
-                }
-
-                $zip->close();
-                Storage::putFileAs('', new \Illuminate\Http\File($localPath), $zipFileStoreName);
-                unlink($localPath);
-
-                $expirationTime = now()->addSeconds(20);
-                $zipFileUrl = Storage::temporaryUrl(
-                    $zipFileStoreName,
-                    $expirationTime,
-                    [
-                        'ResponseContentType' => 'application/zip',
-                        'ResponseContentDisposition' => 'attachment; filename="' . $zipFileName . '"',
-                    ]
-                );
-
-                return response()->json(['downloadUrl' => $zipFileUrl]);
+            if ($zip->open($localPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === false) {
+                throw New \Exception("Failed to create zip file.");
             }
-            throw New \Exception("Failed to create zip file.");
+            foreach ($items as $item) {
+                if ($item instanceof File) {
+                    $content = Storage::get(Helpers::getCloudPath(auth()->id(), $item->id, pathinfo($item->name, PATHINFO_EXTENSION)));
+                    $zip->addFromString($item->name, $content);
+                } 
+                elseif ($item instanceof Folder) {
+                    $this->addFolderToZip($zip, $item, $item->name);
+                }
+            }
+
+            $zip->close();
+            return response()->streamDownload(
+                function () use ($localPath) {
+                    readfile($localPath);
+                    unlink($localPath);
+                },
+                $zipFileName,
+                [
+                    'Content-Type' => 'application/zip',
+                    'Content-Disposition' => 'attachment; filename="' . $zipFileName . '"',
+                    'zip-file-name' => $zipFileName, // To expose it to the frontend (leave header name in lowercase since it appears like that on the frontend)
+                ]
+            );
         }
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
-        }
-        finally {
-            if (isset($zipFileStoreName) && Storage::exists($zipFileStoreName)) { // Delete the ZIP file from bucket after url expires, is in finally block to ensure it runs even if exception is thrown
-                dispatch(function () use ($zipFileStoreName) {
-                    sleep(25); // Delay deletion to ensure the user has enough time to download the file
-                    Storage::delete($zipFileStoreName);
-                });
-            }
         }
     }
     private function addFolderToZip(ZipArchive $zip, Folder $parentFolder, $currentPath)
