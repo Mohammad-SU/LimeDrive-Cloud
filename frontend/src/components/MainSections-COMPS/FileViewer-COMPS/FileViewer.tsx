@@ -13,7 +13,6 @@ import FocusTrap from 'focus-trap-react';
 import ContentViewer from './ContentViewer';
 import { BsChevronDown, BsShare, BsThreeDotsVertical } from 'react-icons/bs';
 import { useToast } from '../../../contexts/ToastContext';
-import { set } from 'lodash';
 
 function FileViewer() {
     const { fileToView, setFileToView } = useFileContext();
@@ -48,6 +47,7 @@ function FileViewer() {
             setTextTooLarge(false);
             setFileTextContent("")
             setBackendErrorMsg("");
+            setContentLoaded(false)
             setUrlExpired(false)
             clearTimeout(urlExpirationTimeout)
         }
@@ -135,6 +135,8 @@ function FileViewer() {
         }
     }, [])
 
+    const [contentLoaded, setContentLoaded] = useState(false)
+
     return (
             <>
                 {isFileViewerVisible &&
@@ -187,12 +189,12 @@ function FileViewer() {
                                         transition={{ duration: 0.3 }}
                                         key="fileViewerContentKey"
                                     >
-                                        {loading || notSupported || urlExpired || textTooLarge || !fileContentUrl && !fileTextContent || backendErrorMsg ?
-                                            <motion.div 
+                                        {(loading || notSupported || urlExpired || textTooLarge || !fileContentUrl && !fileTextContent || backendErrorMsg) ?
+                                            (<motion.div 
                                                 className="loading-indicator-and-info"
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
+                                                exit={{ opacity: 0 }} // Exit animation doesn't seem to work when loading condition changes to render the ContentViewer
                                                 transition={{ duration: 0.3 }}
                                                 key="fileContentLoadingIndicatorKey"
                                             >
@@ -208,18 +210,28 @@ function FileViewer() {
                                                  :
                                                     <h1 className="error-text">Failed to load content.<br/>Please check your connection.</h1>
                                                 }
-                                            </motion.div>
-                                         :
-                                            <motion.div
-                                                className="ContentViewer-cont"
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
-                                                transition={{ duration: 0.3 }}
-                                                key="docViewerKey"
-                                            >
-                                                <ContentViewer fileContentUrl={fileContentUrl} fileType={fileToView.type} fileTextContent={fileTextContent}/>
-                                            </motion.div>
+                                            </motion.div>)
+                                         :  // Leave separate so that loading may feel less slow to user
+                                            (<>                                                
+                                                <motion.span
+                                                    className="spinner-after"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: !contentLoaded && !(fileToView.type.startsWith("image/") && fileToView.size < 2097152) ? 1 : 0 }} // Smaller images usually load quite faster
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                    key="contentViewerSpinnerKey"
+                                                />
+                                                <motion.div
+                                                    className="ContentViewer-cont"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: !contentLoaded ? 0 : 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                    key="contentViewerKey"
+                                                >
+                                                    <ContentViewer fileContentUrl={fileContentUrl} fileType={fileToView.type} fileTextContent={fileTextContent} setContentLoaded={setContentLoaded}/>
+                                                </motion.div>
+                                            </>)
                                         }
                                     </motion.div>
                                 }

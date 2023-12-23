@@ -1,0 +1,192 @@
+.FileViewer {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 999;
+}
+.FileViewer .file-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.FileViewer .file-viewer-header .file-name-cont {
+  display: flex;
+  align-items: center;
+  background: black;
+  height: 4rem;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 33rem;
+  padding: 0 1rem;
+  gap: 1.2rem;
+  border-bottom: 0.0625rem solid lime;
+  border-right: 0.0625rem solid lime;
+  -webkit-clip-path: url(#fileViewerNameContClip);
+          clip-path: url(#fileViewerNameContClip);
+}
+.FileViewer .file-viewer-header .file-name-cont h1 {
+  font-size: 1.2rem;
+  margin: 0;
+  margin-top: -0.2rem;
+  margin-right: 0.75rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.FileViewer .file-viewer-header .file-name-cont .close-btn {
+  font-size: 1.8rem;
+  background: transparent;
+}
+.FileViewer .file-viewer-header .open-with-btn {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  font-size: 1.1rem;
+  height: 3rem;
+  width: 10rem;
+  padding-bottom: 0.1rem;
+  padding-left: 0.3rem;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  border: 0.125rem solid lime;
+  border-radius: 999px;
+  -webkit-clip-path: url(#fileViewerOpenWithBtnClip);
+          clip-path: url(#fileViewerOpenWithBtnClip);
+}
+.FileViewer .file-viewer-header .open-with-btn .chevron {
+  margin-bottom: -0.22rem;
+  font-size: 1.2rem;
+}
+.FileViewer .file-viewer-header .file-viewer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+.FileViewer .file-viewer-header .file-viewer-toolbar button {
+  height: -moz-fit-content;
+  height: fit-content;
+}
+.FileViewer .file-viewer-header .file-viewer-toolbar .icon-btn {
+  -webkit-clip-path: url(#FileViewerToolbarIconBtnClip);
+          clip-path: url(#FileViewerToolbarIconBtnClip);
+}
+.FileViewer .file-viewer-header .file-viewer-toolbar .share-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem;
+  padding-right: 0.65rem;
+  font-size: 1.2rem;
+  border: 0.0625rem solid lime;
+  -webkit-clip-path: url(#fileViewerShareBtnClip);
+          clip-path: url(#fileViewerShareBtnClip);
+}
+.FileViewer .file-viewer-header .file-viewer-toolbar .share-btn .share-icon {
+  font-size: 1.4rem;
+}
+.FileViewer .file-content {
+  position: fixed;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  max-width: 90rem;
+  max-height: 34rem;
+  margin: auto;
+  top: 1.3rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: auto;
+}
+.FileViewer .file-content::-webkit-scrollbar-track {
+  outline: none;
+  border-left: 2px dashed lime;
+}
+.FileViewer .file-content::-webkit-scrollbar-thumb {
+  outline: none;
+  border: 2px solid lime;
+}
+.FileViewer .file-content .loading-indicator-and-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed lime;
+  width: 40rem;
+  height: 23rem;
+  background: black;
+}
+.FileViewer .file-content .loading-indicator-and-info h1 {
+  font-size: 1.5rem;
+  text-align: center;
+}
+.FileViewer .file-content .loading-indicator-and-info h1.not-supported-text {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.FileViewer .file-content .loading-indicator-and-info h1.error-text {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+.FileViewer .file-content .loading-indicator-and-info .LoadingBar {
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+}
+.FileViewer .file-content > .spinner-after {
+  position: absolute;
+  color: rgba(0, 255, 0, 0.5);
+  font-size: 2.6rem;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  text-align: center;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.FileViewer .file-content > .spinner-after::after {
+  margin: 0;
+}
+.FileViewer .file-content .ContentViewer-cont > .video-preview, .FileViewer .file-content .ContentViewer-cont .img-preview {
+  display: block;
+  width: 100%;
+  max-height: 34rem;
+}
+.FileViewer .file-content .ContentViewer-cont > .video-preview.img-preview, .FileViewer .file-content .ContentViewer-cont .img-preview.img-preview {
+  background: repeating-conic-gradient(rgb(54, 54, 54) 0% 25%, rgb(26, 26, 26) 0% 50%) 50%/20px 20px;
+}
+.FileViewer .file-content .ContentViewer-cont > .iframe-preview {
+  display: block;
+}
+.FileViewer .file-content .ContentViewer-cont > .audio-preview {
+  display: block;
+  width: 30rem;
+}
+.FileViewer .file-content .ContentViewer-cont > .audio-preview::-webkit-media-controls-enclosure {
+  background: black;
+  border-radius: 0;
+}
+.FileViewer .file-content .ContentViewer-cont .text-preview {
+  padding: 2rem;
+  color: lime;
+  background: black;
+  white-space: pre-wrap;
+  width: 50rem;
+  height: 100%;
+}
+
+.file-viewer-backdrop {
+  background: rgba(0, 0, 0, 0.8) !important;
+}/*# sourceMappingURL=FileViewer.css.map */

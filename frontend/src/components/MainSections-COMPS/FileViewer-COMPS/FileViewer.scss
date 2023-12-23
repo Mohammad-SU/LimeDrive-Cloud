@@ -149,6 +149,24 @@
             }
         }
 
+        > .spinner-after {
+            position: absolute;
+            color: rgba(0, 255, 0, 0.5);
+            font-size: 2.6rem;
+            width: fit-content;
+            height: fit-content;
+            text-align: center;
+            margin: auto;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+
+            &::after {
+                margin: 0;
+            }
+        }
+
         .ContentViewer-cont {
             > .video-preview, .img-preview {
                 display: block; // For removing extra space
@@ -168,6 +186,7 @@
 
             > .audio-preview {
                 display: block;
+                width: 30rem;
                 &::-webkit-media-controls-enclosure {
                     background: black;
                     border-radius: 0;
