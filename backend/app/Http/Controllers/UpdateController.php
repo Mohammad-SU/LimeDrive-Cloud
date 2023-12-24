@@ -48,10 +48,9 @@ class UpdateController extends Controller
         }
         catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => "Failed to update."], 500);
+            return response()->json(['message' => "Failed to update path(s)."], 500);
         }
     }
-
     private function updateChildPaths($parentFolder, $new_path, &$updatedItems) // Recursive function for updating children items' app_path
     {
         foreach ($parentFolder->subfiles as $subfile) { // parent_folder_id fields dont need to be changed for subfiles/subfolders

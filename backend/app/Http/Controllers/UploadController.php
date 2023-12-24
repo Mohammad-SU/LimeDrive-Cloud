@@ -49,27 +49,32 @@ class UploadController extends Controller
         } 
         catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['message' => "Failed to upload file."], 500);
         }
     }
 
     public function createFolder(Request $request)
     {
-        $folderData = $request->validate([
-            'name' => ['required', 'string', 'regex:/^[^<>\\/:?*"|]{1,255}$/'], // Array due to pipe in regex
-            'app_path' => 'required|string',
-            'parent_folder_id' => 'required|integer|numeric',
-        ]);
-        $user_id = $request->user()->id;
+        try {
+            $folderData = $request->validate([
+                'name' => ['required', 'string', 'regex:/^[^<>\\/:?*"|]{1,255}$/'], // Array due to pipe in regex
+                'app_path' => 'required|string',
+                'parent_folder_id' => 'required|integer|numeric',
+            ]);
+            $user_id = $request->user()->id;
 
-        $uploadedFolder = Folder::create([
-            'user_id' => $user_id,
-            'parent_folder_id' => $folderData['parent_folder_id'],
-            'name' => $folderData['name'],
-            'app_path' => $folderData['app_path'],
-            'date' => now(),
-        ]);
+            $uploadedFolder = Folder::create([
+                'user_id' => $user_id,
+                'parent_folder_id' => $folderData['parent_folder_id'],
+                'name' => $folderData['name'],
+                'app_path' => $folderData['app_path'],
+                'date' => now(),
+            ]);
 
-        return response()->json($uploadedFolder);
+            return response()->json($uploadedFolder);
+        }
+        catch (\Exception $e) {
+            return response()->json(['message' => "Failed to create folder."], 500);
+        }
     }
 }

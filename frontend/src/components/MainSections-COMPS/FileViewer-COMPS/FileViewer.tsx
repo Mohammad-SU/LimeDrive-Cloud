@@ -34,6 +34,7 @@ function FileViewer() {
         "image/jpg", "image/jpeg", "image/bmp", "image/gif", 
         "image/png", "image/x-icon", "application/pdf", 
         "video/mp4", "video/webm", "audio/ogg", "audio/mpeg", 
+        "audio/wav", "audio/flac", "audio/x-m4a",
         "text/plain", "text/htm", "text/html",
     ];
     const { isVisible: isFileViewerVisible }  = useDelayedExit({

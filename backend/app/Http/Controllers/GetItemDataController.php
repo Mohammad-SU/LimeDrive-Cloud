@@ -9,7 +9,6 @@ use App\Http\Helpers;
 use App\Models\File;
 use App\Models\Folder;
 use ZipArchive;
-use Illuminate\Support\Facades\Log;
 
 class GetItemDataController extends Controller
 {
@@ -51,6 +50,7 @@ class GetItemDataController extends Controller
 
     public function getItemDownload(Request $request)
     {
+        $localPath = null; // Set initially so that error is not thrown in shutdown function
         try {
             $request->validate([ // Note that these are the directly selected items' ids (any ids of subfiles/subfolders deeper in the tree are not included here)
                 'itemIds' => 'required|array',
@@ -88,9 +88,9 @@ class GetItemDataController extends Controller
 
             $zip = new \ZipArchive;
             $zipFileName = 
-                $parentFolderIds[0] === 0 ? "LimeDrive.zip" // If all these items are in the root
-                : (count($items) === 1 ? $items[0]->name . ".zip" // If user wants to download single folder, then zipFileName should also be that folder's name with .zip
-                : (Folder::findOrFail($parentFolderIds[0])->name) . ".zip"); // Otherwise it should have the parent folder's name of the multiple selected items
+                count($items) === 1 ? $items[0]->name . ".zip" // If user wants to download single folder, then zipFileName should also be that folder's name with .zip
+                : ($parentFolderIds[0] === 0 ? "LimeDrive.zip" // If all the directly selected items are in the root
+                : (Folder::findOrFail($parentFolderIds[0])->name) . ".zip"); // Otherwise it should have the parent folder's name of the directly selected items
             $zipFileTempName = uniqid(auth()->id()."_", false) . "_" . $zipFileName; // Prevent conflicts
             $localPath = storage_path("app/{$zipFileTempName}");
 
@@ -111,7 +111,7 @@ class GetItemDataController extends Controller
             return response()->streamDownload(
                 function () use ($localPath) {
                     readfile($localPath);
-                    unlink($localPath);
+                    unlink($localPath); // Leave this just in case
                 },
                 $zipFileName,
                 [
@@ -122,7 +122,14 @@ class GetItemDataController extends Controller
             );
         }
         catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => "Failed to return download."], 500);
+        }
+        finally {
+            register_shutdown_function(function () use ($localPath) { // Make sure this runs after the stream has finished or even if any exceptions are thrown before it
+                if ($localPath && file_exists($localPath)) {
+                    unlink($localPath);
+                }
+            });
         }
     }
     private function addFolderToZip(ZipArchive $zip, Folder $parentFolder, $currentPath)

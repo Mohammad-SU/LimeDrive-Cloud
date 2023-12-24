@@ -51,7 +51,7 @@ class AuthController extends Controller
         $fieldName = $isEmail ? 'email' : 'username'; // User can input username OR email for login
         $fieldValue = $credentials['usernameOrEmailLog'];
 
-        $user = User::where($fieldName, $fieldValue)->first();
+        $user = User::where($fieldName, $fieldValue)->first(); // Don't use firstOrFail
 
         if ($user && Hash::check($credentials['passwordLog'], $user->password_hash)) {
             Auth::login($user);

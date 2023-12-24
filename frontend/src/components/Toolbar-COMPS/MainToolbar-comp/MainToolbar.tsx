@@ -10,9 +10,11 @@ import { AiOutlineStar } from 'react-icons/ai'
 import { BsLink45Deg, BsShare } from 'react-icons/bs'
 import { GoPencil } from 'react-icons/go'
 import DynamicClip from '../../DynamicClip'
+import { useToast } from '../../../contexts/ToastContext'
 
 
 function MainToolbar() {
+    const { showToast } = useToast()
     const { selectedItems } = useFileContext()
     const [showToolbar, setShowToolbar] = useState(false)
     const [showOpenBtn, setShowOpenBtn] = useState(false)
@@ -52,22 +54,22 @@ function MainToolbar() {
 
                     <MoveBtn toolbarRendered={showToolbar}/>
                     {showRenameBtn &&
-                        <button className="RenameBtn">
+                        <button className="RenameBtn" onClick={() => showToast({message: "Renaming not yet featured.", showFailIcon: true})}>
                             <GoPencil className="tool-icon"/>
                             Rename
                         </button>
                     }
-                    <button className="StarBtn">
+                    <button className="StarBtn" onClick={() => showToast({message: "Starring not yet featured.", showFailIcon: true})}>
                         <AiOutlineStar className="tool-icon"/>
                         Star
                     </button>
                 </div>
 
                 <div className="sharing-tools">
-                    <button className="LinkBtn"> {/* For multiple selected items, control access modal and separate copied links with commas*/}
+                    <button className="LinkBtn" onClick={() => showToast({message: "Getting link from link button not yet featured.", showFailIcon: true})}> {/* For multiple selected items, control access modal and separate copied links with commas*/}
                         <BsLink45Deg className="tool-icon link"/>
                     </button>
-                    <button className="ShareBtn">
+                    <button className="ShareBtn" onClick={() => showToast({message: "Sharing not yet featured.", showFailIcon: true})}>
                         <BsShare className="tool-icon share"/>
                         Share
                     </button>

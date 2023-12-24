@@ -1,13 +1,12 @@
-    - Downloading, Renaming
     - cloudflare r2 caching?
     - cloudflare r2 get storage used and class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
     - finish implementing search function
-    - finish sorting toolbar logic
+    - finish sorting toolbar logic (starred and types at least?)
     - full page animations with DynamicClip
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
     - implement "space left" on bottom left corner
-    - settings page (put backend code in UserController), toast notifications
-    - remove any unneeded console.logs with vscode file search
+    - settings page (put backend code in UserController)
+    - remove any unneeded console.logs and $e->getMessage() with vscode file search
     - Suggested files with thumbnails on all files page, and recents page
     - malware check
     - make website title reflect page/folder accurately
@@ -32,7 +31,9 @@ Downloads:
     - check yt tutorial to see how to allow file downloads
     - try presigned url method by changing header/content dispostion in r2 bucket
 
-frontend and backend rate limting with denial (deny requests for downloads and other things for a few seconds if spammed fast enough)
+fix move modal breadcrumb for some reason not looking correct on long paths sometimes
+more backend rate limting if needed (use throttle middleware as it denies requests after exceeding limit)
+make rate limting frontend toast message not keep coming back if the next request was also rate limited? otherwise it looks likes it flickering
 get paths using parent folder id instead of app_path?
 custom audio/video players for preview?
 auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually otherwise

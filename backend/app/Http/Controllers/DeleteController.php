@@ -51,7 +51,7 @@ class DeleteController extends Controller
             return response()->json(['message' => "Failed to delete."], 500);
         }
 
-        foreach ($deletedFileData as $deletedFileDataItem) {
+        foreach ($deletedFileData as $deletedFileDataItem) { // Don't put in try catch as I don't have logic for backups/restoring deleted files on the bucket, so if one deletion fails during the loop then previous files will not be restored on the bucket
             $cloudPath = Helpers::getCloudPath(auth()->id(), $deletedFileDataItem['id'], $deletedFileDataItem['extension']);
             Storage::delete($cloudPath);
         }
