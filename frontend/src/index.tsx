@@ -8,6 +8,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import AuthPage from "./AuthPage-folder/AuthPage"
 import MainPage from "./MainPage-folder/MainPage"
 import AllFiles from './components/MainSections-COMPS/AllFiles-COMPS/AllFiles';
+import Settings from './components/MainSections-COMPS/Settings-comp/Settings';
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,15 @@ const router = createBrowserRouter([
             {
                 path: "/LimeDrive/*",
                 element: <AllFiles />,
+            },
+            
+            {
+                path: "/Settings",
+                element: <Settings />,
+            },
+            {
+                path: "/Settings/*",
+                element: <Navigate to="/Settings" replace={true} />,
             },
         ],
     }

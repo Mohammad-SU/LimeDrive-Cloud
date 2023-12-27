@@ -179,14 +179,10 @@
             box-sizing: border-box;
         }
 
-        .error-and-loading {
+        .error {
             position: absolute;
             margin: 0;
             margin-top: 0.3rem;
-
-            .LoadingBar {
-                margin-top: 0.2rem;
-            }
         }
     }
 }

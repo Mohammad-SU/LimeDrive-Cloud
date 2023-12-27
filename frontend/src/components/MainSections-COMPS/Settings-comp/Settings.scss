@@ -1,0 +1,96 @@
+.Settings {
+    padding: 0 2.5rem;
+    font-size: 1.2rem;
+    width: 40rem;
+    margin: 0 auto;
+
+    h1 {
+        text-align: center;
+    }
+
+    .account-settings-cont {
+        display: grid;
+        gap: 2rem;
+        margin-top: 1.8rem;
+
+        * {
+            margin: 0;
+        }
+
+        .settings-section {
+            display: grid;
+
+            h2 {
+                font-size: 1.4rem;
+                margin-bottom: 0.6rem;
+            }
+    
+            > div {
+                padding: 1.3rem 0.5rem;
+                display: flex;
+                justify-content: space-between;
+                border-bottom: .0625rem solid rgba(0, 255, 0, 0.4);
+
+                &:first-of-type {
+                    border-top: .0625rem solid rgba(0, 255, 0, 0.4);
+                }
+                &:last-of-type {
+                    border-bottom: none;
+                }
+
+                .detail-btn-cont {
+                    display: flex;
+                    gap: 1rem;
+                }
+            }
+        }
+    }
+
+    .user-settings-modal {
+        width: fit-content;
+        height: fit-content;
+
+        h1 {
+            width: fit-content;
+            margin-bottom: 2rem;
+        }
+
+        .all-inputs-cont {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+
+            .input-cont {
+                display: grid;
+                gap: 0.4rem;
+
+                label {
+                    font-size: 1.1rem;
+                }
+                input {
+                    font-size: 1rem;
+                    padding: 0.4rem;
+                    border: .0625rem solid lime;
+                    
+                    &.password-input {
+                        padding-right: 2.5rem;
+                    }
+                }
+                button {
+                    position: absolute;
+                    right: 1.8rem;
+                    padding-left: 0.4rem;
+                    margin-top: 2.13rem;
+                    background: transparent;
+                    border-left: .125rem dashed lime;
+
+                    .eye-icon {
+                        font-size: 1.5rem;
+                    }
+                }
+            }
+        }
+
+        clip-path: url("#userSettingsModalClip");
+    }
+}

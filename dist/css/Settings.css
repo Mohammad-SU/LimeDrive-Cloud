@@ -1,0 +1,44 @@
+.Settings {
+  padding: 0 2.5rem;
+  font-size: 1.2rem;
+  width: 40rem;
+  margin: 0 auto;
+}
+.Settings h1 {
+  text-align: center;
+}
+.Settings .account-settings-cont {
+  display: grid;
+  gap: 2rem;
+  margin-top: 1.8rem;
+}
+.Settings .account-settings-cont * {
+  margin: 0;
+}
+.Settings .account-settings-cont .settings-section {
+  display: grid;
+}
+.Settings .account-settings-cont .settings-section h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+.Settings .account-settings-cont .settings-section > div {
+  padding: 1.3rem 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 0.0625rem solid rgba(0, 255, 0, 0.4);
+}
+.Settings .account-settings-cont .settings-section > div:first-of-type {
+  border-top: 0.0625rem solid rgba(0, 255, 0, 0.4);
+}
+.Settings .account-settings-cont .settings-section > div:last-of-type {
+  border-bottom: none;
+}
+.Settings .account-settings-cont .settings-section > div .detail-btn-cont {
+  display: flex;
+  gap: 1rem;
+}
+.Settings .user-settings-modal {
+  -webkit-clip-path: url("#userSettingsModalClip");
+          clip-path: url("#userSettingsModalClip");
+}/*# sourceMappingURL=Settings.css.map */

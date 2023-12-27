@@ -7,7 +7,8 @@
 
     font-size: 1.1rem;
     width: fit-content;
-    padding: 0.7rem;
+    padding: 0.8rem;
+    padding-bottom: 0.7rem;
     margin: 0 auto;
 
     bottom: 0;
@@ -16,9 +17,20 @@
     z-index: 9999;
 
     background: black;
-    border: 2px dashed lime;
     border-bottom: none;
     clip-path: url(#toastClip);
+    
+    &:before { // Used due to lime border not looking nice when directly above lime elements (this :before makes it seem like it has a black outline while also dealing with clip-path issue with CSS outline)
+        content: " ";
+        position: absolute;
+        z-index: -1;
+        top: 1.5px;
+        left: 1.5px;
+        right: 1.5px;
+        bottom: 0;
+        border: .125rem dashed lime;
+        border-bottom: none;
+    }
 
     .toast-icon {
         font-size: 1.4rem;
@@ -28,7 +40,7 @@
             font-size: 1.3rem;
             padding: 0.1rem;
             margin-right: 0.2rem;
-            border: 2px solid lime;
+            border: .125rem solid lime;
             border-radius: 50%;
         }
     }
@@ -36,11 +48,6 @@
     .btn-wrapper {
         margin-left: 1.9rem;
         font-size: 1.05rem;
-        text-underline-offset: 0.1rem;
-
-        button {
-            text-decoration: underline;
-        }
 
         .close-btn {
             margin-left: 0.8rem;

@@ -133,7 +133,17 @@ body {
     }
 }
 
-button {
+@mixin text-btn-selection-styles {
+    &:hover {
+        cursor: pointer;
+        text-decoration-color: rgb(0, 255, 0);
+    }
+    &:active {
+        text-decoration-color: rgb(0, 180, 0);
+    }
+}
+
+button, .dropdown-link {
     @include btn-selection-styles;
     appearance: none;
     background: black;
@@ -152,12 +162,20 @@ button {
     }
 
     &.icon-btn-wrapper {
+        display: block;
         background-color: black;
         @include other-selection-styles;
     }
-    &.text-btn {
+    &.text-btn-no-underline {
         @include other-selection-styles;
         background-color: black !important;
+    }
+    &.text-btn {
+        @include text-btn-selection-styles;
+        background-color: black !important;
+        text-decoration: underline;
+        text-decoration-color: rgb(0, 150, 0);
+        text-underline-offset: 0.4rem;
     }
     
     .icon-btn {
@@ -169,7 +187,7 @@ a {
     text-decoration: none;
     color: inherit;
     
-    &:not(.dropdown-btn-link) {
+    &:not(.dropdown-btn-link, .dropdown-link) {
         @include other-selection-styles;
     }
 }
@@ -185,4 +203,9 @@ a {
 :focus-visible {
     outline: 2px dashed lime;
     outline-offset: .1875rem;
+}
+
+.main-section-heading {
+    margin: 1.1rem 0;
+    font-size: 1.7rem;
 }

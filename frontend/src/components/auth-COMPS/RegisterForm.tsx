@@ -111,6 +111,7 @@ function RegisterForm() {
                     spellCheck="false"
                     required
                     disabled={loading}
+                    aria-label="Input for username for registration. Can contain alphanumeric characters, hyphens, and dashes."
                 />
             </div>
             <div className="form__input-cont">

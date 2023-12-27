@@ -1,0 +1,42 @@
+.Toast {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.4rem;
+  font-size: 1.1rem;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 0.7rem;
+  margin: 0 auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: black;
+  border: 2px dashed lime;
+  border-bottom: none;
+  -webkit-clip-path: url(#toastClip);
+          clip-path: url(#toastClip);
+}
+.Toast .toast-icon {
+  font-size: 1.4rem;
+  margin-right: 0.1rem;
+}
+.Toast .toast-icon.fail {
+  font-size: 1.3rem;
+  padding: 0.1rem;
+  margin-right: 0.2rem;
+  border: 2px solid lime;
+  border-radius: 50%;
+}
+.Toast .btn-wrapper {
+  margin-left: 1.9rem;
+  font-size: 1.05rem;
+}
+.Toast .btn-wrapper .close-btn {
+  margin-left: 0.8rem;
+}
+.Toast .btn-wrapper .close-btn.decrease-gap {
+  margin-left: 0;
+}/*# sourceMappingURL=Toast.css.map */

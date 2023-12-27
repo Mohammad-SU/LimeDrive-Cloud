@@ -1,0 +1,73 @@
+.AuthPage {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: black;
+  min-height: 100vh;
+  min-width: 100vh;
+}
+.AuthPage__heading {
+  margin-top: 5rem;
+  margin-bottom: 2.5rem;
+  width: 80%;
+}
+.AuthPage__heading.active {
+  margin-top: 2rem;
+}
+.AuthPage__main-cont {
+  display: flex;
+  gap: 7rem;
+}
+.AuthPage__main-cont .generator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 27rem;
+  font-size: 1rem;
+  text-align: center;
+  margin-left: -2.5rem;
+  margin-right: 2.5rem;
+}
+.AuthPage__main-cont .generator__btn {
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+.AuthPage__main-cont .generator__details-cont {
+  margin-top: 1.3rem;
+  margin-bottom: 0.3rem;
+  border: 2px dashed lime;
+}
+.AuthPage__main-cont .generator__details-cont p {
+  margin: 1rem;
+  margin-right: 0.8rem;
+  display: flex;
+  align-items: baseline;
+}
+.AuthPage__main-cont .generator__details-cont p strong {
+  margin-right: 0.6rem;
+}
+.AuthPage__main-cont .generator__details-cont p .icon-btn-wrapper {
+  align-self: center;
+  font-size: 1.3rem;
+  margin-left: 0.6rem;
+}
+.AuthPage__main-cont .form-cont {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.AuthPage__main-cont .info {
+  display: grid;
+  width: 25rem;
+  margin-bottom: 12rem;
+  text-align: center;
+}
+.AuthPage__textarea {
+  font-size: 1rem;
+  color: lime;
+  background-color: black;
+}
+.AuthPage__change-form-btn {
+  font-size: 1.1rem;
+  margin-top: 1.3rem;
+}/*# sourceMappingURL=AuthPage.css.map */

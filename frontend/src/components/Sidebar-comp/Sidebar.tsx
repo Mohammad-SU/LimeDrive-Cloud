@@ -43,6 +43,7 @@ function Sidebar() {
     const isFolderNameValid = /^[^<>\\/:?*"|]{1,255}$/.test(formData.newFolderName.trim());
     const isConflictingName = folders.some((folder) => folder.app_path === currentPath + folder.name && folder.name === formData.newFolderName.trim());
     const [creationCooldown, setCreationCooldown] = useState<boolean>(false)
+    console.log(formData.newFolderName)
 
     const handleModalOpen = () => {
         if (backendErrorMsg) { // For if error occurs while modal is closed (toast would already tell the user)
@@ -202,7 +203,7 @@ function Sidebar() {
                         disabled={creationCooldown}
                         aria-label="Input for new folder name"
                     />
-                    <div className="error-and-loading">
+                    <p className="error">
                         {(!isFolderNameValid && formData.newFolderName.trim() !== '') || (backendErrorMsg === 'Invalid folder name format.') ?
                                 "Cannot contain: < > \\ / : ? * \" |"
                             : isConflictingName ?
@@ -211,7 +212,7 @@ function Sidebar() {
                                 "Error. Please check connection."
                             : null
                         }
-                    </div>
+                    </p>
                 </div>
 
                 <div className="modal-btn-cont">

@@ -1,6 +1,7 @@
 import { useState, useRef, memo } from 'react';
 import axios, { AxiosError } from 'axios';
 import "./Header.scss";
+import { useToast } from '../../contexts/ToastContext';
 import { useFileContext } from '../../contexts/FileContext';
 import { useUserContext } from '../../contexts/UserContext';
 import { useNavigate, Link } from 'react-router-dom'; 
@@ -23,6 +24,7 @@ function Header() {
         setShowDropdown(false);
     });
 
+    const { showToast } = useToast()
     const { apiSecure, user, setUser, setToken } = useUserContext()
     const { setFiles, setFolders } = useFileContext()
     const [backendError, setBackendError] = useState<AxiosError | null>(null);
@@ -81,12 +83,14 @@ function Header() {
                 </button>
                 {isDropdownVisible &&
                     <div className="user-dropdown" ref={dropdownRef}>
-                        <Link className="dropdown-btn-link" to="/settings" tabIndex={0}>
-                            <button className="settings-btn" tabIndex={-1}>
-                                Settings
-                            </button>
-                        </Link>
-                        <button className="logout-btn" onClick={logout}>Logout</button>
+                        <Link className="dropdown-item dropdown-link" to="/settings" tabIndex={0}>Settings</Link>
+                        <button 
+                            className="dropdown-item" 
+                            onClick={()=>showToast({message: "Upgrade not yet featured.", showFailIcon: true})}
+                        >  {/* Change or wrap in Link btn if upgrade is implemented */}
+                            Upgrade
+                        </button>
+                        <button className="dropdown-item" onClick={logout}>Logout</button>
                         <DynamicClip
                             clipPathId={"userDropdownClip"}
                             animation={showDropdown}

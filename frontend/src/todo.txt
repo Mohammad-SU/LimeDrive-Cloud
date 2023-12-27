@@ -31,11 +31,12 @@ Downloads:
     - check yt tutorial to see how to allow file downloads
     - try presigned url method by changing header/content dispostion in r2 bucket
 
-fix move modal breadcrumb for some reason not looking correct on long paths sometimes
+fix move modal breadcrumb for some reason not looking correct on long paths sometimes (still adds to dropdown but for some reason lets there be overflowing with more than one visible segment)
 more backend rate limting if needed (use throttle middleware as it denies requests after exceeding limit)
 make rate limting frontend toast message not keep coming back if the next request was also rate limited? otherwise it looks likes it flickering
 get paths using parent folder id instead of app_path?
 custom audio/video players for preview?
+renaming (not yet added due to possbile complexity with changing app_paths in backend due to possible (and allowed) duplicate names in app_paths). This may require restructure of frontend path-related code in front end to populate folders (when user views their contents) based on parent folder ids and possibly changing logic for determining currentPath, and then removing app_path column in database.
 auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually otherwise
 make backend code for uploadQueue check for conflict and tell user in uploadQueue that there was this error, do this similarly for handleMoveItems and its backend code
 make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
@@ -45,6 +46,7 @@ change directory mentions to folder or path instead
 for main sections add general scss to MainPage.scss (such as the title where the breadcrumb is the, the general list/header row scss? and other stuff. so that scss code isnt duplicated too much)
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
+allow zero width spaces in folder names if implementing folder uploads (fix this in folder creation where for some reason backend error happens when user tries to create folder with zero width space only)
 
 Previews:
     - improve file views for PDFs/other normally supported file types that are large in size by streaming/chunking (show what is available to the user while loading the rest of the file, e.g. load large image line by line as it loads)?
@@ -55,6 +57,7 @@ Deleting (future):
     - confirmation, and then move to recycle bin? check what dropbox/google drive does
     - move selection code into a custom hook so other MainSections can use it?
 
+Ascii art for settings section in background?
 for the extra delay in loading large/high resolution image previews/other similar files, use lower resolution thumbnail initially, and then use higher resolution actual content later? (dont implement extra loading state though for ContentViewer.tsx)
 add application/json support and other code file support (text fetch from url and put text in div? or use react package for code rendering?)
 refresh video presigned url after timeout and put user back to time instead of telling them to reopen the file viewer

@@ -179,7 +179,7 @@ function Breadcrumb({ path, setPath, btnType }: BreadcrumbProps) {
                         {index === 0 ? null : <span className="divider" ref={isLastCustomSegment ? lastDividerRef : null}>/</span>}
 
                         {btnType ?
-                            <button className="text-btn" {...commonAttributes} ref={isLastCustomSegment ? (lastSegmentMainRef as React.RefObject<HTMLButtonElement>) : null}>
+                            <button className="text-btn-no-underline" {...commonAttributes} ref={isLastCustomSegment ? (lastSegmentMainRef as React.RefObject<HTMLButtonElement>) : null}>
                                 {decodeURIComponent(segment)}
                             </button>
                             :

@@ -162,7 +162,7 @@ function FileViewer() {
                                     <button className="icon-btn-wrapper comment-btn" onClick={() => showToast({message: "Commenting from viewer not yet featured.", showFailIcon: true})}>
                                         <AiOutlineComment className="icon-btn comment-icon"/>
                                     </button>
-                                    <button className="icon-btn-wrapper print-btn" onClick={() => showToast({message: "Printing not yet featured.", showFailIcon: true})}>
+                                    <button className="icon-btn-wrapper print-btn" onClick={() => showToast({message: "Printing from file viewer toolbar not yet featured.", showFailIcon: true})}>
                                         <AiOutlinePrinter className="icon-btn printer-icon"/>
                                     </button>
                                     <button className="icon-btn-wrapper download-btn" onClick={() => showToast({message: "Downloading from viewer not yet featured.", showFailIcon: true})}>

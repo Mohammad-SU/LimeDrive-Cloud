@@ -74,7 +74,7 @@ class UploadController extends Controller
             return response()->json($uploadedFolder);
         }
         catch (\Exception $e) {
-            return response()->json(['message' => "Failed to create folder."], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }
