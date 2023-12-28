@@ -6,13 +6,11 @@ import { useFormLogic } from '../../../hooks/useFormLogic'
 import { useToast } from '../../../contexts/ToastContext'
 import Modal from '../../Modal-comp/Modal'
 import { capitalize } from 'lodash';
-import LoadingBar from '../../LoadingBar-COMPS/LoadingBar'
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
 
 function Settings() {
     const { user, setUser, apiSecure } = useUserContext()
     const { showToast } = useToast()
-    const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null)
     const [processing, setProcessing] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [displayCurrentPassword, setDisplayCurrentPassword] = useState(false)
@@ -30,7 +28,6 @@ function Settings() {
         newPassword: '',
         confirmNewPassword: '',
     }, (event) => {
-        setBackendErrorMsg(null);
         setFormError(null)
     })
     const isNewUsernameValid = /^[a-zA-Z0-9_-]+$/.test(formData.newUsername)
@@ -39,7 +36,7 @@ function Settings() {
     const isNewPasswordValid = formData.newPassword.length >= 8
     const isConfirmNewPasswordValid = formData.newPassword === formData.confirmNewPassword
 
-    const renderError = () => {
+    const renderError = (backendErrorMsg: string | null) => {
         setFormError( 
             !changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg === "Invalid current password.") ? 'Invalid password.'
 
@@ -63,7 +60,7 @@ function Settings() {
         detailType: string,
         newDetailValue: string, 
     ) => {
-        if (InvalidationCondition && isCurrentPasswordValid) return renderError()
+        if (InvalidationCondition || !isCurrentPasswordValid) return renderError(null)
         
         try {
             setProcessing(true)
@@ -73,7 +70,7 @@ function Settings() {
                 currentPassword: formData.currentPassword,
                 ["new"+capitalize(detailType)]: newDetailValue,
             };
-
+            
             if (detailType === "password") {
                 payload.confirmNewPassword = formData.confirmNewPassword;
             }
@@ -81,19 +78,21 @@ function Settings() {
             const response = await apiSecure.post(`/update${capitalize(detailType)}`, payload);
             
             if (detailType === "username") {
-                setUser(prevUser => ({ ...prevUser, username: newDetailValue }));
+                setUser(prevUser => ({ ...prevUser, username: response.data.newUsername }));
             } else if (detailType === "email") {
-                setUser(prevUser => ({ ...prevUser, email: newDetailValue }));
+                setUser(prevUser => ({ ...prevUser, email: response.data.newEmail }));
             }
             
-            showToast({message: `${detailType} changed successfully.`, showSuccessIcon: true})
+            showToast({message: `${capitalize(detailType)} changed successfully.`, showSuccessIcon: true})
+            setShowModal(false)
         } 
         catch (error) {
             console.error(error);
-            renderError()
             if (axios.isAxiosError(error)) {
-                setBackendErrorMsg(error?.response?.data.message)
-                showToast({message: `Failed to change ${detailType}.`, showFailIcon: true})
+                renderError(error?.response?.data.message)
+                error?.response?.status === 500 ?
+                    showToast({message: `Failed to change ${detailType}. Please check your connection.`, showFailIcon: true})
+                    : showToast({message: `Failed to change ${detailType}.`, showFailIcon: true})
             }
         }
         finally {
@@ -117,7 +116,7 @@ function Settings() {
                     <div>
                         <p>Email</p>
                         <div className="detail-btn-cont">
-                            <p>{user.email}</p>
+                            <p>{user.email ? user.email : "(No email registered)"}</p>
                             <button className="text-btn" onClick={()=>{setShowModal(true), setChangeEmailModal(true)}}>Edit</button>
                         </div>
                     </div>
@@ -149,10 +148,10 @@ function Settings() {
             </div>
             <Modal 
                 className="user-settings-modal"
-                onSubmit={() => {
-                    changeUsernameModal ? handleChangeAccountDetail(isNewUsernameValid, "username", formData.newUsername)
-                    : changeEmailModal ? handleChangeAccountDetail(isNewEmailValid, "email", formData.newEmail)
-                    : handleChangeAccountDetail(isNewPasswordValid && isConfirmNewPasswordValid, "password", formData.newPassword)
+                onSubmit={() => {                    
+                    changeUsernameModal ? handleChangeAccountDetail(!isNewUsernameValid, "username", formData.newUsername) // Don't use trim() for any of these
+                    : changeEmailModal ? handleChangeAccountDetail(!isNewEmailValid, "email", formData.newEmail)
+                    : handleChangeAccountDetail(!isNewPasswordValid || !isConfirmNewPasswordValid, "password", formData.newPassword)
                 }}
                 render={showModal}
                 clipPathId="userSettingsModalClip"
@@ -161,7 +160,6 @@ function Settings() {
                 onVisible={() => firstInputRef.current?.focus()}
                 onExit={() => {
                     resetFormData()
-                    setBackendErrorMsg(null)
                     setFormError(null)
                     setChangeUsernameModal(false)
                     setChangeEmailModal(false)
@@ -282,14 +280,10 @@ function Settings() {
                         : null
                     }
                 </div>
-                {formError &&
-                    <p className="error-and-loading">
-                        <span>{formError}</span>
-                        <LoadingBar loading={processing} />
-                    </p>
-                }
+                <p className="error">{formError}</p>
 
                 <div className="modal-btn-cont">
+                    {/* {changePasswordModal && <p className='logout-warning'>You will be logged out of all sessions<br/>if you change your password.</p>} */}
                     <button 
                         className='modal-cancel-btn' 
                         type="button" 
@@ -301,12 +295,7 @@ function Settings() {
                     <button 
                         className='modal-primary-btn'
                         type="submit"
-                        disabled={processing && !isCurrentPasswordValid &&
-                            changeUsernameModal ? !isNewUsernameValid
-                            : changeEmailModal ? !isNewEmailValid
-                            : changePasswordModal ? !isNewPasswordValid || !isConfirmNewPasswordValid
-                            : true
-                        }
+                        disabled={processing || formError != null}
                     >
                         Change
                     </button>

@@ -49,16 +49,24 @@
     .user-settings-modal {
         width: fit-content;
         height: fit-content;
+        clip-path: url("#userSettingsModalClip");
+        font-size: 1rem;
 
         h1 {
             width: fit-content;
-            margin-bottom: 2rem;
+            margin-bottom: 3.2rem;
+        }
+
+        .logout-warning {
+            font-size: 0.8rem;
+            margin: 0;
+            margin-top: 0.22rem;
+            text-align: center;
         }
 
         .all-inputs-cont {
             display: grid;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 2.3rem;
 
             .input-cont {
                 display: grid;
@@ -71,7 +79,7 @@
                     font-size: 1rem;
                     padding: 0.4rem;
                     border: .0625rem solid lime;
-                    
+
                     &.password-input {
                         padding-right: 2.5rem;
                     }
@@ -91,6 +99,13 @@
             }
         }
 
-        clip-path: url("#userSettingsModalClip");
+        .error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            text-align: center;
+            height: 2.5rem;
+        }
     }
 }

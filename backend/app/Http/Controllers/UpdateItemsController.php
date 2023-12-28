@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\File;
 use App\Models\Folder;
 
-class UpdateController extends Controller
+class UpdateItemsController extends Controller
 {
     public function updatePaths(Request $request)
     {

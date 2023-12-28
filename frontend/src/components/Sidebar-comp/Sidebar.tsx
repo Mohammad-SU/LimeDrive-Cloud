@@ -43,7 +43,6 @@ function Sidebar() {
     const isFolderNameValid = /^[^<>\\/:?*"|]{1,255}$/.test(formData.newFolderName.trim());
     const isConflictingName = folders.some((folder) => folder.app_path === currentPath + folder.name && folder.name === formData.newFolderName.trim());
     const [creationCooldown, setCreationCooldown] = useState<boolean>(false)
-    console.log(formData.newFolderName)
 
     const handleModalOpen = () => {
         if (backendErrorMsg) { // For if error occurs while modal is closed (toast would already tell the user)

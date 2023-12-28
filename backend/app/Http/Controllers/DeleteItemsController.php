@@ -10,7 +10,7 @@ use App\Http\Helpers;
 use App\Models\File;
 use App\Models\Folder;
 
-class DeleteController extends Controller
+class DeleteItemsController extends Controller
 {
     public function deleteItems(Request $request)
     {

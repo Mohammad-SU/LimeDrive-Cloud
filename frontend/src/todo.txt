@@ -1,3 +1,4 @@
+    - add logging out after password change and account delete function and CSS
     - cloudflare r2 caching?
     - cloudflare r2 get storage used and class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
     - finish implementing search function
