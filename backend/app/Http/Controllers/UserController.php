@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -27,22 +28,14 @@ class UserController extends Controller
         return response()->json(['message' => 'Token deleted successfully.']);
     }
 
-    private function checkCurrentPassword($user, $request)
-    {
-        if (!Hash::check($request->input('currentPassword'), $user->password_hash)) {
-            return response()->json(['message' => 'Invalid current password.'], 400);
-        }
-    }
-
     public function updateUsername(Request $request)
     {
         $user = $request->user();
 
         $request->validate([
             'newUsername' => 'required|regex:/^[a-zA-Z0-9_-]+$/|unique:users,username|max:30',
-            'currentPassword' => 'required|string|min:8|max:72',
+            'currentPassword' => 'required|string|min:8|max:72|correct_password',
         ], ['newUsername.unique' => 'Username is taken.',]);
-        $this->checkCurrentPassword($user, $request);
 
         $user->username = $request['newUsername'];
         $user->save();
@@ -59,9 +52,8 @@ class UserController extends Controller
 
         $request->validate([
             'newEmail' => 'required|email|unique:users,email|max:255',
-            'currentPassword' => 'required|string|min:8|max:72',
+            'currentPassword' => 'required|string|min:8|max:72|correct_password',
         ], ['newEmail.unique' => 'Email is taken.',]);
-        $this->checkCurrentPassword($user, $request);
 
         $user->email = $request['newEmail'];
         $user->save();
@@ -77,20 +69,37 @@ class UserController extends Controller
         $user = $request->user();
     
         $request->validate([
-            'currentPassword' => 'required|string|min:8|max:72',
-            'newPassword' => 'required|string|min:8|max:72',
+            'currentPassword' => 'required|string|min:8|max:72|correct_password',
+            'newPassword' => 'required|string|min:8|max:72|different:currentPassword',
             'confirmNewPassword' => 'required|string|min:8|max:72|same:newPassword',
         ]);
-        $this->checkCurrentPassword($user, $request);
         
-        $user->password_hash = bcrypt($request['newPassword']);
-        $user->save();
-
-        return response()->json(['message' => 'Password updated successfully.']);
+        try {
+            DB::beginTransaction();
+    
+            $user->password_hash = bcrypt($request['newPassword']);
+            $user->save();
+            $user->tokens()->delete(); // Delete all tokens of that user
+    
+            DB::commit();
+            return response()->json(['message' => 'Password updated successfully.']);
+        } 
+        catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to update password.'], 500);
+        }
     }    
 
     public function deleteAccount(Request $request)
     {
+        $user = $request->user();
+    
+        $request->validate(['currentPassword' => 'required|string|min:8|max:72|correct_password']);
         
+        if ($user->deleteAccount()) {
+            return response()->json(['message' => 'Account deleted successfully.']);
+        } else {
+            return response()->json(['message' => 'Failed to delete account.'], 500);
+        }
     }
 }

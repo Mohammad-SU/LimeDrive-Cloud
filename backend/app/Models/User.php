@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -54,5 +55,24 @@ class User extends Authenticatable
     public function files()
     {
         return $this->hasMany(File::class, 'user_id');
+    }
+
+    public function deleteAccount()
+    {
+        try {
+            DB::beginTransaction();
+
+            $this->files()->delete();
+            $this->folders()->delete();
+            $this->tokens()->delete();
+            $this->delete();
+
+            DB::commit();
+
+            return true; // Account deleted successfully
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false; // Failed to delete account
+        }
     }
 }

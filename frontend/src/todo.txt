@@ -144,3 +144,4 @@ future update ideas:
     stricter security features such as password-protected file/folders/ and encryption, decryption keys?
     remove dark-reader lock meta tag if light mode styles are added?
     version control for files?
+    email for account deletion extra confirmation?

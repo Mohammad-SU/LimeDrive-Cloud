@@ -18,25 +18,22 @@ function RegisterForm() {
     const { api, setToken } = useUserContext();
     const navigate = useNavigate(); 
     let backendError: AxiosError | null = null
-    let backendErrorMsg: string | null = null
     const [formError, setFormError] = useState<string | null>(null)
-
+    
     const isEmailValid = /^\S+@\S+\.\S+$/.test(formData.emailReg)
     const isUsernameValid = /^[a-zA-Z0-9_-]+$/.test(formData.usernameReg)
     const isPasswordValid = formData.passwordReg.length >= 8
     const isPasswordMatch = formData.passwordReg === formData.passwordReg_confirmation
 
-    function renderError() {
+    function renderError(backendErrorMsg: string) {
         setFormError( 
-            (!isEmailValid || backendErrorMsg === "The email reg field must be a valid email address.") ? 'Invalid email format.'
+            !isEmailValid || backendErrorMsg.startsWith("The email reg field must be a valid email address.") ? 'Invalid email format.'
             : !isUsernameValid ? 'Invalid username format.'
             : !isPasswordValid ? 'Password must have at least 8 characters.'
             : !isPasswordMatch ? 'Passwords do not match.' 
-            : backendErrorMsg === "Email is taken. (and 1 more error)" ? 'Email and username is taken.'
-            : backendErrorMsg === "Username is taken. (and 1 more error)" ? 'Email and username is taken.'
-            : backendErrorMsg === "Email is taken." ? backendErrorMsg
-            : backendErrorMsg === "Username is taken." ? backendErrorMsg
-            : backendErrorMsg != null ? 'Error. Please check your connection.'
+            : backendErrorMsg.startsWith("Email is taken.") ? "Email is taken."
+            : backendErrorMsg.startsWith("Username is taken.") ? "Username is taken."
+            : backendErrorMsg !== "" ? 'Error. Please check your connection.'
             : null
         )
     }
@@ -45,7 +42,7 @@ function RegisterForm() {
         event.preventDefault()
         if (loading) return
         if (!isEmailValid || !isUsernameValid || !isPasswordValid || !isPasswordMatch) {
-            return renderError()
+            return renderError("")
         }
 
         setFormError(null)
@@ -64,9 +61,8 @@ function RegisterForm() {
             console.error(error)
             if (axios.isAxiosError(error)) {
                 backendError = error
-                backendErrorMsg = error?.response?.data.message
+                renderError(error?.response?.data.message)
             }
-            renderError()
         } 
         finally {
             setLoading(false)

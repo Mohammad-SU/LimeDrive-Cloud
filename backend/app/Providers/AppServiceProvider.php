@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Validator::extend('correct_password', function ($attribute, $value, $parameters, $validator) {
+            $user = auth()->user();
+
+            return Hash::check($value, $user->password_hash);
+        }, 'The :attribute is not correct for the current user.');
     }
 }

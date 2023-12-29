@@ -1,16 +1,20 @@
 import { memo, useState, useRef } from 'react'
 import "./Settings.scss"
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import { useUserContext } from '../../../contexts/UserContext'
 import { useFormLogic } from '../../../hooks/useFormLogic'
 import { useToast } from '../../../contexts/ToastContext'
 import Modal from '../../Modal-comp/Modal'
 import { capitalize } from 'lodash';
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
+import { useFileContext } from '../../../contexts/FileContext'
 
 function Settings() {
-    const { user, setUser, apiSecure } = useUserContext()
+    const { user, setUser, apiSecure, setToken } = useUserContext()
+    const { setFiles, setFolders } = useFileContext()
     const { showToast } = useToast()
+    const navigate = useNavigate()
     const [processing, setProcessing] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [displayCurrentPassword, setDisplayCurrentPassword] = useState(false)
@@ -36,23 +40,33 @@ function Settings() {
     const isNewPasswordValid = formData.newPassword.length >= 8
     const isConfirmNewPasswordValid = formData.newPassword === formData.confirmNewPassword
 
-    const renderError = (backendErrorMsg: string | null) => {
-        setFormError( 
-            !changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg === "Invalid current password.") ? 'Invalid password.'
+    const renderError = (backendErrorMsg: string) => {
+        setFormError( // Using startsWith() due to backend possibly grouping multiple validation errors
+            !changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg.startsWith("The current password is not correct for the current user.")) ? 'Invalid password.'
 
             : changeUsernameModal && !isNewUsernameValid ? 'Invalid username format.'
-            : changeUsernameModal && backendErrorMsg === "Username is taken." ? 'Username is taken.'
+            : changeUsernameModal && backendErrorMsg.startsWith("Username is taken.") ? 'Username is taken.'
             
-            : changeEmailModal && (!isNewEmailValid || backendErrorMsg === "Invalid email format.") ? 'Invalid email format.'
-            : changeEmailModal && backendErrorMsg === "Email is taken." ? 'Email is taken.'
+            : changeEmailModal && (!isNewEmailValid || backendErrorMsg.startsWith("Invalid email format.")) ? 'Invalid email format.'
+            : changeEmailModal && user.email === formData.newEmail ? 'Email is already tied to this account.'
+            : changeEmailModal && backendErrorMsg.startsWith("Email is taken.") ? 'Email is taken.'
 
-            : changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg === "Invalid current password.") ? 'Invalid current password.'
-            : changePasswordModal && (!isNewPasswordValid || backendErrorMsg === "Invalid new password format.") ? 'Invalid format for new password.'
-            : changePasswordModal && (!isConfirmNewPasswordValid || backendErrorMsg === "Passwords do not match.") ? 'New password and confirm new password does not match.'
+            : changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg.startsWith("The current password is not correct for the current user.")) ? 'Invalid current password.'
+            : changePasswordModal && backendErrorMsg.startsWith("The new password field and current password must be different.") ? 'Old password and new password must be different.'
+            : changePasswordModal && (!isNewPasswordValid || backendErrorMsg.startsWith("Invalid new password format.")) ? 'Invalid format for new password.'
+            : changePasswordModal && (!isConfirmNewPasswordValid || backendErrorMsg.startsWith("Passwords do not match.")) ? 'New password and confirm password do not match.'
             
-            : backendErrorMsg != null ? 'Error. Please check your connection.'
+            : backendErrorMsg != "" ? 'Error. Please check your connection.'
             : null
         )
+    }
+
+    const logout = () => {
+        setFiles([])
+        setFolders([])
+        setUser({id: null, username: null, email: null})
+        setToken(null)
+        navigate("/auth")
     }
 
     const handleChangeAccountDetail = async (
@@ -60,7 +74,8 @@ function Settings() {
         detailType: string,
         newDetailValue: string, 
     ) => {
-        if (InvalidationCondition || !isCurrentPasswordValid) return renderError(null)
+        if (InvalidationCondition || !isCurrentPasswordValid) return renderError("")
+        const isRegisterEmailFromNull = (detailType === "email" && user.email === null)
         
         try {
             setProcessing(true)
@@ -79,20 +94,26 @@ function Settings() {
             
             if (detailType === "username") {
                 setUser(prevUser => ({ ...prevUser, username: response.data.newUsername }));
-            } else if (detailType === "email") {
+                showToast({message: `Username changed successfully`, showSuccessIcon: true})
+            } 
+            else if (detailType === "email") {
                 setUser(prevUser => ({ ...prevUser, email: response.data.newEmail }));
+                showToast({message: `Email ${isRegisterEmailFromNull ? "registered" : "changed"} successfully`, showSuccessIcon: true})
+            } 
+            else {
+                logout()
+                showToast({message: "Password changed successfully. All your sessions have been expired. Please login again.", showSuccessIcon: true, duration: 8000})
             }
             
-            showToast({message: `${capitalize(detailType)} changed successfully.`, showSuccessIcon: true})
             setShowModal(false)
         } 
         catch (error) {
             console.error(error);
             if (axios.isAxiosError(error)) {
                 renderError(error?.response?.data.message)
-                error?.response?.status === 500 ?
-                    showToast({message: `Failed to change ${detailType}. Please check your connection.`, showFailIcon: true})
-                    : showToast({message: `Failed to change ${detailType}.`, showFailIcon: true})
+                error?.response?.status === 0 ?
+                    showToast({message: `Failed to ${isRegisterEmailFromNull ? "register" : "change"} ${detailType}. Please check your connection.`, showFailIcon: true})
+                    : showToast({message: `Failed to ${isRegisterEmailFromNull ? "register" : "change"} ${detailType}.`, showFailIcon: true})
             }
         }
         finally {
@@ -150,7 +171,7 @@ function Settings() {
                 className="user-settings-modal"
                 onSubmit={() => {                    
                     changeUsernameModal ? handleChangeAccountDetail(!isNewUsernameValid, "username", formData.newUsername) // Don't use trim() for any of these
-                    : changeEmailModal ? handleChangeAccountDetail(!isNewEmailValid, "email", formData.newEmail)
+                    : changeEmailModal ? handleChangeAccountDetail(!isNewEmailValid || user.email === formData.newEmail, "email", formData.newEmail)
                     : handleChangeAccountDetail(!isNewPasswordValid || !isConfirmNewPasswordValid, "password", formData.newPassword)
                 }}
                 render={showModal}
@@ -169,7 +190,10 @@ function Settings() {
                     setDisplayConfirmNewPassword(false)
                 }}
             >
-                <h1>Change {changeUsernameModal ? "username" : changeEmailModal ? "email" : "password"}</h1>
+                <h1>
+                    {changeEmailModal && user.email === null ? "Register " : "Change "}
+                    {changeUsernameModal ? "username" : changeEmailModal ? "email" : "password"}
+                </h1>
                 <div className="all-inputs-cont">
                     <div className="input-cont">
                         <label htmlFor="current-password-input">Enter your {changePasswordModal ? 'current' : ''} password for verification</label>
@@ -215,7 +239,7 @@ function Settings() {
 
                         : changeEmailModal ?
                             <div className="input-cont">
-                                <label htmlFor="new-email-input">New email</label>
+                                <label htmlFor="new-email-input">{user.email === null ? "Email to register" : "New email"}</label>
                                 <input
                                     type="text"
                                     id="new-email-input"
@@ -283,7 +307,7 @@ function Settings() {
                 <p className="error">{formError}</p>
 
                 <div className="modal-btn-cont">
-                    {/* {changePasswordModal && <p className='logout-warning'>You will be logged out of all sessions<br/>if you change your password.</p>} */}
+                    {changePasswordModal && <p className='logout-warning'>All of your sessions will be expired<br/>if you change your password.</p>}
                     <button 
                         className='modal-cancel-btn' 
                         type="button" 
