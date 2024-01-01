@@ -16,7 +16,7 @@ class AuthController extends Controller
     {
         $rules = [
             'usernameReg' => 'required|regex:/^[a-zA-Z0-9_-]+$/|unique:users,username|max:30',
-            'passwordReg' => 'required|string|min:8|max:72',
+            'passwordReg' => 'required|string|min:8|max:72|regex:/\S/',
         ];
     
         if ($request->has('emailReg')) { // If the request has an email field, also require password confirmation
@@ -45,6 +45,10 @@ class AuthController extends Controller
     public function login(Request $request)
     {       
         $credentials = $request->only('usernameOrEmailLog', 'passwordLog');
+
+        if (empty(trim($credentials['usernameOrEmailLog'])) || strlen($credentials['passwordLog']) < 8) { // Don't use validator instead (for simpler approach for invalid login details message).
+            return response()->json(['message' => 'Invalid login details.'], 400);
+        }
 
         $isEmail = filter_var($credentials['usernameOrEmailLog'], FILTER_VALIDATE_EMAIL);
 

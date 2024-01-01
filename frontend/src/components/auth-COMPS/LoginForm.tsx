@@ -23,7 +23,7 @@ function LoginForm() {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
         if (loading) return
-        if (!isPasswordValid) {
+        if (!isPasswordValid || formData.usernameOrEmailLog.trim() === '') {
             setFormError("Invalid login details.")
             return setIsLoginInvalid(true)
         }

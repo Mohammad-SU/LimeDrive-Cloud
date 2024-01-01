@@ -25,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
             $user = auth()->user();
 
             return Hash::check($value, $user->password_hash);
-        }, 'The :attribute is not correct for the current user.');
+        }, 'The :attribute is incorrect for the current user.');
     }
 }

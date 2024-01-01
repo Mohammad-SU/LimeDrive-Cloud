@@ -8,15 +8,19 @@ interface CheckboxProps {
     showMinus?: boolean
     onClick?: () => void;
     tabIndex?: number;
+    disabled?: boolean;
 }
 
-function Checkbox({ className, checked, showMinus, onClick, tabIndex = 0 }: CheckboxProps) {
+function Checkbox({ className, checked, showMinus, onClick, tabIndex = 0, disabled = false }: CheckboxProps) {
+
     return (
         <button
-            className={`Checkbox ${checked ? 'checked' : ''} ${className ? className : ''}`} 
+            className={`Checkbox ${checked ? 'checked' : ''} ${className ? className : ''}`}
+            disabled={disabled}
             onClick={onClick}
             data-checkbox
             tabIndex={tabIndex}
+            type="button"
         >
             {checked && <AiOutlineCheck className="checkbox-icon"/>}
             {showMinus && <AiOutlineMinus className="checkbox-icon"/>}

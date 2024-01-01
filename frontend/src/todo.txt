@@ -1,4 +1,4 @@
-    - add logging out after password change and account delete function and CSS
+    - Test account delete function and add css (warning icon, warning text, tell user to download their files if they want to, etc.)
     - cloudflare r2 caching?
     - cloudflare r2 get storage used and class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
     - finish implementing search function
@@ -26,22 +26,19 @@
     - react virtualisation for large lists
     - account deleted message with apisecure interceptor
     - implement captcha
-    - copy link feature in uploadInfo (shareable links where any person can view the file from it, separate from entire file sharing across accounts)
 
-Downloads:
-    - check yt tutorial to see how to allow file downloads
-    - try presigned url method by changing header/content dispostion in r2 bucket
-
+add checks for passwords to not just be spaces
 fix move modal breadcrumb for some reason not looking correct on long paths sometimes (still adds to dropdown but for some reason lets there be overflowing with more than one visible segment)
 more backend rate limting if needed (use throttle middleware as it denies requests after exceeding limit)
 make rate limting frontend toast message not keep coming back if the next request was also rate limited? otherwise it looks likes it flickering
 get paths using parent folder id instead of app_path?
 custom audio/video players for preview?
-renaming (not yet added due to possbile complexity with changing app_paths in backend due to possible (and allowed) duplicate names in app_paths). This may require restructure of frontend path-related code in front end to populate folders (when user views their contents) based on parent folder ids and possibly changing logic for determining currentPath, and then removing app_path column in database.
+renaming (not yet added due to possbile complexity with changing app_paths in backend due to possible (and allowed) duplicate names in app_paths). This may require restructure of frontend path-related code in front end to populate folders (when user views their contents) based on parent folder ids and possibly changing logic for determining currentPath, and then removing app_path column in database? And possibly include better search algorithms than basic js ones for the arrays when constructing currentPaths based on parent folder ids.
 auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually otherwise
 make backend code for uploadQueue check for conflict and tell user in uploadQueue that there was this error, do this similarly for handleMoveItems and its backend code
 make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
 fix :after being off center in move modal breadcrumb
+file link sharing through r2 presigned urls?
 thumbnails - separate array from files? use find method when rendering, lazy load
 change directory mentions to folder or path instead
 for main sections add general scss to MainPage.scss (such as the title where the breadcrumb is the, the general list/header row scss? and other stuff. so that scss code isnt duplicated too much)
@@ -85,7 +82,7 @@ fix finalising being set back to false when uploadInfo is collapsed (move finali
 remember to put toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
 vertically align text in buttons?
-aria labels
+aria and better accessibility (aria labels, aria form/error attributes for modals, etc.)
 file preview commenting?
 advanced tabbing in file viewer content? (remember to remove overriding focus-visible style in FileViewer)
 more advanced backend delete code with db transaction and r2 cloud deletion error handling? and then update frontend toasts/error handling for DeleteBtn

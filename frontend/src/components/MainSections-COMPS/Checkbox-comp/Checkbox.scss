@@ -12,7 +12,7 @@
     @include btn-selection-styles;
     cursor: pointer;
 
-    &::after { // For expanding clickable area
+    &::after { // For expanding clickable area (add top, bottom, left, right negative values to make it work)
         content: '';
         position: absolute;
     }

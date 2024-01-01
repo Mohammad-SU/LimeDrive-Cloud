@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
@@ -34,7 +33,7 @@ class UserController extends Controller
 
         $request->validate([
             'newUsername' => 'required|regex:/^[a-zA-Z0-9_-]+$/|unique:users,username|max:30',
-            'currentPassword' => 'required|string|min:8|max:72|correct_password',
+            'currentPassword' => 'required|string|min:8|max:72|correct_password|regex:/\S/',
         ], ['newUsername.unique' => 'Username is taken.',]);
 
         $user->username = $request['newUsername'];
@@ -52,7 +51,7 @@ class UserController extends Controller
 
         $request->validate([
             'newEmail' => 'required|email|unique:users,email|max:255',
-            'currentPassword' => 'required|string|min:8|max:72|correct_password',
+            'currentPassword' => 'required|string|min:8|max:72|correct_password|regex:/\S/',
         ], ['newEmail.unique' => 'Email is taken.',]);
 
         $user->email = $request['newEmail'];
@@ -69,9 +68,9 @@ class UserController extends Controller
         $user = $request->user();
     
         $request->validate([
-            'currentPassword' => 'required|string|min:8|max:72|correct_password',
-            'newPassword' => 'required|string|min:8|max:72|different:currentPassword',
-            'confirmNewPassword' => 'required|string|min:8|max:72|same:newPassword',
+            'currentPassword' => 'required|string|min:8|max:72|correct_password|regex:/\S/',
+            'newPassword' => 'required|string|min:8|max:72|different:currentPassword|regex:/\S/',
+            'confirmNewPassword' => 'required|string|min:8|max:72|same:newPassword|regex:/\S/',
         ]);
         
         try {
@@ -94,7 +93,10 @@ class UserController extends Controller
     {
         $user = $request->user();
     
-        $request->validate(['currentPassword' => 'required|string|min:8|max:72|correct_password']);
+        $request->validate([
+            'currentPassword' => 'required|string|min:8|max:72|correct_password|regex:/\S/',
+            'isDeleteChecked' => 'required|boolean|accepted',
+        ]);
         
         if ($user->deleteAccount()) {
             return response()->json(['message' => 'Account deleted successfully.']);

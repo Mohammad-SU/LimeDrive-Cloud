@@ -9,6 +9,7 @@ import Modal from '../../Modal-comp/Modal'
 import { capitalize } from 'lodash';
 import { BsEye, BsEyeSlash } from 'react-icons/bs'
 import { useFileContext } from '../../../contexts/FileContext'
+import Checkbox from '../Checkbox-comp/Checkbox'
 
 function Settings() {
     const { user, setUser, apiSecure, setToken } = useUserContext()
@@ -23,7 +24,9 @@ function Settings() {
     const [changeUsernameModal, setChangeUsernameModal] = useState(false)
     const [changeEmailModal, setChangeEmailModal] = useState(false)
     const [changePasswordModal, setChangePasswordModal] = useState(false)
+    const [deleteAccountModal, setDeleteAccountModal] = useState(false)
     const [formError, setFormError] = useState<string | null>(null)
+    const [isDeleteChecked, setIsDeleteChecked] = useState(false)
     const firstInputRef = useRef<HTMLInputElement | null>(null)
     const { formData, handleInputChange, resetFormData } = useFormLogic({
         newUsername: '',
@@ -42,19 +45,27 @@ function Settings() {
 
     const renderError = (backendErrorMsg: string) => {
         setFormError( // Using startsWith() due to backend possibly grouping multiple validation errors
-            !changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg.startsWith("The current password is not correct for the current user.")) ? 'Invalid password.'
+            !changePasswordModal && formData.currentPassword.trim() === "" ? 'Password must not be empty.'
+            : !changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg.startsWith("The current password is incorrect for the current user.")) ? 'Invalid password.'
 
+            : changeUsernameModal && formData.newUsername.trim() === "" ? 'New username must not be empty.'
             : changeUsernameModal && !isNewUsernameValid ? 'Invalid username format.'
             : changeUsernameModal && backendErrorMsg.startsWith("Username is taken.") ? 'Username is taken.'
             
+            : changeEmailModal && formData.newEmail.trim() === "" ? 'New email must not be empty.'
             : changeEmailModal && (!isNewEmailValid || backendErrorMsg.startsWith("Invalid email format.")) ? 'Invalid email format.'
             : changeEmailModal && user.email === formData.newEmail ? 'Email is already tied to this account.'
             : changeEmailModal && backendErrorMsg.startsWith("Email is taken.") ? 'Email is taken.'
 
-            : changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg.startsWith("The current password is not correct for the current user.")) ? 'Invalid current password.'
+            : changePasswordModal && formData.currentPassword.trim() === "" ? 'Current password must not be empty.'
+            : changePasswordModal && formData.newPassword.trim() === "" ? 'New password must not be empty.'
+            : changePasswordModal && formData.confirmNewPassword.trim() === "" ? 'Confirm new password must not be empty.'
+            : changePasswordModal && (!isCurrentPasswordValid || backendErrorMsg.startsWith("The current password is incorrect for the current user.")) ? 'Invalid current password.'
             : changePasswordModal && backendErrorMsg.startsWith("The new password field and current password must be different.") ? 'Old password and new password must be different.'
             : changePasswordModal && (!isNewPasswordValid || backendErrorMsg.startsWith("Invalid new password format.")) ? 'Invalid format for new password.'
             : changePasswordModal && (!isConfirmNewPasswordValid || backendErrorMsg.startsWith("Passwords do not match.")) ? 'New password and confirm password do not match.'
+
+            : deleteAccountModal && (!isDeleteChecked || backendErrorMsg.startsWith("The is delete checked field must be accepted.")) ? 'The checkbox is not checked.'
             
             : backendErrorMsg != "" ? 'Error. Please check your connection.'
             : null
@@ -121,6 +132,34 @@ function Settings() {
         }
     }
 
+    const handleAccountDeletion = async () => {
+        if (!isCurrentPasswordValid || formData.currentPassword.trim() === "" || !isDeleteChecked) return renderError("")
+        
+        try {
+            setProcessing(true)
+            showToast({message: `Processing account deletion...`, loading: true})
+            const response = await apiSecure.post("/deleteAccount", {
+                currentPassword: formData.currentPassword,
+                isDeleteChecked: isDeleteChecked
+            });
+            logout()
+            showToast({message: "Account successfully deleted.", showSuccessIcon: true, duration: 8000})
+            setShowModal(false)
+        } 
+        catch (error) {
+            console.error(error);
+            if (axios.isAxiosError(error)) {
+                renderError(error?.response?.data.message)
+                error?.response?.status === 0 ?
+                    showToast({message: `Failed to delete account. Please check your connection.`, showFailIcon: true})
+                    : showToast({message: `Failed to delete account.`, showFailIcon: true})
+            }
+        }
+        finally {
+            setProcessing(false)
+        }
+    }
+
     return (
         <div className="Settings">
             <h1 className="main-section-heading">Settings</h1>
@@ -163,16 +202,17 @@ function Settings() {
                     <h2>Delete account</h2>
                     <div>
                         <p>Delete my LimeDrive account</p>
-                        <button className="text-btn">Delete</button>
+                        <button className="text-btn" onClick={()=>{setShowModal(true), setDeleteAccountModal(true)}}>Delete</button>
                     </div>
                 </div>
             </div>
             <Modal 
                 className="user-settings-modal"
                 onSubmit={() => {                    
-                    changeUsernameModal ? handleChangeAccountDetail(!isNewUsernameValid, "username", formData.newUsername) // Don't use trim() for any of these
+                    changeUsernameModal ? handleChangeAccountDetail(!isNewUsernameValid, "username", formData.newUsername) // Don't use trim() here for any of these so the data stays consistent with user expectations
                     : changeEmailModal ? handleChangeAccountDetail(!isNewEmailValid || user.email === formData.newEmail, "email", formData.newEmail)
-                    : handleChangeAccountDetail(!isNewPasswordValid || !isConfirmNewPasswordValid, "password", formData.newPassword)
+                    : changePasswordModal ? handleChangeAccountDetail(!isNewPasswordValid || !isConfirmNewPasswordValid, "password", formData.newPassword)
+                    : handleAccountDeletion()
                 }}
                 render={showModal}
                 clipPathId="userSettingsModalClip"
@@ -185,16 +225,22 @@ function Settings() {
                     setChangeUsernameModal(false)
                     setChangeEmailModal(false)
                     setChangePasswordModal(false)
+                    setDeleteAccountModal(false)
                     setDisplayCurrentPassword(false)
                     setDisplayNewPassword(false)
                     setDisplayConfirmNewPassword(false)
+                    setIsDeleteChecked(false)
                 }}
             >
                 <h1>
-                    {changeEmailModal && user.email === null ? "Register " : "Change "}
-                    {changeUsernameModal ? "username" : changeEmailModal ? "email" : "password"}
+                    {changeUsernameModal ? "Change username"
+                     : changeEmailModal && user.email === null ? "Register email"
+                     : changeEmailModal && user.email ? "Change email"
+                     : changePasswordModal ? "Change password"
+                     : "Delete account"
+                    }
                 </h1>
-                <div className="all-inputs-cont">
+                <div className={`all-inputs-cont ${deleteAccountModal ? 'with-delete-account-confirmation' : ''}`}>
                     <div className="input-cont">
                         <label htmlFor="current-password-input">Enter your {changePasswordModal ? 'current' : ''} password for verification</label>
                         <input
@@ -301,13 +347,29 @@ function Settings() {
                                 </div>
                             </>
 
-                        : null
+                        : <div className={`delete-account-confirmation-cont ${processing ? 'disabled' : ''}`}>
+                            <Checkbox 
+                                checked={isDeleteChecked} 
+                                onClick={() => {setIsDeleteChecked(current => !current), setFormError(null)}}
+                                disabled={processing}
+                            />
+                            I want to delete my account.
+                        </div>
                     }
                 </div>
-                <p className="error">{formError}</p>
+                <p id="account-settings-modal-error" className="error">
+                    {formError}
+                </p>
 
                 <div className="modal-btn-cont">
-                    {changePasswordModal && <p className='logout-warning'>All of your sessions will be expired<br/>if you change your password.</p>}
+                    {(changePasswordModal || deleteAccountModal) && // For some reason parenthesis is needed in conditions for it to show up for both modals
+                        <p className='warning'>
+                            {changePasswordModal ?
+                                <>All of your sessions will be expired<br/>if you change your password</>
+                                : <>You can download your files<br/>before deleting the account</>
+                            }
+                        </p>
+                    }
                     <button 
                         className='modal-cancel-btn' 
                         type="button" 
@@ -316,12 +378,15 @@ function Settings() {
                     >
                         Cancel
                     </button>
-                    <button 
+                    <button
                         className='modal-primary-btn'
                         type="submit"
-                        disabled={processing || formError != null}
+                        disabled={processing || formError !== null}
                     >
-                        Change
+                        {!deleteAccountModal ?
+                            "Change"
+                            : "Delete"
+                        }
                     </button>
                 </div>
             </Modal>

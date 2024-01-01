@@ -16,8 +16,7 @@ function RegisterForm() {
     })
     const [loading, setLoading] = useState<boolean>(false)
     const { api, setToken } = useUserContext();
-    const navigate = useNavigate(); 
-    let backendError: AxiosError | null = null
+    const navigate = useNavigate();
     const [formError, setFormError] = useState<string | null>(null)
     
     const isEmailValid = /^\S+@\S+\.\S+$/.test(formData.emailReg)
@@ -27,8 +26,10 @@ function RegisterForm() {
 
     function renderError(backendErrorMsg: string) {
         setFormError( 
-            !isEmailValid || backendErrorMsg.startsWith("The email reg field must be a valid email address.") ? 'Invalid email format.'
+            !isEmailValid || backendErrorMsg.startsWith("Invalid email format.") ? 'Invalid email format.'
             : !isUsernameValid ? 'Invalid username format.'
+            : formData.passwordReg.trim() === '' ? 'Password must not be empty.'
+            : formData.passwordReg_confirmation.trim() === '' ? 'Password confirmation must not be empty.'
             : !isPasswordValid ? 'Password must have at least 8 characters.'
             : !isPasswordMatch ? 'Passwords do not match.' 
             : backendErrorMsg.startsWith("Email is taken.") ? "Email is taken."

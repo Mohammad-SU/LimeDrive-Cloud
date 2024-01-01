@@ -43,7 +43,8 @@ function Modal({
             onSubmit: (event: React.FormEvent) => {
                 event.preventDefault();
                 onSubmit()
-            } 
+            },
+            noValidate: true,
         } : {}),
     }
 
