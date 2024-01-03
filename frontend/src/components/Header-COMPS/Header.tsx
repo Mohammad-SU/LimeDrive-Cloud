@@ -11,6 +11,7 @@ import LimeDriveAscii_header from '../../assets/images/ascii/LimeDrive-ascii-hea
 import { GiOrange } from "react-icons/gi";
 import { BsPersonFillGear } from "react-icons/bs";
 import { BsSearch } from "react-icons/bs";
+import Search from './Search-comp/Search';
 import DynamicClip from '../DynamicClip';
 import LoadingPage from '../LoadingBar-COMPS/LoadingPage-comp/LoadingPage';
 
@@ -65,16 +66,7 @@ function Header() {
                 </div>
             </Link>
 
-            <div className="search-cont">
-                <BsSearch className="search-icon" />
-                <input
-                    className="search-input"
-                    type="text"
-                    placeholder="Search..."
-                    maxLength={40000}
-                    name="search"
-                />
-            </div>
+            <Search />
 
             <div className="user-cont">
                 <h1 className="username">{user.username}</h1>

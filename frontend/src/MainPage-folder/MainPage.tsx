@@ -4,7 +4,7 @@ import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useUserContext } from '../contexts/UserContext.tsx';
 import FileViewer from '../components/MainSections-COMPS/FileViewer-COMPS/FileViewer.tsx';
 import useGlobalEnterKey from '../hooks/useGlobalEnterKey.ts'
-import Header from "../components/Header-comp/Header.tsx"
+import Header from "../components/Header-COMPS/Header.tsx"
 import Sidebar from "../components/Sidebar-comp/Sidebar.tsx"
 
 function MainPage() {

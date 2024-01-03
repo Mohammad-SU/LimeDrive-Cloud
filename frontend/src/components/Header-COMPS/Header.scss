@@ -13,6 +13,7 @@
     .main-heading {
         display: flex;
         align-items: center;
+        
         &:hover .image {
             opacity: 0.8;
         }
@@ -25,33 +26,6 @@
         .image {
             height: 2rem;
             width: 10rem;
-        }
-    }
-  
-    .search-cont {
-        display: flex;
-        align-items: center;
-  
-        .search-icon {
-            font-size: 1.3rem;
-            color: inherit;
-            margin-top: 0.1rem;
-            margin-right: -1.8rem;
-            z-index: 1;
-        }
-  
-        .search-input {
-            width: 40rem;
-            padding: 0.5rem;
-            padding-left: 2.4rem;
-            font-family: inherit;
-            background-color: black;
-            color: lime;
-            border: none;
-            outline: none;
-            
-            font-size: 1rem;
-            border: .0625rem solid lime;
         }
     }
   

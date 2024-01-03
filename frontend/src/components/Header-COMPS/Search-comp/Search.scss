@@ -1,0 +1,106 @@
+@import "../../../global.scss";
+
+.Search {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .search-icon {
+        position: absolute;
+        font-size: 1.3rem;
+        color: inherit;
+        margin-top: 0.1rem;
+        padding-left: 0.6rem;
+        z-index: 1;
+    }
+
+    .search-input {
+        width: 40rem;
+        padding: 0.5rem;
+        padding-left: 2.4rem;
+        font-family: inherit;
+        background-color: black;
+        color: lime;
+        border: none;
+        outline: none;
+        
+        font-size: 1rem;
+        border: .0625rem solid lime;
+    }
+
+    .results-list {
+        position: absolute;
+        display: grid;
+        max-height: 29.2rem;
+        overflow: auto;
+        
+        width: 100%;
+        top: 2.3rem;     
+           
+        background: black;
+        border: .0625rem solid lime;
+        z-index: 2;
+        box-sizing: border-box;
+
+        &::-webkit-scrollbar-track {
+            outline: none;
+            border-left: 1px solid lime;
+            margin-top: -0.01rem;
+        }
+        &::-webkit-scrollbar-thumb {
+            outline: 1px solid lime;
+            border-left: 1px solid lime;
+        }
+
+        .no-results {
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .result-item {
+            @include btn-selection-styles;
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            padding-left: 0.7rem;
+            gap: 0.7rem;
+            border-bottom: .0625rem solid rgba(0, 255, 0, 0.500);
+
+            &:last-of-type {
+                border-bottom: none;
+            }
+
+            .icon {
+                font-size: 2.3rem;
+            }
+
+            .details-cont {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+
+                p {
+                    margin: 0;
+                    opacity: 0.7;
+                }
+    
+                .name-and-path-cont {
+                    display: grid;
+                    gap: 0.3rem;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+    
+                    .name {
+                        opacity: 1;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        margin-right: 1rem;
+                    }
+                }
+            }
+        }
+    }
+}

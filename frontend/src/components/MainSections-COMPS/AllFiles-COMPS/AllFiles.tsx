@@ -248,7 +248,7 @@ function AllFiles() {
                         </p>
                         <p>Type</p>
                         <p>Size</p>
-                        <p>Uploaded (D/M/Y)</p>
+                        <p>Upload Date</p>
                     </div>
                 </div>
 

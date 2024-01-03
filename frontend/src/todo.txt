@@ -1,7 +1,13 @@
-    - Test account delete function and add css (warning icon, warning text, tell user to download their files if they want to, etc.)
+    - Ascii art of gear for settings section in background?
+    - Add backend checks for name conflicts
+    - Add error message for queue files that fail due to name conflict OR non existant parent directory (i.e. a folder was deleted before the file finished uploading)
+    - Add error message in for normal moving files that fail due to name conflict
+    - Add more icon types depending on file type (e.g.)
+    - Add cypress e2e tests
+    - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
+
     - cloudflare r2 caching?
     - cloudflare r2 get storage used and class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
-    - finish implementing search function
     - finish sorting toolbar logic (starred and types at least?)
     - full page animations with DynamicClip
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
@@ -14,7 +20,6 @@
     - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
     - favicon
     - change all px in scss to rem/em whatever else
-    - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
     - test thoroughly in production
     - Add to portfolio
     - Starring
@@ -55,7 +60,7 @@ Deleting (future):
     - confirmation, and then move to recycle bin? check what dropbox/google drive does
     - move selection code into a custom hook so other MainSections can use it?
 
-Ascii art for settings section in background?
+Allow removal of failed queue files
 for the extra delay in loading large/high resolution image previews/other similar files, use lower resolution thumbnail initially, and then use higher resolution actual content later? (dont implement extra loading state though for ContentViewer.tsx)
 add application/json support and other code file support (text fetch from url and put text in div? or use react package for code rendering?)
 refresh video presigned url after timeout and put user back to time instead of telling them to reopen the file viewer
@@ -66,6 +71,7 @@ test htm file for file viewer
 implement keyboard controls for drag and drop and better selection? (fix checkbox space key double click problem)
 implement registration confirmation email properly with mjml with email verification in it.
 use pre instead of images for ascii
+Improve search (e.g. if there are no files/folders that have the exact name, then results should come up where some words of the search term match some files/folders). Also deal with if a user has loads of files, possibly limit results at first and only load more if user keeps scolling search results list, also if multiple folders exist with same name then app_path in results should have folder name before it until no conflicts, more advanced search page with filtering option if user presses enter or clicks search?
 fix escape key causing items to deselect sometimes even if file viewer is open for some reason (use customhook to remove escape key listeners and add them back based on file viewer being open?)
 underline/bold sidebar links if user is in that section
 make it so backend logic handles filtering out of d_ prefix for folders in move operations (to avoid needing to send type)

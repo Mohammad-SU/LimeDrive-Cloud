@@ -126,11 +126,12 @@
                 }
 
                 &.select-delayed {
-                    background: rgba(0, 255, 0, 0.37); 
+                    background: rgba(0, 255, 0, 0.37) !important; 
                 }
             }
             &.targeted {
                 outline: 2px dashed transparent;
+                outline-offset: -0.05rem;
                 animation: blink-targeted 1s infinite;          
             }
             @keyframes blink-targeted {
