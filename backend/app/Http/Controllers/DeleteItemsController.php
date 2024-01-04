@@ -48,7 +48,7 @@ class DeleteItemsController extends Controller
         }
         catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => "Failed to delete."], 500);
+            return response()->json(['error' => "Failed to delete."], 500);
         }
 
         foreach ($deletedFileData as $deletedFileDataItem) { // Don't put in try catch as I don't have logic for backups/restoring deleted files on the bucket, so if one deletion fails during the loop then previous files will not be restored on the bucket

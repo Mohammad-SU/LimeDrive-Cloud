@@ -109,6 +109,7 @@
         left: 0;
         right: 0;
         overflow: auto;
+        overflow-x: hidden;
 
         &::-webkit-scrollbar-track {
             outline: none;
@@ -194,12 +195,16 @@
             }
 
             .text-preview {
+                width: 55rem;
+                min-height: 34rem;
                 padding: 2rem;
+                margin: 0;
+                box-sizing: border-box;
+                white-space: pre-wrap;
+                overflow-wrap: break-word;
                 color: lime;
                 background: black;
-                white-space: pre-wrap;
-                width: 50rem;
-                height: 100%;
+                overflow: visible; // Overflow-y scroll is handled by .file-content
             }
         }
     }

@@ -148,7 +148,7 @@ function Folder({ folder, onSelect }: FolderProps) {
 
     function formatDate(date: Date) {
         const dateTime = DateTime.fromJSDate(date).toLocal();
-        return dateTime.toFormat('dd/MM/yyyy HH:mm');
+        return dateTime.toFormat('dd-MM-yyyy HH:mm');
     }
     const formattedDate = formatDate(new Date(folder.date));
 

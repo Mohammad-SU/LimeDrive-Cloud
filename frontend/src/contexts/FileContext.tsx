@@ -177,6 +177,18 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     }
 
     const [conflictingItemsTimeout, setConflictingItemsTimeout] = useState<NodeJS.Timeout | null>(null);
+    const conflictingItemsSetter = (conflictingItems: ItemTypes[]) => {
+        setConflictingItems(conflictingItems)
+        if (conflictingItemsTimeout) {
+            clearTimeout(conflictingItemsTimeout);
+        }
+        const timeoutId = setTimeout(() => {
+            setConflictingItems([]);
+            setSameFolderConflictingItems([]);
+        }, 8000);
+        setConflictingItemsTimeout(timeoutId);
+    }
+
     const handleMoveItems = async (itemsToMove: ItemTypes[], targetFolder: FolderType, apiSecure: AxiosInstance) => {
         if (processingItems.some(processingItem => processingItem.id === targetFolder.id)) {
             return showToast({message: `Cannot move: target folder is currently being processed.`, showFailIcon: true});
@@ -210,15 +222,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         newConflictingItems.push(...fileConflicts, ...folderConflicts);
 
         if (newConflictingItems.length > 0) {
-            setConflictingItems(newConflictingItems)
-            if (conflictingItemsTimeout) {
-                clearTimeout(conflictingItemsTimeout);
-            }
-            const timeoutId = setTimeout(() => {
-                setConflictingItems([]);
-                setSameFolderConflictingItems([]);
-            }, 8000);
-            setConflictingItemsTimeout(timeoutId);
+            conflictingItemsSetter(newConflictingItems)
             if (newConflictingItems.length === itemsToMove.length) { // Different toast message not needed for sameFolderConflictingItems as MoveBtn.tsx handles that
                 return showToast({message: `Cannot move any items: please rename or deselect items with the same name between both directories.`, showFailIcon: true});
             }
@@ -228,28 +232,23 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             return !newConflictingItems.some((conflictingItem) => conflictingItem.id === itemToMove.id);
         });
 
-        try {
-            const itemsToMoveData = newItemsToMove.map(item => {
-                const new_path = targetFolder.app_path + "/" + item.name;
-                const postId = !item.type ? // If draggedItem is a folder (id has d_ prefix on the frontend) then filter it for the backend
-                    parseInt((item.id as string).substring(2))
-                    : item.id
+        newItemsToMove.length === 1 && newConflictingItems.length === 0 ?
+            showToast({message: "Moving 1 item...", loading: true})
+        : newItemsToMove.length > 1 && newConflictingItems.length === 0 ?
+            showToast({message: `Moving ${newItemsToMove.length} items...`, loading: true})
+        : showToast({message: `Moving ${newItemsToMove.length} of ${itemsToMove.length} items (conflicts/errors were detected)...`, loading: true})
 
-                return {
-                    id: postId,
-                    new_path: new_path,
-                    type: item.type,
-                    parent_folder_id: parseInt((targetFolder.id as string).substring(2))
-                }
-            })
+        const itemsToMoveData = newItemsToMove.map(item => {
+            return {
+                id: "931",
+                new_path: targetFolder.app_path + "/" + "LimeDrive Ascii.txt",
+                parent_folder_id: targetFolder.id
+            }
+        })
+
+        try {
             addToProcessingItems(newItemsToMove)
             removeFromSelectedItems(newItemsToMove)
-
-            newItemsToMove.length === 1 && newConflictingItems.length === 0 ?
-                showToast({message: "Moving 1 item...", loading: true})
-            : newItemsToMove.length > 1 && newConflictingItems.length === 0 ?
-                showToast({message: `Moving ${newItemsToMove.length} items...`, loading: true})
-            : showToast({message: `Moving ${newItemsToMove.length} of ${itemsToMove.length} items (conflicts/errors were detected)...`, loading: true})
 
             const response = await apiSecure.post('/updatePaths', {
                 items: itemsToMoveData
@@ -282,7 +281,18 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         catch (error) {
             console.error(error);
             if (axios.isAxiosError(error)) {
-                showToast({message: `Failed to move. Please check your connection.`, showFailIcon: true });
+                const errorData = error.response?.data;
+
+                if (errorData.error === "Duplicate name and parent_folder_id detected.") {
+                    const conflictingItem = errorData.table === "folders" ? 
+                        folders.find((folder) => folder.id === "d_" + errorData.id)
+                        : files.find((file) => file.id === parseInt(errorData.id))
+
+                    if (conflictingItem) conflictingItemsSetter([conflictingItem])
+                    showToast({message: `Server failed to move: please rename or deselect items with the same name between both directories.`, showFailIcon: true })
+                } else {
+                    showToast({message: `Failed to move. Please check your connection.`, showFailIcon: true })
+                }
             }
         }
         finally {

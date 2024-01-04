@@ -6,7 +6,7 @@ interface ContentViewerProps {
     fileTextContent: string;
     setContentLoaded: React.Dispatch<React.SetStateAction<boolean>>
 }
-// Is separate component so that it can be memoised
+// Is separate component so that it can be memoised easily
 function ContentViewer({ fileContentUrl, fileType, fileTextContent, setContentLoaded }: ContentViewerProps) { // React DocViewer package doesn't seem to work very well with some file types
     if (fileType === "text/plain" || fileType.startsWith("audio/")) {
         setContentLoaded(true)
@@ -41,7 +41,7 @@ function ContentViewer({ fileContentUrl, fileType, fileTextContent, setContentLo
             <audio src={fileContentUrl} controls className="audio-preview" onLoad={() => setContentLoaded(true)}/>
 
          : fileType === "text/plain" ?
-            <div className="text-preview">{fileTextContent}</div>
+            <pre className="text-preview">{fileTextContent}</pre>
 
          : <p>Error.</p>
     );

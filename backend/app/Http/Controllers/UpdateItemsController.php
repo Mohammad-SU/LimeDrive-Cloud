@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\File;
 use App\Models\Folder;
+use Exception;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class UpdateItemsController extends Controller
 {
@@ -14,10 +18,9 @@ class UpdateItemsController extends Controller
         try {
             $request->validate([
                 'items' => 'required|array',
-                'items.*.id' => 'required|int',
+                'items.*.id' => 'required',
                 'items.*.new_path' => 'required|string',
-                'items.*.type' => 'nullable',
-                'items.*.parent_folder_id' => 'required|int',
+                'items.*.parent_folder_id' => 'required|string|different:items.*.id',
             ]);
             $updatedItems = [];
 
@@ -25,13 +28,15 @@ class UpdateItemsController extends Controller
 
             foreach ($request['items'] as $item) {
                 $id = $item['id'];
+                $isFolderId = Str::startsWith($id, 'd_');
                 $new_path = $item['new_path'];
-                $parent_folder_id = $item['parent_folder_id'];
+                $newParentFolderDbId = Str::after($item['parent_folder_id'], 'd_');
 
-                if (!isset($item['type'])) {
-                    $updItem = Folder::findOrFail($id);
+                if ($isFolderId) {
+                    $dbId = Str::after($id, 'd_');
+                    $updItem = Folder::findOrFail($dbId);
                     $this->updateChildPaths($updItem, $new_path, $updatedItems);
-                    $updatedItems[] = ['id' => 'd_' . $updItem->id, 'updated_path' => $new_path];
+                    $updatedItems[] = ['id' => $id, 'updated_path' => $new_path];
                 } 
                 else {
                     $updItem = File::findOrFail($id);
@@ -39,16 +44,30 @@ class UpdateItemsController extends Controller
                 }
 
                 $updItem->app_path = $new_path;
-                $updItem->parent_folder_id = $parent_folder_id;
+                $updItem->parent_folder_id = $newParentFolderDbId;
                 $updItem->save();
             }
 
             DB::commit();
             return response()->json(['message' => 'Item path(s) updated successfully', 'updatedItems' => $updatedItems]);
-        }
+        } 
         catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => "Failed to update path(s)."], 500);
+
+            if ($e instanceof QueryException && $e->getCode() === '23000' && $e->errorInfo[1] === 1062) { // If MySQL error for duplicate entry (leave all checks, and getCode() does return the code as a string)
+                $matches = [];
+                preg_match("/update `([^']+)` set `app_path` = .*? where `id` = (\d+)/", $e->getMessage(), $matches);
+
+                if (count($matches) === 3) {
+                    return response()->json([
+                        'error' => 'Duplicate name and parent_folder_id detected.', 
+                        'table' => $matches[1], 
+                        'id' => $matches[2]
+                    ], 422);
+                }
+            }
+
+            return response()->json(['error' => "Failed to update path(s)."], 500);
         }
     }
     private function updateChildPaths($parentFolder, $new_path, &$updatedItems) // Recursive function for updating children items' app_path

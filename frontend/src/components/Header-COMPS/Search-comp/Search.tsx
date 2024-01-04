@@ -40,7 +40,7 @@ function Search() {
         if (dateTime >= today) {
             return dateTime.toFormat('HH:mm');
         } else {
-            return dateTime.toFormat('dd/MM/yyyy');
+            return dateTime.toFormat('dd-MM-yyyy');
         }
     }
 

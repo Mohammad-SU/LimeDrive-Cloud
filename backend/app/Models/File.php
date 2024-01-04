@@ -17,7 +17,6 @@ class File extends Model
         'name',
         'app_path',
         'type',
-        'extension',
         'size',
         'date'
     ];

@@ -23,7 +23,7 @@ class UploadController extends Controller
             $fileName = $requestFile->getClientOriginalName();
             $extension = $requestFile->getClientOriginalExtension();
             $type = $requestFile->getClientMimeType();
-            if ($extension === "odt" && $type === "application/octet-stream") { // For some reason on the frontend the type for odt files were empty
+            if ($extension === "odt" && $type === "application/octet-stream") { // For some reason on the frontend JS File object, the type for odt files were empty
                 $type = "application/vnd.oasis.opendocument.text";
             }
 
@@ -35,7 +35,6 @@ class UploadController extends Controller
                 'name' => $fileName,
                 'app_path' => $fileData['app_path'],
                 'type' => $type,
-                'extension' => $extension,
                 'size' => $requestFile->getSize(),
                 'date' => now(),
             ]);
@@ -49,7 +48,7 @@ class UploadController extends Controller
         } 
         catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => "Failed to upload file."], 500);
+            return response()->json(['error' => "Failed to upload file."], 500);
         }
     }
 
@@ -74,7 +73,7 @@ class UploadController extends Controller
             return response()->json($uploadedFolder);
         }
         catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['error' => "Failed to create folder."], 500);
         }
     }
 }

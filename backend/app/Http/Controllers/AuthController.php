@@ -47,7 +47,7 @@ class AuthController extends Controller
         $credentials = $request->only('usernameOrEmailLog', 'passwordLog');
 
         if (empty(trim($credentials['usernameOrEmailLog'])) || strlen($credentials['passwordLog']) < 8) { // Don't use validator instead (for simpler approach for invalid login details message).
-            return response()->json(['message' => 'Invalid login details.'], 400);
+            return response()->json(['error' => 'Invalid login details.'], 400);
         }
 
         $isEmail = filter_var($credentials['usernameOrEmailLog'], FILTER_VALIDATE_EMAIL);
@@ -61,7 +61,7 @@ class AuthController extends Controller
             Auth::login($user);
             return $this->createLoginResponse($request, $user, 'Login successful.');
         } else {
-            return response()->json(['message' => 'Invalid login details.'], 400);
+            return response()->json(['error' => 'Invalid login details.'], 400);
         };
     }
 

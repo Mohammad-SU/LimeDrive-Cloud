@@ -83,19 +83,19 @@
                 p {
                     margin: 0;
                     opacity: 0.7;
+                    white-space: nowrap;
                 }
     
                 .name-and-path-cont {
                     display: grid;
                     gap: 0.3rem;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
     
                     .name {
                         opacity: 1;
+                    }
+
+                    .name, .app_path {
                         overflow: hidden;
-                        white-space: nowrap;
                         text-overflow: ellipsis;
                         margin-right: 1rem;
                     }

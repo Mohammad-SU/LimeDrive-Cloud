@@ -1,9 +1,9 @@
-    - Ascii art of gear for settings section in background?
-    - Add backend checks for name conflicts
     - Add error message for queue files that fail due to name conflict OR non existant parent directory (i.e. a folder was deleted before the file finished uploading)
     - Add error message in for normal moving files that fail due to name conflict
     - Add more icon types depending on file type (e.g.)
     - Add cypress e2e tests
+    - Add space left
+    - Ascii art of gears for settings section in background?
     - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
 
     - cloudflare r2 caching?
@@ -12,14 +12,13 @@
     - full page animations with DynamicClip
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
     - implement "space left" on bottom left corner
-    - settings page (put backend code in UserController)
     - remove any unneeded console.logs and $e->getMessage() with vscode file search
     - Suggested files with thumbnails on all files page, and recents page
     - malware check
     - make website title reflect page/folder accurately
     - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
     - favicon
-    - change all px in scss to rem/em whatever else
+    - change all px in scss to rem/em/whatever is needed
     - test thoroughly in production
     - Add to portfolio
     - Starring
@@ -68,6 +67,7 @@ slightly more detailed error messages (e.g. not found error/unknown error instea
 inform user that backend/finalisng might take a while if a file is large
 deal with slow Storage put in backend for large files/speed it up somehow
 test htm file for file viewer
+add foreign key constraints to database tables? (also make it so parent_folder_id of a folder can't be the same as its own id with a check or constraint, and allow null parent_folder_id [change app code to allow null parent_folder_id instead of 0 for the root, where root items should have null parent folder id])
 implement keyboard controls for drag and drop and better selection? (fix checkbox space key double click problem)
 implement registration confirmation email properly with mjml with email verification in it.
 use pre instead of images for ascii
@@ -116,7 +116,7 @@ decrease header sizings?
 file list sorting based on header row label/arrow icon clicks
 add left click dropdown menu
 file sharing
-settings page
+more settings in settings page
 gallery
 starred
 filters for deleted section (allow users to search non-deleted folders to see if it had any items in the recycle bin)

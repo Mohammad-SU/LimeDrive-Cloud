@@ -85,7 +85,7 @@ class UserController extends Controller
         } 
         catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Failed to update password.'], 500);
+            return response()->json(['error' => 'Failed to update password.'], 500);
         }
     }    
 
@@ -101,7 +101,7 @@ class UserController extends Controller
         if ($user->deleteAccount()) {
             return response()->json(['message' => 'Account deleted successfully.']);
         } else {
-            return response()->json(['message' => 'Failed to delete account.'], 500);
+            return response()->json(['error' => 'Failed to delete account.'], 500);
         }
     }
 }
