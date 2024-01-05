@@ -64,13 +64,12 @@ function Sidebar() {
             const newCurrentPath = currentPath
             const parentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
             const app_path = currentPath + formData.newFolderName.trim()
-            const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
             setShowNewFolderModal(false);
             showToast({message: "Creating folder...", loading: true})
             const response = await apiSecure.post('/createFolder', {
                 name: formData.newFolderName.trim(),
                 app_path: app_path,
-                parent_folder_id: parseInt(parent_folder_id)
+                parent_folder_id: parentFolder ? parseInt(parentFolder.id.substring(2)) : null // null represents root directory id, aka "LimeDrive/"
             });
 
             addFolders(response.data)

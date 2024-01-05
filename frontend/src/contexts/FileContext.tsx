@@ -1,7 +1,5 @@
 import { useMemo, createContext, useContext, useState, useEffect, useRef } from 'react'
-import { FileType } from '../types'
-import { FolderType } from '../types'
-import { ItemTypes } from '../types'
+import { FileType, FolderType, ItemTypes } from '../types'
 import { useToast } from './ToastContext'
 import axios, { AxiosInstance } from 'axios'
 
@@ -189,7 +187,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         setConflictingItemsTimeout(timeoutId);
     }
 
-    const handleMoveItems = async (itemsToMove: ItemTypes[], targetFolder: FolderType, apiSecure: AxiosInstance) => {
+    const handleMoveItems = async (
+        itemsToMove: ItemTypes[], 
+        targetFolder: FolderType | FolderType & { id: null }, // Null allowed in case target is root
+        apiSecure: AxiosInstance
+    ) => {
         if (processingItems.some(processingItem => processingItem.id === targetFolder.id)) {
             return showToast({message: `Cannot move: target folder is currently being processed.`, showFailIcon: true});
         } else if (itemsToMove.some(itemToMove => processingItems.some(processingItem => processingItem.id === itemToMove.id))) {
@@ -240,9 +242,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
         const itemsToMoveData = newItemsToMove.map(item => {
             return {
-                id: "931",
-                new_path: targetFolder.app_path + "/" + "LimeDrive Ascii.txt",
-                parent_folder_id: targetFolder.id
+                id: item.id,
+                new_path: targetFolder.app_path + "/" + item.name,
+                new_parent_folder_id: targetFolder.id
             }
         })
 
@@ -283,7 +285,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             if (axios.isAxiosError(error)) {
                 const errorData = error.response?.data;
 
-                if (errorData.error === "Duplicate name and parent_folder_id detected.") {
+                if (errorData.error === "Disallowed duplicate name and parent_folder_id detected.") {
                     const conflictingItem = errorData.table === "folders" ? 
                         folders.find((folder) => folder.id === "d_" + errorData.id)
                         : files.find((file) => file.id === parseInt(errorData.id))

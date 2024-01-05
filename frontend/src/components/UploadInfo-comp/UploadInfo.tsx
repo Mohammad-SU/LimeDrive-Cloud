@@ -100,7 +100,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             //     try {
             //         const parentFolder = folders.find((folder) => folder.app_path === currentPath.slice(0, -1));
             //         const app_path = currentPath + formData.newFolderName.trim()
-            //         const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory id, aka "LimeDrive/"
+            //         const parent_folder_id = parentFolder ? parentFolder.id : null; // null here represents root directory, aka "LimeDrive"
             //         setShowNewFolderModal(false);
             //         const response = await apiSecure.post('/createFolder', {
             //             name: formData.newFolderName.trim(),
@@ -111,16 +111,8 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
             //         addFolders(response.data)
             //         showToast({message: "Folder created.", showSuccessIcon: true})
             //         formData.newFolderName = ''
-        
-            //         setTimeout(() => { // Wait for folder with it's id to be properly rendered to the DOM
-            //             if (currentPath === parentFolder?.app_path + "/" || parent_folder_id === "0" && currentPath === "LimeDrive/") { // Jump to folder if user is still in same path
-            //                 navigate(currentPath.slice(0, -1)+"#d_"+response.data.id)
-            //                 const element = document.getElementById(`d_${response.data.id}`);
-            //                 if (element) {
-            //                     element.scrollIntoView({ behavior: "smooth" });
-            //                 }
-            //             }
-            //         }, 1);
+            //         
+            //          add jump to folder after creation?
             //     } 
             //     catch (error) {
             //         console.error(error);
@@ -152,14 +144,16 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
     const { apiSecure } = useUserContext()
     
     const uploadFile = async (file: QueueFile) => {
-        const formData = new FormData();
+        const formData = new FormData(); // Leave formData since it's used with file upload request data
         formData.append('file', file.fileObj) // Actual js file object
         formData.append('app_path', file.app_path) // e.g. app_path = LimeDrive/LimeDrive.txt
 
         const lastSlashIndex = file.app_path.lastIndexOf('/');
         const parentFolder = folders.find((folder) => folder.app_path === file.app_path.substring(0, lastSlashIndex));
-        const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : "0"; // 0 represents root directory (LimeDrive) id
-        formData.append('parent_folder_id', parent_folder_id)
+        const parent_folder_id = parentFolder ? parentFolder.id.substring(2) : null; // null represents root directory (LimeDrive) here
+        if (parent_folder_id) {
+            formData.append('parent_folder_id', parent_folder_id);
+        }
 
         const source = axios.CancelToken.source();
         cancelTokenSource.current = source;

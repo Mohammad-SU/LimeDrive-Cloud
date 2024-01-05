@@ -1,26 +1,27 @@
+    - Add foreign key constraints to DB
     - Add error message for queue files that fail due to name conflict OR non existant parent directory (i.e. a folder was deleted before the file finished uploading)
-    - Add error message in for normal moving files that fail due to name conflict
     - Add more icon types depending on file type (e.g.)
     - Add cypress e2e tests
     - Add space left
     - Ascii art of gears for settings section in background?
-    - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
-
     - cloudflare r2 caching?
     - cloudflare r2 get storage used and class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
+    - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
+    - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
+    - malware check for file uploads only
+    - Add to portfolio
+
+    - Change default error messages to not say "check connection" unless
     - finish sorting toolbar logic (starred and types at least?)
     - full page animations with DynamicClip
     - e2e tests with cypress (mainly file upload and deletion, possibly folder)
     - implement "space left" on bottom left corner
     - remove any unneeded console.logs and $e->getMessage() with vscode file search
     - Suggested files with thumbnails on all files page, and recents page
-    - malware check
     - make website title reflect page/folder accurately
-    - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
     - favicon
     - change all px in scss to rem/em/whatever is needed
     - test thoroughly in production
-    - Add to portfolio
     - Starring
     - Sharing
     - add tooltips with bulb icon (in gap inside toolbar/space after sorting categories?)
@@ -28,8 +29,7 @@
     - fix date when daylight savings time (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
     - add functionality for deleting older user accounts when new user uploads files and space is getting low (get space left from r2 directly)
     - react virtualisation for large lists
-    - account deleted message with apisecure interceptor
-    - implement captcha
+    - implement captcha?
 
 add checks for passwords to not just be spaces
 fix move modal breadcrumb for some reason not looking correct on long paths sometimes (still adds to dropdown but for some reason lets there be overflowing with more than one visible segment)
@@ -37,7 +37,7 @@ more backend rate limting if needed (use throttle middleware as it denies reques
 make rate limting frontend toast message not keep coming back if the next request was also rate limited? otherwise it looks likes it flickering
 get paths using parent folder id instead of app_path?
 custom audio/video players for preview?
-renaming (not yet added due to possbile complexity with changing app_paths in backend due to possible (and allowed) duplicate names in app_paths). This may require restructure of frontend path-related code in front end to populate folders (when user views their contents) based on parent folder ids and possibly changing logic for determining currentPath, and then removing app_path column in database? And possibly include better search algorithms than basic js ones for the arrays when constructing currentPaths based on parent folder ids.
+renaming (not yet added due to extra time and/or complexity with changing app_paths in backend due to possible (and allowed) duplicate names in app_paths. May be able to be done with this method still though, by looking for where the app_path ends for that renamed folder on the database and then renaming all other app_paths starting from there. Then frontend see if special rerendering is required or not (may work without changing logic beyond adding folder)? DON'T restructure frontend path code to populate based on parent folder ids in that case). 
 auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually otherwise
 make backend code for uploadQueue check for conflict and tell user in uploadQueue that there was this error, do this similarly for handleMoveItems and its backend code
 make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates

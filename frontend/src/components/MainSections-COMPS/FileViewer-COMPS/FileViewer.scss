@@ -195,10 +195,12 @@
             }
 
             .text-preview {
-                width: 55rem;
+                width: 50em;
                 min-height: 34rem;
+                font-size: 0.97rem;
                 padding: 2rem;
                 margin: 0;
+
                 box-sizing: border-box;
                 white-space: pre-wrap;
                 overflow-wrap: break-word;

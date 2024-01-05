@@ -86,16 +86,17 @@ function MoveBtn({ toolbarRendered }: { toolbarRendered: boolean }) {
             return showToast({message: `Cannot move folder inside itself.`, showFailIcon: true});
         }
 
-        let newTargetFolder = { ...targetFolder } as FolderType | undefined;
         if (moveListPath === "LimeDrive/") { // If user wants to move items to root
-            newTargetFolder = {
-                id: 'd_0',
+            const rootTargetFolder = {
+                id: null,
                 name: 'LimeDrive',
                 app_path: 'LimeDrive',
                 date: new Date(),
-            };
+            }
+            handleMoveItems(selectedItems, rootTargetFolder as FolderType & { id: null }, apiSecure)
+        } else {
+            handleMoveItems(selectedItems, targetFolder!, apiSecure)
         }
-        handleMoveItems(selectedItems, newTargetFolder!, apiSecure)
     }
 
     return (

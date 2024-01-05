@@ -20,7 +20,7 @@ class GetItemDataController extends Controller
             $fileExtension = pathinfo($file->name, PATHINFO_EXTENSION);
             $cloudPath = Helpers::getCloudPath(auth()->id(), $file->id, $fileExtension);
 
-            if (Str::startsWith($file->type, 'text/plain')) { // Return text content directly for text/plain files instead of using fetch API with presigned url on the frontend
+            if ($file->type === 'text/plain') { // Return text content directly for text/plain files instead of using fetch API with presigned url on the frontend
                 $stream = Storage::readStream($cloudPath);
                 return response()->stream(
                     function () use ($stream) {
@@ -29,7 +29,7 @@ class GetItemDataController extends Controller
                     },
                     200,
                     [
-                        'Content-Type' => $file->type,
+                        'Content-Type' => "text/plain",
                         'Content-Disposition' => 'inline; filename="' . $file->name . '"',
                     ]
                 );
@@ -89,7 +89,7 @@ class GetItemDataController extends Controller
             $zip = new \ZipArchive;
             $zipFileName = 
                 count($items) === 1 ? $items[0]->name . ".zip" // If user wants to download single folder, then zipFileName should also be that folder's name with .zip
-                : ($parentFolderIds[0] === 0 ? "LimeDrive.zip" // If all the directly selected items are in the root
+                : ($parentFolderIds[0] === null ? "LimeDrive.zip" // If all the directly selected items are in the root
                 : (Folder::findOrFail($parentFolderIds[0])->name) . ".zip"); // Otherwise it should have the parent folder's name of the directly selected items
             $zipFileTempName = uniqid(auth()->id()."_", false) . "_" . $zipFileName; // Prevent conflicts
             $localPath = storage_path("app/{$zipFileTempName}");

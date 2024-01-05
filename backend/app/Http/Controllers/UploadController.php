@@ -16,6 +16,7 @@ class UploadController extends Controller
             $fileData = $request->validate([
                 'app_path' => 'required|string',
                 'file' => 'required|file',
+                'parent_folder_id' => 'nullable|string', // |string here since formData on frontend doesn't allow int
             ]);
             
             $user_id = auth()->id();
@@ -26,12 +27,15 @@ class UploadController extends Controller
             if ($extension === "odt" && $type === "application/octet-stream") { // For some reason on the frontend JS File object, the type for odt files were empty
                 $type = "application/vnd.oasis.opendocument.text";
             }
+            $parentFolderId = $request['parent_folder_id'] === null ? 
+                null
+                : intval($request['parent_folder_id']);
 
             DB::beginTransaction();
 
             $uploadedFile = File::create([
                 'user_id' => $user_id,
-                'parent_folder_id' => intval($request->input('parent_folder_id')),
+                'parent_folder_id' => $parentFolderId,
                 'name' => $fileName,
                 'app_path' => $fileData['app_path'],
                 'type' => $type,
@@ -58,7 +62,7 @@ class UploadController extends Controller
             $folderData = $request->validate([
                 'name' => ['required', 'string', 'regex:/^[^<>\\/:?*"|]{1,255}$/'], // Array due to pipe in regex
                 'app_path' => 'required|string',
-                'parent_folder_id' => 'required|integer|numeric',
+                'parent_folder_id' => 'nullable|integer|numeric',
             ]);
             $user_id = $request->user()->id;
 

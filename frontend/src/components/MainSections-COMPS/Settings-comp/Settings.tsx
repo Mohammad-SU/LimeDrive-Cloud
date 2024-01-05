@@ -1,4 +1,4 @@
-import { memo, useState, useRef } from 'react'
+import { memo, useState, useEffect, useRef } from 'react'
 import "./Settings.scss"
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
@@ -13,7 +13,7 @@ import Checkbox from '../Checkbox-comp/Checkbox'
 
 function Settings() {
     const { user, setUser, apiSecure, setToken } = useUserContext()
-    const { setFiles, setFolders } = useFileContext()
+    const { setFiles, setFolders, setCurrentPath } = useFileContext()
     const { showToast } = useToast()
     const navigate = useNavigate()
     const [processing, setProcessing] = useState(false)
@@ -42,6 +42,10 @@ function Settings() {
     const isCurrentPasswordValid = formData.currentPassword.length >= 8
     const isNewPasswordValid = formData.newPassword.length >= 8
     const isConfirmNewPasswordValid = formData.newPassword === formData.confirmNewPassword
+    
+    useEffect(() => {
+        setCurrentPath("LimeDrive/")
+    }, []);
 
     const renderError = (backendErrorMsg: string) => {
         setFormError( // Using startsWith() due to backend possibly grouping multiple validation errors

@@ -7,7 +7,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\File;
 use App\Models\Folder;
-use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -20,7 +19,7 @@ class UpdateItemsController extends Controller
                 'items' => 'required|array',
                 'items.*.id' => 'required',
                 'items.*.new_path' => 'required|string',
-                'items.*.parent_folder_id' => 'required|string|different:items.*.id',
+                'items.*.new_parent_folder_id' => 'nullable|string|different:items.*.id',
             ]);
             $updatedItems = [];
 
@@ -30,10 +29,12 @@ class UpdateItemsController extends Controller
                 $id = $item['id'];
                 $isFolderId = Str::startsWith($id, 'd_');
                 $new_path = $item['new_path'];
-                $newParentFolderDbId = Str::after($item['parent_folder_id'], 'd_');
+                $newParentFolderDbId = $item['new_parent_folder_id'] === null ?
+                    null
+                    : intval(Str::after($item['new_parent_folder_id'], 'd_'));
 
                 if ($isFolderId) {
-                    $dbId = Str::after($id, 'd_');
+                    $dbId = intval(Str::after($id, 'd_'));
                     $updItem = Folder::findOrFail($dbId);
                     $this->updateChildPaths($updItem, $new_path, $updatedItems);
                     $updatedItems[] = ['id' => $id, 'updated_path' => $new_path];
@@ -53,6 +54,7 @@ class UpdateItemsController extends Controller
         } 
         catch (\Exception $e) {
             DB::rollBack();
+            Log::error($e);
 
             if ($e instanceof QueryException && $e->getCode() === '23000' && $e->errorInfo[1] === 1062) { // If MySQL error for duplicate entry (leave all checks, and getCode() does return the code as a string)
                 $matches = [];
@@ -60,7 +62,7 @@ class UpdateItemsController extends Controller
 
                 if (count($matches) === 3) {
                     return response()->json([
-                        'error' => 'Duplicate name and parent_folder_id detected.', 
+                        'error' => 'Disallowed duplicate name and parent_folder_id detected.', 
                         'table' => $matches[1], 
                         'id' => $matches[2]
                     ], 422);
