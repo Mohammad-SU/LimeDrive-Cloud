@@ -1,37 +1,36 @@
-    - Add foreign key constraints to DB
     - Add error message for queue files that fail due to name conflict OR non existant parent directory (i.e. a folder was deleted before the file finished uploading)
+    - make it so name cant conlfict when creating folder (backend error for duplicates) and then show toast to user the reason
     - Add more icon types depending on file type (e.g.)
-    - Add cypress e2e tests
-    - Add space left
+    - Add cypress e2e tests (mainly file upload and deletion, possibly folder)
+    - Add "space left" on bottom left corner
     - Ascii art of gears for settings section in background?
     - cloudflare r2 caching?
     - cloudflare r2 get storage used and class a/class b operations and prevent operations/delete accounts when limit is reached (make limits 9.5gb storage, 950k class a, 9.5mil class b - put code into effect if when these limits are reached)
     - Default files/folders with restore button (Tips and info readme such as shortcuts, short gif/videos, pictures, documents, etc.)
-    - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
+    - change all px in scss to rem/em/whatever is needed
     - malware check for file uploads only
-    - Add to portfolio
-
-    - Change default error messages to not say "check connection" unless
-    - finish sorting toolbar logic (starred and types at least?)
-    - full page animations with DynamicClip
-    - e2e tests with cypress (mainly file upload and deletion, possibly folder)
-    - implement "space left" on bottom left corner
-    - remove any unneeded console.logs and $e->getMessage() with vscode file search
-    - Suggested files with thumbnails on all files page, and recents page
+    - full page animations with DynamicClip?
     - make website title reflect page/folder accurately
     - favicon
-    - change all px in scss to rem/em/whatever is needed
+    - remove any unneeded console.logs and $e->getMessage() with vscode file search, or install a package or something that comments them out automatically?
+    - handle folder name and path name limits with folder creations and file names/file uploads
+    - add functionality for deleting older user accounts when new user uploads files and space is getting low (get space left from r2 directly)
+    - CSS for basic folders dropdown in sidebar below another divider, similar to how dropbox does it?
+    - Check rest of todo in case there is anything else of higher priority
+    - Repsonsive CSS, Check multiple browsers (firefox android folder upload webkitdirectory), long press for opening files/folders on touch devices
+    - Add to portfolio
+
+    - Change default error messages to not say "check connection" unless it is actually a network error
+    - finish sorting toolbar logic
+    - Suggested files with thumbnails on all files page
     - test thoroughly in production
     - Starring
     - Sharing
-    - add tooltips with bulb icon (in gap inside toolbar/space after sorting categories?)
-    - handle folder name and path name limits with file names
+    - add tooltips with bulb icon? (in gap inside toolbar/space after sorting categories?)
     - fix date when daylight savings time (try get timezone offset? laravel settings/save timezone on database and deal with conversions?)
-    - add functionality for deleting older user accounts when new user uploads files and space is getting low (get space left from r2 directly)
     - react virtualisation for large lists
     - implement captcha?
 
-add checks for passwords to not just be spaces
 fix move modal breadcrumb for some reason not looking correct on long paths sometimes (still adds to dropdown but for some reason lets there be overflowing with more than one visible segment)
 more backend rate limting if needed (use throttle middleware as it denies requests after exceeding limit)
 make rate limting frontend toast message not keep coming back if the next request was also rate limited? otherwise it looks likes it flickering
@@ -40,24 +39,24 @@ custom audio/video players for preview?
 renaming (not yet added due to extra time and/or complexity with changing app_paths in backend due to possible (and allowed) duplicate names in app_paths. May be able to be done with this method still though, by looking for where the app_path ends for that renamed folder on the database and then renaming all other app_paths starting from there. Then frontend see if special rerendering is required or not (may work without changing logic beyond adding folder)? DON'T restructure frontend path code to populate based on parent folder ids in that case). 
 auto removal of console.error for frontend and $e->getMessage() for backend for production with build plugin/package? remember to remove them manually otherwise
 make backend code for uploadQueue check for conflict and tell user in uploadQueue that there was this error, do this similarly for handleMoveItems and its backend code
-make it so name cant conlfict when creating folder (keep array of queued folder names) and add backend error for duplicates
-fix :after being off center in move modal breadcrumb
+fix :after being off center? in move modal breadcrumb
 file link sharing through r2 presigned urls?
 thumbnails - separate array from files? use find method when rendering, lazy load
-change directory mentions to folder or path instead
-for main sections add general scss to MainPage.scss (such as the title where the breadcrumb is the, the general list/header row scss? and other stuff. so that scss code isnt duplicated too much)
+change directory mentions to folder or path instead?
+for main sections add general scss to MainPage.scss (such as the title where the breadcrumb is, the general list/header row scss? and other stuff. so that scss code isnt duplicated too much)
 set currentPath to root (LimeDrive/) when user goes to a separate/unrelated page
 disable all toolbar btns when no selected items and also return from functions
 allow zero width spaces in folder names if implementing folder uploads (fix this in folder creation where for some reason backend error happens when user tries to create folder with zero width space only)
 
 Previews:
     - improve file views for PDFs/other normally supported file types that are large in size by streaming/chunking (show what is available to the user while loading the rest of the file, e.g. load large image line by line as it loads)?
+    - Custom PDF viewer or react package (also to avoid user relying on the iframe pdf viewer for printing)
     - add zoom btn? (make it so large images/videos are showed to be zoomed out by default instead of allowing them to overflow scroll, unless the user zooms in after?)
     - left/right arrows so user can cycle through files in the current folder (hide if no other files in same folder)?
 
 Deleting (future):
     - confirmation, and then move to recycle bin? check what dropbox/google drive does
-    - move selection code into a custom hook so other MainSections can use it?
+    - move selection code into a custom hook so MainSections can use it?
 
 Allow removal of failed queue files
 for the extra delay in loading large/high resolution image previews/other similar files, use lower resolution thumbnail initially, and then use higher resolution actual content later? (dont implement extra loading state though for ContentViewer.tsx)
@@ -71,6 +70,7 @@ add foreign key constraints to database tables? (also make it so parent_folder_i
 implement keyboard controls for drag and drop and better selection? (fix checkbox space key double click problem)
 implement registration confirmation email properly with mjml with email verification in it.
 use pre instead of images for ascii
+somehow fix printing default margins for .text-preview? @page didn't work for some reason, and don't set it as the pre style either since otherwise user's can't edit it then
 Improve search (e.g. if there are no files/folders that have the exact name, then results should come up where some words of the search term match some files/folders). Also deal with if a user has loads of files, possibly limit results at first and only load more if user keeps scolling search results list, also if multiple folders exist with same name then app_path in results should have folder name before it until no conflicts, more advanced search page with filtering option if user presses enter or clicks search?
 fix escape key causing items to deselect sometimes even if file viewer is open for some reason (use customhook to remove escape key listeners and add them back based on file viewer being open?)
 underline/bold sidebar links if user is in that section
@@ -84,6 +84,7 @@ file upload chunking?
 if using presigned urls for downloads then add better way for file downloads than presigned url due to security reasons?
 fix text in buttons looking vertically off-center (move toolbar, breadcrumb drodown, possibly other dropdowns/buttons too) by adding padding bottom?
 toast notification stacking
+Allow users to upload files/folders with drag & drop onto any place on the app or an area on the app
 fix finalising being set back to false when uploadInfo is collapsed (move finalising code to uploadInfo)
 remember to put toast notifications for errors
 adjust scrolls/item sizes so they dont cause unnecessary scrollbars/item borders being too close to screen edges
@@ -97,7 +98,7 @@ backend validation for conflicting item name checking when moving and uploading,
 fix handleDragEnd working when target folder is below toolbar but hidden due to z index (add early return in handleDragEnd if droppedonfolder being under something/filelist header by more than 70-60%)
 instead of delaying item selection, make item selection instant and implement below suggestion? Or implement below suggestion without removing selection delay? 
 for folder opening use delay clip animation on entire main-list/list items? Although it may be annoying for users who want to open folders quickly
-file selection with arrow keys (multiple with shift)
+file selection with arrow keys (multiple with shift)? shift is already implemented for clicking.
 cancel button in toast for aborting current operation
 file editing
 more detailed errors, such as if folder/file doesnt exist on database cause a backend error and then tell the user that the folder/file doesnt exist

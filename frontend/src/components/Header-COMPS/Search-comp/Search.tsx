@@ -13,10 +13,10 @@ function Search() {
     const navigate = useNavigate()
     const searchRef = useRef<HTMLDivElement | null>(null)
     const [showResultsList, setShowResultsList] = useState(false)
+    const [searchTerm, setSearchTerm] = useState('');
     useUnfocusPopup(searchRef, () => {
         setShowResultsList(false);
     });
-    const [searchTerm, setSearchTerm] = useState('');
 
     const filteredFiles = files.filter((file) =>
         file.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -57,16 +57,16 @@ function Search() {
         const isCtrlPressed = event.ctrlKey || event.metaKey;
         const isShiftPressed = event.shiftKey;
 
-        isCtrlPressed || isShiftPressed ? 
+        isCtrlPressed || isShiftPressed ?
             window.open(pathToNavigate, '_blank')
-        : navigate(pathToNavigate);
+            : navigate(pathToNavigate);
 
         setShowResultsList(false)
         setSearchTerm('')
     }
 
     return (
-        <div className="Search" ref={searchRef}>
+        <div className="Search" ref={searchRef}>  {/* Don't use onBlur instead since dropdown would close after user tries to click an item in it */}
             <BsSearch className="search-icon" />
             <input
                 className="search-input"
@@ -76,7 +76,7 @@ function Search() {
                 name="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onClick={() => setShowResultsList(true)}
+                onFocus={() => setShowResultsList(true)}
             />
             {(searchTerm !== '' && showResultsList) &&
                 <div className="results-list">
@@ -84,7 +84,7 @@ function Search() {
                         <p className="no-results">No results</p>
                         :
                         filteredItems.map((item) => (
-                            <div className="result-item" key={item.id} onClick={(e) => onResultItemClick(item, e)}>
+                            <div className="result-item" key={item.id} onClick={(e) => onResultItemClick(item, e)} tabIndex={0}>
                                 {item.id.toString().startsWith("d_") ?
                                     <AiOutlineFolder className="icon" />
                                     : <AiOutlineFile className="icon" />

@@ -21,6 +21,17 @@ body {
     color: lime;
     box-sizing: border-box;
     cursor: default;
+
+    @media print {
+        font-size: 1rem;
+        color: black;
+        background-color: white;
+        // For some reason setting margin with @page wasn't working
+        .text-preview {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    }
 }
     input {
         border: none;

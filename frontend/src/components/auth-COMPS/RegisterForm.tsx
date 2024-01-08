@@ -61,7 +61,6 @@ function RegisterForm() {
         catch (error) {
             console.error(error)
             if (axios.isAxiosError(error)) {
-                backendError = error
                 renderError(error?.response?.data.message)
             }
         } 

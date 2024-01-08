@@ -39,6 +39,8 @@ interface FileContextType {
     processingItems: ItemTypes[];
     addToProcessingItems: (item: ItemTypes[]) => void;
     removeFromProcessingItems: (item: ItemTypes[]) => void;
+
+    handleDownloadItems: (itemsToDownload: ItemTypes[], apiSecure: AxiosInstance) => void;
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined)
@@ -301,6 +303,42 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             removeFromProcessingItems(newItemsToMove)
         }
     }
+
+    const handleDownloadItems = async (itemsToDownload: ItemTypes[], apiSecure: AxiosInstance) => {
+        if (itemsToDownload.length === 0) return
+        const isSingleFile = itemsToDownload.length === 1 && !itemsToDownload[0].id.toString().startsWith("d_")
+        showToast({message: `Getting download ${!isSingleFile ? "(folders/multiple items at once may take a while)" : ""}...`, loading: true})
+
+        try {
+            const response = await apiSecure.get('/getItemDownload', {
+                params: {itemIds: itemsToDownload.map(item => item.id)},
+                responseType: isSingleFile ? "json" : "arraybuffer"
+            });
+            if (isSingleFile) {
+                window.location.href = response.data.downloadUrl;
+            } else {
+                const blob = new Blob([response.data], { type: 'application/zip' });
+                const objectUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a'); // Using window.location.href for some reason caused issue
+                link.download = response.headers["zip-file-name"]; // Custom header
+                link.href = objectUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                window.URL.revokeObjectURL(objectUrl);
+            }
+            showToast({message: "Download retrieved.", showSuccessIcon: true})
+        }
+        catch (error) {
+            console.error(error);
+            if (axios.isAxiosError(error)) {
+                error.response?.status === 429 ? // Rate limit toast flickers. In future, can try to get rate limit time left from backend
+                    showToast({message: 'Failed to download. Rate limit reached. Please wait a few seconds before trying again.', showFailIcon: true})
+                : showToast({ message: 'Failed to download. Please check your connection.', showFailIcon: true })
+            }
+        }
+    };
     
     const contextValue: FileContextType = useMemo(() => {
         return {
@@ -340,6 +378,8 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
             processingItems,
             addToProcessingItems,
             removeFromProcessingItems,
+
+            handleDownloadItems,
         };
     }, [currentPath, scrollTargetId, files, folders, fileToView, selectedItems, conflictingItems, sameFolderConflictingItems, processingItems])
 

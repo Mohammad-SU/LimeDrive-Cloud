@@ -19,13 +19,7 @@ return [
 
     'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
-    'allowed_origins' => [
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "https://limedrive-backend.onrender.com",
-        "http://localhost:5173",
-        "https://limedrive.netlify.app"
-    ],
+    'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS')),
 
     'allowed_origins_patterns' => [],
 

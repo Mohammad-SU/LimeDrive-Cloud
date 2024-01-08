@@ -12,6 +12,7 @@ import { IoMdClose } from 'react-icons/io'
 import { FileType } from '../../types/FileType.ts';
 import ProgressBar from '../LoadingBar-COMPS/ProgressBar.tsx'
 import DynamicClip from '../DynamicClip.tsx';
+import { useToast } from '../../contexts/ToastContext.tsx';
 
 interface QueueFile {
     fileObj: File,
@@ -26,6 +27,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
         delayMs: 300,
     });
 
+    const { showToast } = useToast()
     const { currentPath, files, folders, addFiles, addFolders, setScrollTargetId } = useFileContext()
     
     const [fileErrors, setFileErrors] = useState(new Map());
@@ -297,7 +299,7 @@ function UploadInfo({ fileInputRef }: { fileInputRef: React.RefObject<HTMLInputE
                         <button className="retry-btn" onClick={onRetryClick}>Retry</button>
                     : isDeleted ?
                         null
-                    : <button>Copy Link</button>
+                    : <button onClick={()=>showToast({message: "Copy link from upload info not yet featured."})}>Copy Link</button>
                 }
             </div>
         );

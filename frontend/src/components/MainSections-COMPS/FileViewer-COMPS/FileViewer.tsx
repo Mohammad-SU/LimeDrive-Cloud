@@ -3,6 +3,7 @@ import "./FileViewer.scss"
 import axios from 'axios';
 import { useFileContext } from '../../../contexts/FileContext';
 import { useUserContext } from '../../../contexts/UserContext';
+import { useReactToPrint } from 'react-to-print';
 import { AiOutlineClose, AiOutlineComment, AiOutlineDownload, AiOutlinePrinter } from 'react-icons/ai';
 import { motion, AnimatePresence } from 'framer-motion';
 import DynamicClip from '../../DynamicClip';
@@ -15,7 +16,7 @@ import { BsChevronDown, BsShare, BsThreeDotsVertical } from 'react-icons/bs';
 import { useToast } from '../../../contexts/ToastContext';
 
 function FileViewer() {
-    const { fileToView, setFileToView } = useFileContext();
+    const { fileToView, setFileToView, handleDownloadItems } = useFileContext();
     const { apiSecure } = useUserContext();
     const { showToast, setToastContainer } = useToast()
     const fileViewerRef = useRef<HTMLDivElement | null>(null);
@@ -30,6 +31,7 @@ function FileViewer() {
     const [loading, setLoading] = useState(false);
     const [urlExpirationTimeout, setUrlExpirationTimeout] = useState<NodeJS.Timeout | undefined>(undefined);
     const controller = new AbortController();
+    const contentViewerRef = useRef<HTMLElement | null>(null);
     const supportedFileTypes: string[] = [
         "image/jpg", "image/jpeg", "image/bmp", "image/gif", 
         "image/png", "image/x-icon", "application/pdf", 
@@ -136,7 +138,22 @@ function FileViewer() {
         }
     }, [])
 
-    const [contentLoaded, setContentLoaded] = useState(false)
+    const loadPrint = useReactToPrint({ // Error in console may occur from react dev tools (Attempting to use a disconnected port object)
+        content: () => contentViewerRef.current,
+    });
+
+    const handlePrintClick = () => {
+        if (!fileToView) return
+        !supportedFileTypes.includes(fileToView.type) ?
+            showToast({message: "Printing not yet supported by LimeDrive for this file type.", showFailIcon: true})
+            :
+        fileToView.type === "application/pdf" ?
+            showToast({message: "Please use the print button in the PDF viewer instead.", showFailIcon: true})
+            :
+            loadPrint()
+    }
+
+    const [contentLoaded, setContentLoaded] = useState(false) // For when the content itself has loaded and is visible to the user
 
     return (
             <>
@@ -162,10 +179,10 @@ function FileViewer() {
                                     <button className="icon-btn-wrapper comment-btn" onClick={() => showToast({message: "Commenting from viewer not yet featured.", showFailIcon: true})}>
                                         <AiOutlineComment className="icon-btn comment-icon"/>
                                     </button>
-                                    <button className="icon-btn-wrapper print-btn" onClick={() => showToast({message: "Printing from file viewer toolbar not yet featured.", showFailIcon: true})}>
+                                    <button className="icon-btn-wrapper print-btn" onClick={handlePrintClick}>
                                         <AiOutlinePrinter className="icon-btn printer-icon"/>
                                     </button>
-                                    <button className="icon-btn-wrapper download-btn" onClick={() => showToast({message: "Downloading from viewer not yet featured.", showFailIcon: true})}>
+                                    <button className="icon-btn-wrapper download-btn" onClick={() => {fileToView ? handleDownloadItems([fileToView], apiSecure) : null}}>
                                         <AiOutlineDownload className="icon-btn download-icon"/>
                                     </button>
                                     <button className="icon-btn-wrapper more-btn" onClick={() => showToast({message: "More viewer tools not yet featured.", showFailIcon: true})}>
@@ -230,7 +247,13 @@ function FileViewer() {
                                                     transition={{ duration: 0.3 }}
                                                     key="contentViewerKey"
                                                 >
-                                                    <ContentViewer fileContentUrl={fileContentUrl} fileType={fileToView.type} fileTextContent={fileTextContent} setContentLoaded={setContentLoaded}/>
+                                                    <ContentViewer
+                                                        ref={contentViewerRef}
+                                                        fileContentUrl={fileContentUrl} 
+                                                        fileType={fileToView.type} 
+                                                        fileTextContent={fileTextContent} 
+                                                        setContentLoaded={setContentLoaded}
+                                                    />
                                                 </motion.div>
                                             </>)
                                         }
